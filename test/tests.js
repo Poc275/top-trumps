@@ -1,29 +1,17 @@
 var expect = require('chai').expect;
 
 
-describe('object instantiation tests', function() {
-	var parser = new XMLParser();
-	var playlist = new Playlist('test');
-	var track = new Track(12345, 'title', 'artist', 'album');
+describe('database tests', function() {
+	var mongoUtil = require('../server/mongoUtil');
 
-	it('xml parser object instantiates OK', function() {
-		expect(parser).to.be.an.instanceOf(XMLParser);
+	// check we're connected before running any tests
+	before(function(done) {
+		mongoUtil.connect(function(err) {
+			done();
+		});
 	});
 
-	it('playlist object instantiates OK', function() {
-		expect(playlist).to.be.an.instanceOf(Playlist);
-	});
-
-	it('track object instantiates OK', function() {
-		expect(track).to.be.an.instanceOf(Track);
-		expect(track._id).to.equal(12345);
-		expect(track._title).to.equal('title');
-		expect(track._artist).to.equal('artist');
-		expect(track._album).to.equal('album');
-		expect(track._spotifyUri).to.equal(null);
-	});
-
-	it('track toString() returns encoded Uri', function() {
-		expect(track.toString()).to.equal(encodeURIComponent('track:"title" artist:"artist"'));
+	it('connect to the database', function() {
+		expect(mongoUtil.connected()).to.be.true;
 	});
 });

@@ -13,6 +13,8 @@ app.set('view engine', 'jade');
 
 // mongodb setup
 var mongoUtil = require('./mongoUtil');
+// Check for the callback!
+//mongoUtil.connect();
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -42,6 +44,16 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 
 app.get('/', function(req, res) {
+	// var cards = mongoUtil.cards();
+
+	// cards.find().toArray(function(err, results) {
+	// 	if(err) {
+	// 		response.sendStatus(400);
+	// 	}
+
+	// 	console.log(results);
+	// 	response.json(results);
+	// });
 	res.sendStatus(200);
 });
 
