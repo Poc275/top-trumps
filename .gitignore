@@ -1,3 +1,8 @@
+# coverage logs
+coverage/
+.nyc_output/
+npm-debug.log
+
 # Logs
 logs
 *.log
