@@ -17,11 +17,12 @@ var connect = function(callback) {
 			console.log('Error connecting to Mongo - check mongod connection');
 			// exit node.js (we don't want the app running without a database connection)
 			process.exit(1);
-			return callback(err);
+			return callback(err, null);
+		} else {
+			_db = db;
+			_connected = true;
+			return callback(null, true);
 		}
-		_db = db;
-		_connected = true;
-		return callback(null);
 	});
 };
 
@@ -30,9 +31,21 @@ var connected = function() {
 };
 
 // get all cards
-var cards = function() {
-	return _db.collection('cards');
+var cards = function(callback) {
+	if(_connected) {
+		var cards = _db.collection('cards');
+		cards.find({}).limit(3).toArray(function(err, docs) {
+			if(err) {
+				return callback(err, null);
+			}
+
+			return callback(null, docs);
+		});
+	} else {
+		return callback(new Error('Database not connected'), null);
+	}
 };
+
 
 // exports
 exports.connect = connect;
