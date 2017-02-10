@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="CardsModule">
+<head>
+	<meta charset="utf-8">
+	<title>Top Cunts!</title>
+
+    <link rel="stylesheet" href="/scripts/angular-material/angular-material.min.css" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+</head>
+
+<body ng-controller="CardController">
+	<h1>Top Cunts!</h1>
+	<p>Welcome</p>
+	<div class="container">
+		<ul>
+			<li ng-repeat="card in cards">
+				{{card.name}}
+			</li>
+		</ul>
+	</div>
+	
+	<script type='text/javascript' src='/scripts/angular/angular.js'></script>
+  	<script type='text/javascript' src='/scripts/angular-animate/angular-animate.min.js'></script>
+  	<script type='text/javascript' src='/scripts/angular-aria/angular-aria.min.js'></script>
+  	<script type='text/javascript' src='/scripts/angular-material/angular-material.min.js'></script>
+  	<script type='text/javascript' src='/javascripts/CardsModule.js'></script>
+  	<script type='text/javascript' src='/javascripts/controllers/CardController.js'></script>
+</body>
+
+</html>
