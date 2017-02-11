@@ -5,7 +5,7 @@ services:
   - mongodb
 before_script:
   - mongo use tc
-  - mongo db.cards.insert({"name": "a", "unpalatibility": 1, "up_their_own_arsemanship": 2, "media_attention": 3, "legacy": 4, "special_ability": 5, "ppc", 6, "cuntal_order": "a", "category": "a", "special_ability_description": "a"})
-  - mongo db.cards.insert({"name": "a", "unpalatibility": 1, "up_their_own_arsemanship": 2, "media_attention": 3, "legacy": 4, "special_ability": 5, "ppc", 6, "cuntal_order": "a", "category": "a", "special_ability_description": "a"})
-  - mongo db.cards.insert({"name": "a", "unpalatibility": 1, "up_their_own_arsemanship": 2, "media_attention": 3, "legacy": 4, "special_ability": 5, "ppc", 6, "cuntal_order": "a", "category": "a", "special_ability_description": "a"})
+  - mongo tc --eval 'db.cards.insert({"name": "a", "unpalatibility": 1, "up_their_own_arsemanship": 2, "media_attention": 3, "legacy": 4, "special_ability": 5, "ppc", 6, "cuntal_order": "a", "category": "a", "special_ability_description": "a"});'
+  - mongo tc --eval 'db.cards.insert({"name": "a", "unpalatibility": 1, "up_their_own_arsemanship": 2, "media_attention": 3, "legacy": 4, "special_ability": 5, "ppc", 6, "cuntal_order": "a", "category": "a", "special_ability_description": "a"});'
+  - mongo tc --eval 'db.cards.insert({"name": "a", "unpalatibility": 1, "up_their_own_arsemanship": 2, "media_attention": 3, "legacy": 4, "special_ability": 5, "ppc", 6, "cuntal_order": "a", "category": "a", "special_ability_description": "a"});'
 after_success: npm run coverage
