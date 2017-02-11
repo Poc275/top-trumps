@@ -2,27 +2,61 @@
 <html ng-app="CardsModule">
 <head>
 	<meta charset="utf-8">
-	<title>Top Cunts!</title>
+	<title>Top C****!</title>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/scripts/angular-material/angular-material.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/bootstrap-social.css" />
     <link rel="stylesheet" href="/stylesheets/style.css" />
 </head>
 
 <body ng-controller="CardController">
-	<h1>Top Cunts!</h1>
+	<h1>Top C****!</h1>
 	<p>Welcome</p>
 	<div class="container">
 		<ul>
 			<li ng-repeat="card in cards">
 				{{card.name}}
+				{{card.unpalatibility}}
 			</li>
 		</ul>
+	</div>
+
+	<div layout="column" class="zero">
+	  <div flex="33" flex-md="{{ vm.box1Width }}" class="one">
+	  	<p>This is a material design layout...</p>
+
+	  	<md-button class="md-raised md-primary">Button</md-button>
+
+	  	<a class="btn btn-block btn-social btn-facebook">
+			<span class="fa fa-facebook"></span> Sign in with Facebook
+		</a>
+
+		<a class="btn btn-block btn-social btn-google">
+			<span class="fa fa-google"></span> Sign in with Google
+		</a>
+
+	  	<a class="btn btn-block btn-social btn-twitter">
+			<span class="fa fa-twitter"></span> Sign in with Twitter
+		</a>
+	  </div>
+
+	  <div flex="33" layout="{{ vm.direction }}" layout-md="row" class="two">
+	    <div flex="20" flex-md="10" hide-lg class="two_one"></div>
+	    <div flex="30px" show hide-md="{{ vm.hideBox }}" flex-md="25" class="two_two"></div>
+	    <div flex="20" flex-md="65" class="two_three"></div>
+	  </div>
+	  <div flex class="three"></div>
 	</div>
 	
 	<script type='text/javascript' src='/scripts/angular/angular.js'></script>
   	<script type='text/javascript' src='/scripts/angular-animate/angular-animate.min.js'></script>
   	<script type='text/javascript' src='/scripts/angular-aria/angular-aria.min.js'></script>
   	<script type='text/javascript' src='/scripts/angular-material/angular-material.min.js'></script>
+  	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   	<script type='text/javascript' src='/javascripts/CardsModule.js'></script>
   	<script type='text/javascript' src='/javascripts/controllers/CardController.js'></script>
 </body>

@@ -1,1 +1,1 @@
-angular.module('CardsModule', []);
+angular.module('CardsModule', ['ngMaterial']);
