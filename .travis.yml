@@ -1,6 +1,12 @@
 language: node_js
 node_js:
   - "4"
-after_success: npm run coverage
 services:
   - mongodb
+addons:
+  apt:
+    packages:
+      - mongodb-org-tools
+before_script:
+  - mongoimport --db tc --collection cards --type json --file mock-db.json
+after_success: npm run coverage
