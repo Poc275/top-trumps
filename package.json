@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "nyc mocha test",
+    "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "start": "node server/app.js"
   },
@@ -28,6 +28,7 @@
     "coveralls": "^2.11.16",
     "istanbul": "^0.4.5",
     "jasmine-core": "^2.5.2",
+    "jshint": "^2.9.4",
     "karma": "^1.4.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-firefox-launcher": "^1.0.0",
@@ -35,6 +36,7 @@
     "karma-jasmine": "^1.1.0",
     "karma-spec-reporter": "0.0.26",
     "mocha": "^3.2.0",
+    "mockgoose": "^6.0.8",
     "nyc": "^10.1.2",
     "protractor": "^5.1.1"
   }

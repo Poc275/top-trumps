@@ -7,14 +7,12 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
-// view engine setup
-// app.set('views', path.join(__dirname, '../views'));
-// app.set('view engine', 'pug');
-
-// mongodb setup
-var mongoUtil = require('./mongoUtil');
-// Check for the callback!
-mongoUtil.connect(function(err, result) {});
+var mongoose = require('mongoose');
+// use default JS promises as mongoose promises are deprecated
+mongoose.Promise = global.Promise;
+var db = mongoose.createConnection('localhost', 'tc');
+var cardSchema = require('../models/Card.js').CardSchema;
+var card = db.model('cards', cardSchema);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -30,12 +28,9 @@ app.use('/scripts', express.static(path.join(__dirname, '../node_modules')));
 
 // routes
 app.get('/cards', function(req, res) {
-	mongoUtil.cards(function(err, result) {
-		if(err) {
-			res.sendStatus(400);
-		}
-
-		res.json(result);
+	card.find({}, function(err, cards) {
+		console.log(cards);
+		res.json(cards);
 	});
 });
 
