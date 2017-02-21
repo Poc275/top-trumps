@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="CardsModule">
+<html>
 <head>
 	<meta charset="utf-8">
 	<title>Top C****!</title>
@@ -12,16 +12,15 @@
     <link rel="stylesheet" href="/stylesheets/style.css" />
 </head>
 
-<body ng-controller="CardController">
-	<h1>Top C****!</h1>
-	<p>Welcome</p>
-	<div class="container">
-		<ul>
-			<li ng-repeat="card in cards">
-				{{card.name}}
-				{{card.unpalatibility}}
-			</li>
-		</ul>
+<body ng-app="CardsModule" ng-controller="CardController" layout="column">
+	<div class="container" layout="row" flex>
+		<md-list>
+			<md-list-item ng-repeat="card in cards">
+				<md-button>
+					{{card.name}}
+				</md-button>
+			</md-list-item>
+		</md-list>
 	</div>
 
 	<div layout="column" class="zero">
