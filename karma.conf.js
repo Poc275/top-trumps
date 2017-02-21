@@ -15,6 +15,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+        'node_modules/angular/angular.js',
+        'node_modules/angular-animate/angular-animate.min.js',
+        'node_modules/angular-aria/angular-aria.min.js',
+        'node_modules/angular-material/angular-material.min.js',
+        'node_modules/angular-mocks/angular-mocks.js',
+        'public/javascripts/CardsModule.js',
+        'public/javascripts/controllers/CardController.js',
         'test/client-tests.js'
     ],
 
@@ -55,7 +62,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox', 'IE'],
+    browsers: ['Chrome'],
 
 
     // Continuous Integration mode

@@ -1,5 +1,4 @@
-(function() {
-	angular.module('CardsModule').controller('CardController', function($scope, $http) {
+angular.module('CardsModule').controller('CardController', function($scope, $http) {
 	$scope.cards = [];
 
 	$scope.getCards = function() {
@@ -10,4 +9,4 @@
 	};
 
 	$scope.getCards();
-})();
+});
