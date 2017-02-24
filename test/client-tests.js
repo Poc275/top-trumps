@@ -1,10 +1,3 @@
-describe('Basic functionality', function() {
-	it('has a dummy spec to test 2 + 2', function() {
-		expect(2 + 2).toEqual(4);
-	});
-});
-
-
 describe('CardController Tests', function() {
 	var $httpBackend;
 	var $rootScope;
@@ -18,9 +11,7 @@ describe('CardController Tests', function() {
 		$httpBackend = $injector.get('$httpBackend');
 
 		// mock a request for /cards
-		getCardsRequestHandler = $httpBackend.when('GET', '/cards').respond({name: 'created'});
-
-		console.log(getCardsRequestHandler);
+		getCardsRequestHandler = $httpBackend.when('GET', '/cards').respond({name: 'Donald Trump'});
 
 		$rootScope = $injector.get('$rootScope');
 
@@ -32,11 +23,16 @@ describe('CardController Tests', function() {
 		}
 	}));
 
+	afterEach(function() {
+		$httpBackend.verifyNoOutstandingExpectation();
+     	$httpBackend.verifyNoOutstandingRequest();
+	});
 
-	it('GET /cards should return card objects', function() {
+
+	it('http calls are being mocked correctly', function() {
 		$httpBackend.expectGET('/cards');
 		var controller = createController();
 		$httpBackend.flush();
-		console.log('controller object looks like this:' + controller.cards);
+		expect($rootScope.cards.name).toBe('Donald Trump');
 	});
 });
