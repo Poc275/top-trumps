@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 var passport = require('passport');
 // we have to initialise passport.js before we can use it
 // (see app.use(passport.initilize() below)
@@ -17,6 +18,8 @@ var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 var db = mongoose.createConnection('localhost', 'tc');
 
+// create mongoose schemas and models from the schemas
+// note 'cards' and 'users' refers to the collection names
 var cardSchema = require('../models/Card.js').CardSchema;
 var card = db.model('cards', cardSchema);
 var userSchema = require('../models/User.js').UserSchema;
@@ -32,13 +35,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 // don't expose external paths to resources, so to access node_modules
 // for angular etc. use a /scripts alias for the path
 app.use('/scripts', express.static(path.join(__dirname, '../node_modules')));
+app.use(session({ 
+	secret: 'thedonald',
+	resave: false,
+	saveUninitialized: false 
+}));
 app.use(passport.initialize());
 
 
 // routes
 app.get('/cards', function(req, res) {
 	card.find({}, function(err, cards) {
-		console.log(cards);
 		res.json(cards);
 	});
 });
@@ -46,11 +53,25 @@ app.get('/cards', function(req, res) {
 // facebook oauth
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 
-app.get('/auth/facebook/callback',
-		passport.authenticate('facebook', {
-			successRedirect: '/',
-			failureRedirect: '/login'
-}));
+app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(req, res) {
+	console.log(req.user);
+	res.sendStatus(200);
+});
 
+// twitter oauth
+app.get('/auth/twitter', passport.authenticate('twitter'));
+
+app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req, res) {
+	console.log(req.user);
+	res.sendStatus(200);
+});
+
+// google oauth
+app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.profile.emails.read'] }));
+
+app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
+	console.log(req.user);
+	res.sendStatus(200);
+});
 
 app.listen(3000, () => console.log('Listening on port 3000'));

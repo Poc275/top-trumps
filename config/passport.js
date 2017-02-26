@@ -1,27 +1,25 @@
 // var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
+var TwitterStrategy = require('passport-twitter').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var config = require('./auth');
 var mongoose = require('mongoose');
 
 var db = mongoose.createConnection('localhost', 'tc');
 mongoose.Promise = global.Promise;
+
 var userSchema = require('../models/User.js').UserSchema;
 var User = db.model('users', userSchema);
 
+
 module.exports = function(passport) {
-	// passport session signup required for persistent login sessions
-	// passport requires the ability to serialise and deserialise users in/out of session
 	passport.serializeUser(function(user, done) {
-		// just serialize the username to the session to keep
-		// the amount of data stored within the session to a minimum
 		// subsequent requests can use req.user to use this username
-		done(null, user.email);
+		done(null, user);
 	});
 
-	passport.deserializeUser(function(email, done) {
-		User.find(email, function(err, user) {
-			done(err, user);
-		});
+	passport.deserializeUser(function(user, done) {
+		done(null, user);
 	});
 
 	// facebook strategy
@@ -32,27 +30,34 @@ module.exports = function(passport) {
 			// this isn't documented in passport.js but
 			// we have to pass which fields we want in addition to 
 			// passport's scope due to a Facebook API update
-			profileFields: ['name', 'email']
+			profileFields: ['id', 'name', 'email']
 		},
 		function(accessToken, refreshToken, profile, done) {
-			console.log(profile);
 			User.findOne({
-				'facebook.id': profile.id
+				'id': profile.id.toString()
 			}, function(err, user) {
 				if(err) {
 					return done(err);
 				}
-				// else no user was found, so create a new user
-				// Facebook provides the info in the profile parameter
+				// if no user was found, create them
+				// passport provides the user info in the profile parameter
 				if(!user) {
+					var username;
+
+					if(profile.username === undefined) {
+						// sometimes usernames might not be set
+						// so just grab the first part of the email address
+						username = profile.emails[0].value.split('@')[0];
+					} else {
+						username = profile.username;
+					}
+
 					user = new User({
+						username: username,
 						name: profile.name.givenName.toString() + ' ' + profile.name.familyName.toString(),
 						email: profile.emails[0].value.toString(),
 						provider: 'facebook',
-						// note we save the profile info as a JSON object also, this is to
-						// make User.findOne() easier to work with as we can just search for
-						// 'facebook.id': profile.id
-						facebook: JSON.stringify(profile._json)
+						id: profile.id.toString()
 					});
 
 					user.save(function(err) {
@@ -64,6 +69,94 @@ module.exports = function(passport) {
 					});
 				} else {
 					// we found a user, return them
+					return done(null, user);
+				}
+			});
+		}
+	));
+
+	// twitter strategy
+	passport.use(new TwitterStrategy({
+			consumerKey: config.twitter.consumerKey,
+			consumerSecret: config.twitter.consumerSecret,
+			callbackURL: config.twitter.callbackURL
+		},
+		function(token, tokenSecret, profile, done) {
+			User.findOne({
+				'id': profile.id.toString()
+			}, function(err, user) {
+				if(err) {
+					return done(err);
+				}
+
+				if(!user) {
+					// TODO - we need a web site with a privacy document
+					// and T's and C's before Twitter will let us have email addresses
+					user = new User({
+						username: profile.username,
+						name: profile.displayName,
+						email: 'test@twitter.com',
+						provider: 'twitter',
+						id: profile.id.toString()
+					});
+
+					user.save(function(err) {
+						if(err) {
+							console.log(err);
+							return done(err, null);
+						}
+						return done(null, user);
+					});
+				} else {
+					// we found a user
+					return done(null, user);
+				}
+			});
+		}
+	));
+
+	// google strategy
+	passport.use(new GoogleStrategy({
+			clientID: config.google.clientID,
+			clientSecret: config.google.clientSecret,
+			callbackURL: config.google.callbackURL
+		},
+		function(accessToken, refreshToken, profile, done) {
+			User.findOne({
+				'id': profile.id.toString()
+			}, function(err, user) {
+				if(err) {
+					return done(err);
+				}
+
+				if(!user) {
+					var username;
+
+					if(profile.username === undefined) {
+						// sometimes usernames might not be set
+						// so just grab the first part of the email address
+						username = profile.emails[0].value.split('@')[0];
+					} else {
+						username = profile.username;
+					}
+
+					user = new User({
+						username: username,
+						name: profile.displayName,
+						email: profile.emails[0].value,
+						provider: 'google',
+						id: profile.id.toString()
+					});
+
+					user.save(function(err) {
+						if(err) {
+							console.log(err);
+							return done(err, null);
+						}
+						return done(null, user);
+					});
+				} else {
+					// we found a user
 					return done(null, user);
 				}
 			});
