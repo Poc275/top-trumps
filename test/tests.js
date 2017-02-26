@@ -6,6 +6,7 @@ mongodb.max_delay = 0;
 
 var MongoClient = mongodb.MongoClient;
 
+chai.use(chaiHttp);
 
 describe('database tests', function() {
 	var url = 'mongodb://localhost:27017/tc';

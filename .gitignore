@@ -1,7 +1,7 @@
 # coverage logs
 coverage/
 .nyc_output/
-npm-debug.log
+config/auth.js
 
 # Logs
 logs

@@ -13,7 +13,7 @@
 </head>
 
 <body ng-app="CardsModule" ng-controller="CardController" layout="column">
-	<div class="container" layout="row" flex>
+	<!-- <div class="container" layout="row" flex>
 		<md-list>
 			<md-list-item ng-repeat="card in cards">
 				<md-button>
@@ -21,7 +21,7 @@
 				</md-button>
 			</md-list-item>
 		</md-list>
-	</div>
+	</div> -->
 
 	<div layout="column" class="zero">
 	  <div flex="33" flex-md="{{ vm.box1Width }}" class="one">
@@ -29,7 +29,7 @@
 
 	  	<md-button class="md-raised md-primary">Button</md-button>
 
-	  	<a class="btn btn-block btn-social btn-facebook">
+	  	<a href="/auth/facebook" class="btn btn-block btn-social btn-facebook">
 			<span class="fa fa-facebook"></span> Sign in with Facebook
 		</a>
 
@@ -57,6 +57,7 @@
   	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   	<script type='text/javascript' src='/javascripts/CardsModule.js'></script>
+  	<script type='text/javascript' src='/javascripts/services/CardsFactory.js'></script>
   	<script type='text/javascript' src='/javascripts/controllers/CardController.js'></script>
 </body>
 

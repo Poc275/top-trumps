@@ -21,6 +21,7 @@ module.exports = function(config) {
         'node_modules/angular-material/angular-material.min.js',
         'node_modules/angular-mocks/angular-mocks.js',
         'public/javascripts/CardsModule.js',
+        'public/javascripts/services/CardsFactory.js',
         'public/javascripts/controllers/CardController.js',
         'test/client-tests.js'
     ],
@@ -34,13 +35,24 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+        '**/public/javascripts/*.js': 'coverage',
+        '**/public/javascripts/controllers/*.js': 'coverage',
+        '**/public/javascripts/services/*.js': 'coverage'
     },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['spec'],
+    reporters: ['spec', 'coverage'],
+
+
+    // coverage reporter options
+    coverageReporter: {
+        type: 'html',
+        dir: 'coverage/',
+        file: 'ng-coverage.html'
+    },
 
 
     // web server port

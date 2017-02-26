@@ -19,7 +19,7 @@ describe('CardController Tests', function() {
 		var $controller = $injector.get('$controller');
 
 		createController = function() {
-			return $controller('CardController', {'$scope' : $rootScope});
+			return $controller('CardController', { '$scope' : $rootScope });
 		}
 	}));
 
