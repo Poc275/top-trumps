@@ -50,12 +50,18 @@ app.get('/cards', function(req, res) {
 	});
 });
 
+app.get('/cards/:name', function(req, res) {
+	card.find({ 'name': req.params.name }, function(err, card) {
+		res.json(card);
+	});
+});
+
 // facebook oauth
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(req, res) {
 	console.log(req.user);
-	res.sendStatus(200);
+	res.send(req.user);
 });
 
 // twitter oauth
@@ -63,7 +69,7 @@ app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req, res) {
 	console.log(req.user);
-	res.sendStatus(200);
+	res.send(req.user);
 });
 
 // google oauth
@@ -71,7 +77,13 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.g
 
 app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
 	console.log(req.user);
-	res.sendStatus(200);
+	// res.send(req.user);
+	// res.writeHead(302, {
+ //        'Location': '/#/auth/google/callback?user=' + req.user.email
+ //    });
+ //    res.end();
+ 	res.writeHead(200, { "Content-Type": "text/json" });
+ 	res.end(JSON.stringify(req.user));
 });
 
 app.listen(3000, () => console.log('Listening on port 3000'));

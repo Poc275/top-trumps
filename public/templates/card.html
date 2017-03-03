@@ -1,0 +1,29 @@
+<!-- <h1>{{ card[0].name }}</h1> -->
+<div class="card" layout="column">
+	<div flex>
+		<h4>{{ card[0].category }}</h4>
+	</div>
+
+	<div flex>
+		<h1>{{ card[0].name }}</h1>
+	</div>
+
+	<div flex layout-align="center">
+		<img src='images/donald-trump.jpg' alt='card-pic' />
+	</div>
+
+	<div layout="row">
+		<div layout="column">
+			<h2>Unpalatibility: {{ card[0].unpalatibility }}</h2>
+			<h2>Up their own arsemanship: {{ card[0].up_their_own_arsemanship }}</h2>
+			<h2>Media attention: {{ card[0].media_attention }}</h2>
+			<h2>Legacy: {{ card[0].legacy }}</h2>
+			<h2>PPC: {{ card[0].ppc }}</h2>
+		</div>
+
+		<div layout="column">
+			<h2>Special ability: {{ card[0].special_ability }}</h2>
+			<h3>{{ card[0].special_ability_description }}</h3>
+		</div>
+	</div>
+</div>

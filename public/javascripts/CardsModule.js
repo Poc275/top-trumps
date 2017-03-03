@@ -1,1 +1,1 @@
-angular.module('CardsModule', ['ngMaterial']);
+angular.module('CardsModule', ['ngMaterial', 'ngRoute']);
