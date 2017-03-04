@@ -51,7 +51,7 @@ app.get('/cards', function(req, res) {
 });
 
 app.get('/cards/:name', function(req, res) {
-	card.find({ 'name': req.params.name }, function(err, card) {
+	card.findOne({ 'name': req.params.name }, function(err, card) {
 		res.json(card);
 	});
 });
@@ -78,12 +78,12 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.g
 app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
 	console.log(req.user);
 	// res.send(req.user);
-	// res.writeHead(302, {
- //        'Location': '/#/auth/google/callback?user=' + req.user.email
- //    });
- //    res.end();
- 	res.writeHead(200, { "Content-Type": "text/json" });
- 	res.end(JSON.stringify(req.user));
+	res.writeHead(302, {
+        'Location': '/#/auth/callback?user=' + req.user.email
+    });
+    res.end();
+ 	// res.writeHead(200, { "Content-Type": "text/json" });
+ 	// res.end(JSON.stringify(req.user));
 });
 
 app.listen(3000, () => console.log('Listening on port 3000'));

@@ -1,5 +1,7 @@
 angular.module('CardsModule').config(function($routeProvider) {
-	$routeProvider.when('/auth/google/callback', {
-		templateUrl: '/templates/index.html',
-	}).otherwise('/');
+	$routeProvider.when('/', {
+		templateUrl: '/templates/index.html'
+	}).when('/auth/callback', {
+		templateUrl: '/templates/logged-in.html',
+	}).otherwise({redirectTo: '/'});
 });

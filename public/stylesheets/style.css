@@ -1,12 +1,11 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
-}
+.play-button {
+	min-width: 50px;
+	min-height: 50px;
+	background-color: orange;
+	border-radius: 25px;
 
-.card {
-	border: 2px solid black;
 }
