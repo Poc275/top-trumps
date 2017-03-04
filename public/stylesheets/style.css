@@ -7,5 +7,56 @@ body {
 	min-height: 50px;
 	background-color: orange;
 	border-radius: 25px;
+}
 
+.fb.md-raised {
+	background-color: #3B5998;
+	padding: 6px 12px;
+}
+
+.fb.md-raised:not([disabled]):hover {
+	background-color: #2d4373;
+}
+
+.fa-facebook {
+	position: relative;
+	top: -2px;
+	left: -5px;
+	color: #fff;
+}
+
+.google.md-raised {
+	background-color: #DD4B39;
+	padding: 6px 12px;
+}
+
+.google.md-raised:not([disabled]):hover {
+	background-color: #C23321;
+}
+
+.fa-google {
+	position: relative;
+	top: -2px;
+	left: -5px;
+	color: #fff;
+}
+
+.twitter.md-raised {
+	background-color: #55ACEE;
+	padding: 6px 12px;
+}
+
+.twitter.md-raised:not([disabled]):hover {
+	background-color: #2795E9;
+}
+
+.fa-twitter {
+	position: relative;
+	top: -2px;
+	left: -5px;
+	color: #fff;
+}
+
+.social-text {
+	color: #fff;
 }

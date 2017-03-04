@@ -51,7 +51,7 @@ describe('database tests', function() {
 
 
 	it('db contains 2 card objects', function(done) {
-		collection.find({}, {_id:-1}).toArray(function(err, docs) {
+		collection.find({}).toArray(function(err, docs) {
             expect(docs).to.have.length.of(2);
             done();
         });
@@ -59,7 +59,7 @@ describe('database tests', function() {
 
 
 	it('card objects have correct properties and data types', function(done) {
-		collection.find({}, {_id:-1}).toArray(function(err, docs) {
+		collection.find({}).toArray(function(err, docs) {
             expect(docs).to.be.a('array');
 			expect(docs).to.have.length.of(2);
 
@@ -90,8 +90,8 @@ describe('database tests', function() {
 	});
 
 	
-	it('card attributes can be compared numerically', function() {
-		collection.find({}, {_id:-1}).toArray(function(err, docs) {
+	it('card attributes can be compared numerically', function(done) {
+		collection.find({}).toArray(function(err, docs) {
 			var trump = docs[0];
 			var putin = docs[1];
 
@@ -101,6 +101,36 @@ describe('database tests', function() {
 			expect(trump.legacy).to.be.below(putin.legacy);
 			expect(trump.special_ability).to.be.below(putin.special_ability);
 			expect(trump.ppc).to.be.below(putin.ppc);
+
+			done();
+		});
+	});
+
+
+	it('findOne returns only a single result', function(done) {
+		collection.findOne({ 'name': 'Donald Trump' }, function(err, result) {
+			expect(result).to.be.an('object');
+			expect(result.name).to.deep.equal('Donald Trump');
+			expect(result.unpalatibility).to.deep.equal(97);
+			expect(result.up_their_own_arsemanship).to.deep.equal(98);
+			expect(result.media_attention).to.deep.equal(99);
+			expect(result.legacy).to.deep.equal(75);
+			expect(result.special_ability).to.deep.equal(68);
+			expect(result.ppc).to.deep.equal(6800);
+			expect(result.cuntal_order).to.deep.equal('Gold');
+			expect(result.category).to.deep.equal('World Leaders');
+			expect(result.special_ability_description).to.deep.equal('Grabbin pussies');
+
+			done();
+		});
+	});
+
+
+	it('missing search handled ok', function(done) {
+		collection.findOne({ 'name': 'Ronald Reagan' }, function(err, result) {
+			expect(result).to.be.null;
+
+			done();
 		});
 	});
 });
