@@ -86,4 +86,6 @@ app.get('/auth/google/callback', passport.authenticate('google'), function(req, 
  	// res.end(JSON.stringify(req.user));
 });
 
-app.listen(3000, () => console.log('Listening on port 3000'));
+app.listen(3000, function() {
+	console.log('Listening on port 3000');
+});

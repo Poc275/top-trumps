@@ -1,8 +1,10 @@
-<div flex-xs flex-gt-xs="50" layout="column">
+<div flex-xs flex-gt-xs="50" layout="column" class="card" ng-class="{'showInfo': toggleInfo}">
 	<md-card>
 		<md-card-header>
 			<md-card-avatar>
-				<i class="material-icons">face</i>
+				<md-button class="md-icon-button md-primary" ng-click="toggleInfo = !toggleInfo" aria-label="card information">
+					<md-icon class="info-button" md-svg-src="images/ic_info_outline_black_24px.svg"></md-icon>
+				</md-button>
 			</md-card-avatar>
 			<md-card-header-text>
 				<span class="md-title">{{ card.category }}</span>
@@ -12,9 +14,13 @@
 
 		<img ng-src="images/donald-trump.jpg" class="md-card-image" alt="card photo" />
 
-		<md-card-title>
-			<md-card-title-text>
+		<md-card-title ng-switch on="toggleInfo">
+			<md-card-title-text ng-switch-default>
 				<span class="md-headline">{{ card.name }}</span>
+			</md-card-title-text>
+
+			<md-card-title-text ng-switch-when="false">
+				<span class="md-headline">Biography</span>
 			</md-card-title-text>
 		</md-card-title>
 
@@ -22,37 +28,37 @@
 			<div layout="row">
 				<p>Unpalatibility:</p>
 				<span flex></span>
-				<md-button class="play-button">{{ card.unpalatibility }}</md-button>
+				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.unpalatibility }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Up their own arsemanship:</p>
 				<span flex></span>
-				<md-button class="play-button">{{ card.up_their_own_arsemanship }}</md-button>
+				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.up_their_own_arsemanship }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Media attention:</p>
 				<span flex></span>
-				<md-button class="play-button">{{ card.media_attention }}</md-button>
+				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.media_attention }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Legacy:</p>
 				<span flex></span>
-				<md-button class="play-button">{{ card.legacy }}</md-button>
+				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.legacy }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>PPC (price per cunt):</p>
 				<span flex></span>
-				<md-button class="play-button">{{ card.ppc }}</md-button>
+				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.ppc }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Special ability:</p>
 				<span flex></span>
-				<md-button class="play-button">{{ card.special_ability }}</md-button>
+				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.special_ability }}</md-button>
 			</div>
 		</md-card-actions>
 

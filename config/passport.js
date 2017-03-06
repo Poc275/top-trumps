@@ -5,8 +5,8 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var config = require('./auth');
 var mongoose = require('mongoose');
 
-var db = mongoose.createConnection('localhost', 'tc');
 mongoose.Promise = global.Promise;
+var db = mongoose.createConnection('localhost', 'tc');
 
 var userSchema = require('../models/User.js').UserSchema;
 var User = db.model('users', userSchema);
@@ -162,4 +162,4 @@ module.exports = function(passport) {
 			});
 		}
 	));
-}
+};

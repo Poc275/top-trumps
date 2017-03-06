@@ -2,13 +2,49 @@ body {
   padding: 50px;
 }
 
+/*
+**********************************
+Card styles
+**********************************
+*/
+.card {
+	transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s;
+	/*background-color: red;*/
+}
+
+.card.showInfo {
+	background-color: red;
+}
+
 .play-button {
 	min-width: 50px;
 	min-height: 50px;
-	background-color: orange;
 	border-radius: 25px;
 }
 
+.play-button.Bronze {
+	background-color: orange;
+}
+
+.md-headline {
+	font-weight: 700;
+}
+
+md-card-actions div {
+	padding: 5px 15px;
+}
+
+.info-button {
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+/*
+*********************************
+ Social media buttons for oAUth
+*********************************
+*/
 .fb.md-raised {
 	background-color: #3B5998;
 	padding: 6px 12px;
