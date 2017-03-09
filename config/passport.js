@@ -1,4 +1,8 @@
-// var passport = require('passport');
+/**
+ * Passport module that handles authentiction strategies
+ * for Facebook, Google, and Twitter
+ * @module config/passport
+ */
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;

@@ -1,0 +1,10 @@
+// jsdoc config file for documentation generation
+{
+	"source": {
+		"include": [ "config" ],
+		"exclude": [ "node_modules" ]
+	},
+	"opts": {
+		"destination": "docs/"
+	}
+}
