@@ -2,18 +2,32 @@ body {
   padding: 50px;
 }
 
+
 /*
 **********************************
 Card styles
 **********************************
 */
 .card {
-	transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s;
-	/*background-color: red;*/
+	/*-webkit-animation-duration: 3s;
+	-moz-animation-duration: 3s;
+	animation-duration: 3s;*/
 }
 
-.card.showInfo {
-	background-color: red;
+md-card-header.grade-Bronze {
+	border-top: 3px solid rgba(205, 127, 50, 1);
+}
+
+md-card-header.grade-Silver {
+	border-top: 3px solid rgba(192, 192, 192, 1);
+}
+
+md-card-header.grade-Gold {
+	border-top: 3px solid rgba(253, 181, 21, 1);
+}
+
+md-card-header.grade-Brown Platinum {
+	border-top: 3px solid rgba(128, 70, 27, 1);
 }
 
 .play-button {
@@ -22,8 +36,28 @@ Card styles
 	border-radius: 25px;
 }
 
-.play-button.Bronze {
-	background-color: orange;
+.play-button.grade-Bronze {
+	background-color: rgba(205, 127, 50, 1);
+}
+
+.play-button.grade-Silver {
+	background-color: rgba(192, 192, 192, 1);
+}
+
+.play-button.grade-Gold {
+	background-color: rgba(253, 181, 21, 1);
+}
+
+.play-button.grade-Bronze:not([disabled]):hover {
+	background-color: rgba(150, 93, 37, 1);
+}
+
+.play-button.grade-Silver:not([disabled]):hover {
+	background-color: rgba(158, 158, 158, 1);
+}
+
+.play-button.grade-Gold:not([disabled]):hover {
+	background-color: rgba(174, 122, 0, 1)
 }
 
 .md-headline {
@@ -40,9 +74,10 @@ md-card-actions div {
 	padding: 0;
 }
 
+
 /*
 *********************************
- Social media buttons for oAUth
+ Social media buttons for oAuth
 *********************************
 */
 .fb.md-raised {

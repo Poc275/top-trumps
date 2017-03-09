@@ -1,8 +1,8 @@
-<div flex-xs flex-gt-xs="50" layout="column" class="card" ng-class="{'showInfo': toggleInfo}">
-	<md-card>
-		<md-card-header>
+<div flex-xs flex-gt-xs="50" layout="column" class="card animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }">
+	<md-card md-whiteframe="12">
+		<md-card-header class="grade-{{ card.cuntal_order }}">
 			<md-card-avatar>
-				<md-button class="md-icon-button md-primary" ng-click="toggleInfo = !toggleInfo" aria-label="card information">
+				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
 					<md-icon class="info-button" md-svg-src="images/ic_info_outline_black_24px.svg"></md-icon>
 				</md-button>
 			</md-card-avatar>
@@ -12,59 +12,132 @@
 			</md-card-header-text>
 		</md-card-header>
 
-		<img ng-src="images/donald-trump.jpg" class="md-card-image" alt="card photo" />
+		<!-- default/not flipped states - show front image -->
+		<img ng-switch-default ng-src="images/donald-trump.jpg" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="false" ng-src="images/donald-trump.jpg" class="md-card-image" alt="card photo" />
 
-		<md-card-title ng-switch on="toggleInfo">
+		<!-- else if flipped show rear image -->
+		<img ng-switch-when="true" ng-src="images/donald-trump-rear.jpg" class="md-card-image" alt="card photo" />
+
+		<md-card-title>
+			<!-- default/unflipped title - show name -->
 			<md-card-title-text ng-switch-default>
 				<span class="md-headline">{{ card.name }}</span>
 			</md-card-title-text>
 
 			<md-card-title-text ng-switch-when="false">
+				<span class="md-headline">{{ card.name }}</span>
+			</md-card-title-text>
+
+			<!-- flipped state - show biography -->
+			<md-card-title-text ng-switch-when="true">
 				<span class="md-headline">Biography</span>
 			</md-card-title-text>
 		</md-card-title>
 
-		<md-card-actions layout="column" layout-align="space-around none">
+
+		<!-- default card actions - show credentials -->
+		<md-card-actions layout="column" layout-align="space-around none" ng-switch-default>
 			<div layout="row">
 				<p>Unpalatibility:</p>
 				<span flex></span>
-				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.unpalatibility }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.unpalatibility }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Up their own arsemanship:</p>
 				<span flex></span>
-				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.up_their_own_arsemanship }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.up_their_own_arsemanship }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Media attention:</p>
 				<span flex></span>
-				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.media_attention }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.media_attention }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Legacy:</p>
 				<span flex></span>
-				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.legacy }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.legacy }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>PPC (price per cunt):</p>
 				<span flex></span>
-				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.ppc }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.ppc }}</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Special ability:</p>
 				<span flex></span>
-				<md-button class="play-button ng-class: {{ card.cuntal_order }}">{{ card.special_ability }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.special_ability }}</md-button>
 			</div>
 		</md-card-actions>
 
-		<md-card-content>
+
+		<!-- not flipped - show credentials -->
+		<md-card-actions layout="column" layout-align="space-around none" ng-switch-when="false">
+			<div layout="row">
+				<p>Unpalatibility:</p>
+				<span flex></span>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.unpalatibility }}</md-button>
+			</div>
+
+			<div layout="row">
+				<p>Up their own arsemanship:</p>
+				<span flex></span>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.up_their_own_arsemanship }}</md-button>
+			</div>
+
+			<div layout="row">
+				<p>Media attention:</p>
+				<span flex></span>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.media_attention }}</md-button>
+			</div>
+
+			<div layout="row">
+				<p>Legacy:</p>
+				<span flex></span>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.legacy }}</md-button>
+			</div>
+
+			<div layout="row">
+				<p>PPC (price per cunt):</p>
+				<span flex></span>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.ppc }}</md-button>
+			</div>
+
+			<div layout="row">
+				<p>Special ability:</p>
+				<span flex></span>
+				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.special_ability }}</md-button>
+			</div>
+		</md-card-actions>
+
+
+		<!-- default/unflipped - show special ability description -->
+		<md-card-content ng-switch-default>
 			<h4>Special ability description:</h4>
 			<p>{{ card.special_ability_description }}</p>
+		</md-card-content>
+
+		<md-card-content ng-switch-when="false">
+			<h4>Special ability description:</h4>
+			<p>{{ card.special_ability_description }}</p>
+		</md-card-content>
+
+		<!-- flipped - show biography -->
+		<md-card-content ng-switch-when="true">
+			<p>{{ card.bio }}</p>
+
+			<h5>References</h5>
+			<ul>
+				<li ng-repeat="ref in card.references">
+					<a ng-href="{{ ref }}">{{ ref }}</a>
+				</li>
+			</ul>
+
 		</md-card-content>
 
 	</md-card>
