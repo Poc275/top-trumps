@@ -1,7 +1,9 @@
 /**
  * Passport module that handles authentiction strategies
- * for Facebook, Google, and Twitter
+ * for Facebook, Google, and Twitter.
  * @module config/passport
+ * @todo Twitter will not provide email addresses until the application requesting
+ * access has a Ts and Cs and privacy policy document.
  */
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
@@ -16,6 +18,13 @@ var userSchema = require('../models/User.js').UserSchema;
 var User = db.model('users', userSchema);
 
 
+/**
+ * function that takes the initialised passport object (from app.js) 
+ * and handles the oAuth callbacks using Facebook, Google, Twitter strategies.
+ * @param {object} passport - initialised passport object
+ * @returns {Error|User} Error if something went wrong, or the user if found. If 
+ * the user wasn't found they are created and added to the database
+ */
 module.exports = function(passport) {
 	passport.serializeUser(function(user, done) {
 		// subsequent requests can use req.user to use this username
@@ -94,8 +103,6 @@ module.exports = function(passport) {
 				}
 
 				if(!user) {
-					// TODO - we need a web site with a privacy document
-					// and T's and C's before Twitter will let us have email addresses
 					user = new User({
 						username: profile.username,
 						name: profile.displayName,

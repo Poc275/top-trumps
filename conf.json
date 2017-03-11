@@ -1,7 +1,7 @@
 // jsdoc config file for documentation generation
 {
 	"source": {
-		"include": [ "config" ],
+		"include": [ "config", "models" ],
 		"exclude": [ "node_modules" ]
 	},
 	"opts": {
