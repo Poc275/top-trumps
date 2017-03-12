@@ -1,9 +1,7 @@
 <md-toolbar layout-padding layout="row">
-	<!-- <h1>Top C*unts</h1> -->
 	<img class="tc-text-logo" src="images/tc-text-logo.png" alt="tc logo" />
 	<span flex></span>
 	<md-button class="md-primary md-accent" ng-click="toggleMenu()">
-		<!-- <md-icon md-svg-src="images/ic_menu_white_48px.svg"></md-icon> -->
 		<i class="material-icons menu-icon">menu</i>
 	</md-button>
 </md-toolbar>
@@ -11,7 +9,7 @@
 <!-- md-component-id allows the controller to access the sidenav -->
 <md-sidenav class="md-whiteframe-4dp md-sidenav-left" md-component-id="side-menu">
 	<md-toolbar layout-padding layout="row">
-		<h1>Menu</h1>
+		<h2>Menu</h2>
 		<span flex></span>
 		<md-button ng-click="toggleMenu()" class="md-primary md-accent">
 			<i class="material-icons menu-icon">close</i>
@@ -19,9 +17,46 @@
 	</md-toolbar>
 
 	<md-content layout-padding ng-controller="UserController">
-		<h2>Hi {{user.username}}</h2>
+		<md-list flex>
+			<md-list-item class="md-3-line">
+				<img ng-src="{{ gravatarUrl(user.email) }}" alt="user's gravatar" class="md-avatar" />
+				<div class="md-list-item-text" layout="column">
+					<h3>Hi {{user.username}}</h3>
+					<h4>{{ user.name }}</h4>
+					<p>{{ user.email }}</p>
+				</div>
+			</md-list-item>
+
+			<md-divider></md-divider>
+
+			<md-list-item class="md-1-line" ng-click="getCards()">
+				<i class="material-icons md-avatar">collections</i>
+				<div class="md-list-item-text" layout="column">
+					<h3>My Cards</h3>
+				</div>
+			</md-list-item>
+
+			<md-list-item class="md-1-line" ng-click="null">
+				<i class="material-icons md-avatar">history</i>
+				<div class="md-list-item-text" layout="column">
+					<h3>Game History</h3>
+				</div>
+			</md-list-item>
+
+			<md-list-item class="md-1-line" ng-click="logout()">
+				<i class="material-icons md-avatar">exit_to_app</i>
+				<div class="md-list-item-text" layout="column">
+					<h3>Sign out</h3>
+				</div>
+			</md-list-item>
+
+		</md-list>
 	</md-content>
 </md-sidenav>
 
 <!-- Donald Trump <card> directive for testing -->
-<card></card>
+<!-- TODO - can only have 1 ng-view, so when viewing collections
+	the toolbar/sidebar disappears. Need to persist the menu's and just
+	show the collection in the main section on the same ng-view -->
+<!-- possible answer here: http://stackoverflow.com/questions/17544558/multiple-ng-view-in-single-template-angular-js -->
+<!-- <card></card> -->

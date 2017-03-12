@@ -84,6 +84,12 @@ app.get('/me', isAuthenticated, function(req, res) {
 	});
 });
 
+app.get('/logout', function(req, res) {
+	// req.logout() provided by passport
+	req.logout();
+	res.status(200).end();
+});
+
 
 // facebook oauth
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
