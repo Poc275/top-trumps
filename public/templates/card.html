@@ -1,15 +1,21 @@
 <div flex-xs flex-gt-xs="50" layout="column" class="card animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }">
 	<md-card md-whiteframe="12">
-		<md-card-header class="grade-{{ card.cuntal_order }}">
-			<md-card-avatar>
-				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
-					<md-icon class="info-button" md-svg-src="images/ic_info_outline_black_24px.svg"></md-icon>
-				</md-button>
-			</md-card-avatar>
+		<md-card-header class="grade-{{ card.cuntal_order }}" layout="row">
 			<md-card-header-text>
 				<span class="md-title">{{ card.category }}</span>
 				<span class="md-subhead">{{ card.cuntal_order }}</span>
 			</md-card-header-text>
+
+			<span flex></span>
+
+			<md-card-avatar>
+				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
+					<i ng-switch-default class="material-icons info-button">info_outline</i>
+					<i ng-switch-when="false" class="material-icons info-button">info_outline</i>
+					<!-- if flipped show filled in info button -->
+					<i ng-switch-when="true" class="material-icons info-button">info</i>
+				</md-button>
+			</md-card-avatar>
 		</md-card-header>
 
 		<!-- default/not flipped states - show front image -->

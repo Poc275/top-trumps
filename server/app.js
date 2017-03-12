@@ -41,6 +41,25 @@ app.use(session({
 	saveUninitialized: false 
 }));
 app.use(passport.initialize());
+// remember to let passport access the session for req.isAuthenticated to work!
+app.use(passport.session());
+
+
+// middleware
+// is user authenticated?
+var isAuthenticated = function(req, res, next) {
+	// if a user is authenticated, carry on
+	// isAuthenticated provided by passport
+	if (req.isAuthenticated()) {
+		return next();
+	}
+
+	// not authenticated, redirect to home page to login
+	res.writeHead(401, {
+        'Location': '/#/'
+    });
+    res.end();
+};
 
 
 // routes
@@ -56,35 +75,49 @@ app.get('/cards/:name', function(req, res) {
 	});
 });
 
+app.get('/me', isAuthenticated, function(req, res) {
+	user.findOne({ 'email': app.locals.user }, function(err, user) {
+		if(err) {
+			console.log(err);
+		}
+		res.json(user);
+	});
+});
+
+
 // facebook oauth
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(req, res) {
-	console.log(req.user);
-	res.send(req.user);
+	app.locals.user = req.user.email;
+	res.writeHead(302, {
+        'Location': '/#/home'
+    });
+    res.end();
 });
 
 // twitter oauth
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req, res) {
-	console.log(req.user);
-	res.send(req.user);
+	app.locals.user = req.user.email;
+	res.writeHead(302, {
+        'Location': '/#/home'
+    });
+    res.end();
 });
 
 // google oauth
 app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.profile.emails.read'] }));
 
 app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
-	console.log(req.user);
-	// res.send(req.user);
+	app.locals.user = req.user.email;
 	res.writeHead(302, {
-        'Location': '/#/auth/callback?user=' + req.user.email
+        'Location': '/#/home'
     });
     res.end();
- 	// res.writeHead(200, { "Content-Type": "text/json" });
- 	// res.end(JSON.stringify(req.user));
 });
+
 
 app.listen(3000, function() {
 	console.log('Listening on port 3000');

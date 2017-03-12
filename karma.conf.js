@@ -25,6 +25,7 @@ module.exports = function(config) {
         'public/javascripts/CardsModule.js',
         'public/javascripts/routes.js',
         'public/javascripts/services/CardsFactory.js',
+        'public/javascripts/controllers/AppController.js',
         'public/javascripts/controllers/CardController.js',
         'public/javascripts/controllers/UserController.js',
         'public/javascripts/directives/CardDirective.js',

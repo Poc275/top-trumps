@@ -1,16 +1,24 @@
 body {
-  padding: 50px;
+  /*padding: 50px;*/
 }
 
 
 /*
 **********************************
-Home page styles
+Logo/Icon styles
 **********************************
 */
 .tc-logo {
 	min-width: 500px;
 	min-height: 500px;
+}
+
+.tc-text-logo {
+	height: 100px;
+}
+
+.menu-icon {
+	font-size: 40px;
 }
 
 
@@ -83,6 +91,7 @@ md-card-actions div {
 	background-color: transparent;
 	margin: 0;
 	padding: 0;
+	color: #000;
 }
 
 

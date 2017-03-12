@@ -1,8 +1,11 @@
 angular.module('CardsModule', ['ngMaterial', 'ngRoute', 'ngAnimate'])
 	.config(function($mdThemingProvider) {
 		$mdThemingProvider.theme('default')
-			.primaryPalette('pink')
-			.accentPalette('orange')
-			.warnPalette('red')
-			.dark();
+			// .backgroundPalette('cyan')
+			.primaryPalette('cyan')
+			.accentPalette('blue', {
+				'default': '900'
+			})
+			.warnPalette('red');
+			// .dark();
 });

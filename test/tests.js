@@ -1,4 +1,6 @@
+var chai = require('chai');
 var expect = require('chai').expect;
+var chaiHttp = require('chai-http');
 
 var mongodb = require('mongo-mock');
 // mimic async db behaviour by setting max_delay
@@ -6,7 +8,9 @@ mongodb.max_delay = 0;
 
 var MongoClient = mongodb.MongoClient;
 
-describe('database tests', function() {
+chai.use(chaiHttp);
+
+describe('database card collection tests', function() {
 	var url = 'mongodb://localhost:27017/tc';
 	var collection;
 
@@ -129,6 +133,102 @@ describe('database tests', function() {
 	it('missing search handled ok', function(done) {
 		collection.findOne({ 'name': 'Ronald Reagan' }, function(err, result) {
 			expect(result).to.be.null;
+
+			done();
+		});
+	});
+});
+
+
+describe('database user collection tests', function() {
+	var url = 'mongodb://localhost:27017/tc';
+	var collection;
+
+	before(function(done) {	
+		MongoClient.connect(url, {}, function(err, db) {
+			// insert some dummy data into the mocked db
+			collection = db.collection('users');
+
+			var user = {
+				username: 'harry123',
+				name: 'Harry Belafonte',
+				email: 'harry.b@emailme.com',
+				provider: 'Google',
+				id: '123456'
+			};
+
+			collection.insert(user, function(err, result) {
+				if(err) {
+					console.log(err);
+					throw(err);
+				}
+				done();
+			});
+		});
+	});
+
+
+	it('db contains a user', function(done) {
+		collection.find({}).toArray(function(err, docs) {
+			expect(docs).to.be.a('array');
+            expect(docs).to.have.length.of(1);
+            done();
+        });
+	});
+
+
+	it('user object has correct properties and data types', function(done) {
+		collection.find({}).toArray(function(err, docs) {
+			expect(docs[0]).to.have.property('username');
+			expect(docs[0]).to.have.property('name');
+			expect(docs[0]).to.have.property('email');
+			expect(docs[0]).to.have.property('provider');
+			expect(docs[0]).to.have.property('id');
+
+			expect(docs[0].username).to.be.a('string');
+			expect(docs[0].name).to.be.a('string');
+			expect(docs[0].email).to.be.a('string');
+			expect(docs[0].provider).to.be.a('string');
+			expect(docs[0].id).to.be.a('string');
+
+            done();
+        });
+	});
+
+
+	it('find user works as expected', function(done) {
+		collection.findOne({ 'email': 'harry.b@emailme.com' }, function(err, result) {
+			expect(result).to.be.an('object');
+			expect(result.username).to.deep.equal('harry123');
+			expect(result.name).to.deep.equal('Harry Belafonte');
+			expect(result.email).to.deep.equal('harry.b@emailme.com');
+			expect(result.provider).to.deep.equal('Google');
+			expect(result.id).to.deep.equal('123456');
+
+			done();
+		});
+	});
+
+
+	it('missing user search handled ok', function(done) {
+		collection.findOne({ 'email': 'harry.b@emailme.co.uk' }, function(err, result) {
+			expect(result).to.be.null;
+
+			done();
+		});
+	});
+
+});
+
+
+// will need to change the url depending on test environment
+// look into testUtils.getRootUrl() for an environment agnostic url method
+// source: http://beletsky.net/2014/03/testable-apis-with-node-dot-js.html
+describe('user authentication tests', function() {
+	it('unauthenticated user cannot get /me', function(done) {
+		chai.request('http://localhost:3000').get('/me').end(function(err, res) {
+			expect(err).to.not.be.null;
+			expect(res).to.have.status(401);
 
 			done();
 		});

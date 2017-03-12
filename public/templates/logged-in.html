@@ -1,1 +1,27 @@
+<md-toolbar layout-padding layout="row">
+	<!-- <h1>Top C*unts</h1> -->
+	<img class="tc-text-logo" src="images/tc-text-logo.png" alt="tc logo" />
+	<span flex></span>
+	<md-button class="md-primary md-accent" ng-click="toggleMenu()">
+		<!-- <md-icon md-svg-src="images/ic_menu_white_48px.svg"></md-icon> -->
+		<i class="material-icons menu-icon">menu</i>
+	</md-button>
+</md-toolbar>
+
+<!-- md-component-id allows the controller to access the sidenav -->
+<md-sidenav class="md-whiteframe-4dp md-sidenav-left" md-component-id="side-menu">
+	<md-toolbar layout-padding layout="row">
+		<h1>Menu</h1>
+		<span flex></span>
+		<md-button ng-click="toggleMenu()" class="md-primary md-accent">
+			<i class="material-icons menu-icon">close</i>
+		</md-button>
+	</md-toolbar>
+
+	<md-content layout-padding ng-controller="UserController">
+		<h2>Hi {{user.username}}</h2>
+	</md-content>
+</md-sidenav>
+
+<!-- Donald Trump <card> directive for testing -->
 <card></card>
