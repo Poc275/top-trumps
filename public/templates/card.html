@@ -1,4 +1,4 @@
-<div flex-xs flex-gt-xs="50" layout="column" class="card animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }">
+<div layout="column" class="card animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }">
 	<md-card md-whiteframe="12">
 		<md-card-header class="grade-{{ card.cuntal_order }}" layout="row">
 			<md-card-header-text>
@@ -140,7 +140,7 @@
 			<h5>References</h5>
 			<ul>
 				<li ng-repeat="ref in card.references">
-					<a ng-href="{{ ref }}">{{ ref }}</a>
+					<a ng-href="{{ ref }}" target="_blank">{{ ref }}</a>
 				</li>
 			</ul>
 

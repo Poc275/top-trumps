@@ -6,6 +6,7 @@
 	</md-button>
 </md-toolbar>
 
+
 <!-- md-component-id allows the controller to access the sidenav -->
 <md-sidenav class="md-whiteframe-4dp md-sidenav-left" md-component-id="side-menu">
 	<md-toolbar layout-padding layout="row">
@@ -53,6 +54,11 @@
 		</md-list>
 	</md-content>
 </md-sidenav>
+
+
+<md-content id="content" flex layout-padding ng-controller="UserController">
+	<div ng-include="'/templates/collection.html'" ng-if="showCollection"></div>
+</md-content>
 
 <!-- Donald Trump <card> directive for testing -->
 <!-- TODO - can only have 1 ng-view, so when viewing collections

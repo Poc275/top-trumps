@@ -28,9 +28,7 @@ Card styles
 **********************************
 */
 .card {
-	/*-webkit-animation-duration: 3s;
-	-moz-animation-duration: 3s;
-	animation-duration: 3s;*/
+	width: 400px;
 }
 
 md-card-header.grade-Bronze {

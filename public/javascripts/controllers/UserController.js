@@ -1,5 +1,5 @@
 angular.module('CardsModule').controller('UserController', function($scope, $http, $location, Gravatar) {
-
+	
 	$scope.getUser = function() {
 		$http.get('/me').success(function(user) {
 			$scope.user = user;
