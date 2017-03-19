@@ -1,11 +1,17 @@
 {
-  "name": "topcunts",
+  "name": "toptrumps",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "nyc mocha",
+    "test": "nyc mocha && karma start --single-run",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "start": "node server/app.js"
+    "start": "node server/app.js",
+    "lint": "jshint .",
+    "posttest": "npm run lint",
+    "webdriver-start": "webdriver-manager update && webdriver-manager start",
+    "protractor": "protractor ./test/protractor-conf.js",
+    "http-server": "http-server -a localhost -p 3000",
+    "e2e": "(webdriver-manager start &) && sleep 2 && npm run http-server"
   },
   "dependencies": {
     "angular": "~1.5.11",
@@ -36,6 +42,7 @@
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "coveralls": "^2.11.16",
+    "http-server": "^0.9.0",
     "istanbul": "^0.4.5",
     "jasmine-core": "^2.5.2",
     "jshint": "^2.9.4",

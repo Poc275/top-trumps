@@ -1,6 +1,7 @@
 var chai = require('chai');
 var expect = require('chai').expect;
 var chaiHttp = require('chai-http');
+var app = require('../server/app');
 
 var mongodb = require('mongo-mock');
 // mimic async db behaviour by setting max_delay
@@ -29,7 +30,12 @@ describe('database card collection tests', function() {
 				ppc: 6800,
 				cuntal_order: 'Gold',
 				category: 'World Leaders',
-				special_ability_description: 'Grabbin pussies'
+				special_ability_description: 'Grabbin pussies',
+				bio: 'Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro.',
+				references: [
+					'https://goo.gl/XTASMi',
+					'https://goo.gl/P0KzJd'
+				]
 			},{
 				name: 'Vladimir Putin',
 				unpalatibility: 90,
@@ -40,7 +46,76 @@ describe('database card collection tests', function() {
 				ppc: 20000,
 				cuntal_order: 'Gold',
 				category: 'World Leaders',
-				special_ability_description: 'Election interference'
+				special_ability_description: 'Election interference',
+				bio: 'De carne animata corpora quaeritis. Summus sit​​, morbo vel maleficia?',
+				references: [
+					'https://goo.gl/W59LNx'
+				]
+			},{
+				name: 'Sting',
+				unpalatibility: 56,
+				up_their_own_arsemanship: 66,
+				media_attention: 24,
+				legacy: 41,
+				special_ability: 29,
+				ppc: 300,
+				cuntal_order: 'Bronze',
+				category: 'Mouth Breathers',
+				special_ability_description: 'Tantric tomfoolery',
+				bio: 'De Apocalypsi undead dictum mauris.',
+				references: []
+			},{
+				name: 'David Cameron',
+				unpalatibility: 80,
+				up_their_own_arsemanship: 75,
+				media_attention: 59,
+				legacy: 88,
+				special_ability: 62,
+				ppc: 10,
+				cuntal_order: 'Brown Platinum',
+				category: 'Tories',
+				special_ability_description: 'Humming death warrants',
+				bio: 'Hi mortuis soulless creaturas, imo monstra adventus vultus comedat cerebella viventium.',
+				references: []
+			},{
+				name: 'George Bush Snr',
+				unpalatibility: 35,
+				up_their_own_arsemanship: 40,
+				media_attention: 7,
+				legacy: 23,
+				special_ability: 35,
+				ppc: 25,
+				cuntal_order: 'Bronze',
+				category: 'World Leaders',
+				special_ability_description: 'OPEC parties',
+				bio: 'Qui offenderit rapto, terribilem incessu.',
+				references: []
+			},{
+				name: 'Chris Evans',
+				unpalatibility: 56,
+				up_their_own_arsemanship: 44,
+				media_attention: 50,
+				legacy: 29,
+				special_ability: 66,
+				ppc: 55,
+				cuntal_order: 'Bronze',
+				category: 'Mouth Breathers',
+				special_ability_description: 'Annoying gingerness',
+				bio: 'The voodoo sacerdos suscitat mortuos comedere carnem.',
+				references: []
+			},{
+				name: 'Ben Bernanke',
+				unpalatibility: 70,
+				up_their_own_arsemanship: 78,
+				media_attention: 12,
+				legacy: 79,
+				special_ability: 89,
+				ppc: 2,
+				cuntal_order: 'Silver',
+				category: '1%er',
+				special_ability_description: 'Tax dime misappropriation',
+				bio: 'Sicut malus movie horror.',
+				references: []
 			}];
 
 			collection.insert(cards, function(err, result) {
@@ -56,7 +131,7 @@ describe('database card collection tests', function() {
 
 	it('db contains 2 card objects', function(done) {
 		collection.find({}).toArray(function(err, docs) {
-            expect(docs).to.have.length.of(2);
+            expect(docs).to.have.length.of(7);
             done();
         });
 	});
@@ -65,7 +140,7 @@ describe('database card collection tests', function() {
 	it('card objects have correct properties and data types', function(done) {
 		collection.find({}).toArray(function(err, docs) {
             expect(docs).to.be.a('array');
-			expect(docs).to.have.length.of(2);
+			expect(docs).to.have.length.of(7);
 
 			expect(docs[0]).to.have.property('name');
 			expect(docs[0]).to.have.property('unpalatibility');
@@ -217,6 +292,24 @@ describe('database user collection tests', function() {
 			done();
 		});
 	});
+
+
+	// aggregate not yet supported in mongo-mock
+	// it('starter pack db query creates 2 bronze cards', function(done) {
+	// 	collection.aggregate([
+	// 		{ $match: { cuntal_order: 'Bronze' }},
+	// 		{ $project: { _id: true, name: true, cuntal_order: true }},
+	// 		{ $sample: { size: 2 }}
+	// 	], function(err, docs) {
+	// 		expect(docs).to.be.a('array');
+	// 		expect(docs).to.have.length.of(2);
+	// 		expect(docs[0].cuntal_order).to.deep.equal('Bronze');
+	// 		expect(docs[1].cuntal_order).to.deep.equal('Bronze');
+	// 		expect(docs[0]._id).to.not.equal(docs[1]._id);
+
+	// 		done();
+	// 	});
+	// });
 
 });
 

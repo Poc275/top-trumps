@@ -22,6 +22,8 @@ exports.CardSchema = new mongoose.Schema({
 	 * @property {string} category - Category to group related cards (World Leaders, Attention Seekers, 
 	 * Wrong'n, Mouth Breathers, Sports, Fictional, Tories, 1%er, Jokers)
 	 * @property {string} special_ability_description - A text description of their special ability
+	 * @property {string} bio - Biography. A brief background/story as to why they qualify for a TC card
+	 * @property {array} references - Array of links/references to back up the bio
 	 */
 	name: { type: String, required: true },
 	unpalatibility: { type: Number, required: true },
@@ -32,5 +34,7 @@ exports.CardSchema = new mongoose.Schema({
 	ppc: { type: Number, required: true },
 	cuntal_order: { type: String, required: true },
 	category: { type: String, required: true },
-	special_ability_description: { type: String, required: true }
+	special_ability_description: { type: String, required: true },
+	bio: { type: String, required: true },
+	references: { type: Array, required: false }
 });
