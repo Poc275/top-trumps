@@ -2,5 +2,5 @@ angular.module('CardsModule').controller('AppController', function($scope, $mdSi
 	// toggle sidenav menu
 	$scope.toggleMenu = function() {
 		$mdSidenav('side-menu').toggle();
-	}
+	};
 });

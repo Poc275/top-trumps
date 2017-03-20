@@ -8,13 +8,13 @@ angular.module('CardsModule').controller('UserController', function($scope, $htt
 
 	$scope.gravatarUrl = function(email) {
 		return Gravatar(email);
-	}
+	};
 
 	$scope.logout = function() {
 		$http.get('/logout').success(function() {
 			$location.path('/');
 		});
-	}
+	};
 
 	/*
 	 * @todo just display a test card for now
@@ -22,7 +22,7 @@ angular.module('CardsModule').controller('UserController', function($scope, $htt
 	 */
 	$scope.getCards = function() {
 		$location.path('/collection');
-	}
+	};
 
 	$scope.getUser();
 });

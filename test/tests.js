@@ -129,7 +129,7 @@ describe('database card collection tests', function() {
 	});
 
 
-	it('db contains 2 card objects', function(done) {
+	it('db contains correct number of objects', function(done) {
 		collection.find({}).toArray(function(err, docs) {
             expect(docs).to.have.length.of(7);
             done();
@@ -152,6 +152,8 @@ describe('database card collection tests', function() {
 			expect(docs[0]).to.have.property('cuntal_order');
 			expect(docs[0]).to.have.property('category');
 			expect(docs[0]).to.have.property('special_ability_description');
+			expect(docs[0]).to.have.property('bio');
+			expect(docs[0]).to.have.property('references');
 
 			expect(docs[0].name).to.be.a('string');
 			expect(docs[0].unpalatibility).to.be.a('number');
@@ -163,6 +165,9 @@ describe('database card collection tests', function() {
 			expect(docs[0].cuntal_order).to.be.a('string');
 			expect(docs[0].category).to.be.a('string');
 			expect(docs[0].special_ability_description).to.be.a('string');
+			expect(docs[0].bio).to.be.a('string');
+			expect(docs[0].references).to.be.a('array');
+			expect(docs[0].references).to.have.length.of(2);
 
             done();
         });
@@ -199,6 +204,9 @@ describe('database card collection tests', function() {
 			expect(result.cuntal_order).to.deep.equal('Gold');
 			expect(result.category).to.deep.equal('World Leaders');
 			expect(result.special_ability_description).to.deep.equal('Grabbin pussies');
+			expect(result.bio).to.deep.equal('Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro.');
+			expect(result.references[0]).to.deep.equal('https://goo.gl/XTASMi');
+			expect(result.references[1]).to.deep.equal('https://goo.gl/P0KzJd');
 
 			done();
 		});
@@ -229,7 +237,8 @@ describe('database user collection tests', function() {
 				name: 'Harry Belafonte',
 				email: 'harry.b@emailme.com',
 				provider: 'Google',
-				id: '123456'
+				id: '123456',
+				cards: ['123', '456']
 			};
 
 			collection.insert(user, function(err, result) {
@@ -259,12 +268,15 @@ describe('database user collection tests', function() {
 			expect(docs[0]).to.have.property('email');
 			expect(docs[0]).to.have.property('provider');
 			expect(docs[0]).to.have.property('id');
+			expect(docs[0]).to.have.property('cards');
 
 			expect(docs[0].username).to.be.a('string');
 			expect(docs[0].name).to.be.a('string');
 			expect(docs[0].email).to.be.a('string');
 			expect(docs[0].provider).to.be.a('string');
 			expect(docs[0].id).to.be.a('string');
+			expect(docs[0].cards).to.be.a('array');
+			expect(docs[0].cards).have.length.of(2);
 
             done();
         });

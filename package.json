@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "start": "node server/app.js",
+    "pretest": "npm run lint",
     "test": "nyc mocha && karma start --single-run",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "start": "node server/app.js",
     "lint": "jshint .",
-    "posttest": "npm run lint",
     "webdriver-start": "webdriver-manager update && webdriver-manager start",
     "protractor": "protractor ./test/protractor-conf.js",
     "http-server": "http-server -a localhost -p 3000",
-    "e2e": "(webdriver-manager start &) && sleep 2 && npm run http-server"
+    "e2e": "(webdriver-manager start &) && sleep 2 && npm run http-server",
+    "docs": "jsdoc . -c conf.json"
   },
   "dependencies": {
     "angular": "~1.5.11",

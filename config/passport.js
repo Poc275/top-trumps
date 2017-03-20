@@ -27,6 +27,9 @@ var db = mongoose.createConnection('localhost', 'tc');
 var userSchema = require('../models/User.js').UserSchema;
 var User = db.model('users', userSchema);
 
+var cardSchema = require('../models/Card.js').CardSchema;
+var Card = db.model('cards', cardSchema);
+
 
 /**
  * function that takes the initialised passport object (from app.js) 
@@ -75,20 +78,29 @@ module.exports = function(passport) {
 						username = profile.username;
 					}
 
-					user = new User({
-						username: username,
-						name: profile.name.givenName.toString() + ' ' + profile.name.familyName.toString(),
-						email: profile.emails[0].value.toString(),
-						provider: 'facebook',
-						id: profile.id.toString()
-					});
-
-					user.save(function(err) {
+					// create starter pack
+					createStarterPack(function(err, cardIds) {
 						if(err) {
 							console.log(err);
-							return done(err, null);
+							throw(err);
 						}
-						return done(null, user);
+
+						user = new User({
+							username: username,
+							name: profile.name.givenName.toString() + ' ' + profile.name.familyName.toString(),
+							email: profile.emails[0].value.toString(),
+							provider: 'facebook',
+							id: profile.id.toString(),
+							cards: createStarterPack()
+						});
+
+						user.save(function(err) {
+							if(err) {
+								console.log(err);
+								return done(err, null);
+							}
+							return done(null, user);
+						});
 					});
 				} else {
 					// we found a user, return them
@@ -113,20 +125,29 @@ module.exports = function(passport) {
 				}
 
 				if(!user) {
-					user = new User({
-						username: profile.username,
-						name: profile.displayName,
-						email: 'test@twitter.com',
-						provider: 'twitter',
-						id: profile.id.toString()
-					});
-
-					user.save(function(err) {
+					// create starter pack
+					createStarterPack(function(err, cardIds) {
 						if(err) {
 							console.log(err);
-							return done(err, null);
+							throw(err);
 						}
-						return done(null, user);
+
+						user = new User({
+							username: profile.username,
+							name: profile.displayName,
+							email: 'test@twitter.com',
+							provider: 'twitter',
+							id: profile.id.toString(),
+							cards: createStarterPack()
+						});
+
+						user.save(function(err) {
+							if(err) {
+								console.log(err);
+								return done(err, null);
+							}
+							return done(null, user);
+						});
 					});
 				} else {
 					// we found a user
@@ -161,20 +182,29 @@ module.exports = function(passport) {
 						username = profile.username;
 					}
 
-					user = new User({
-						username: username,
-						name: profile.displayName,
-						email: profile.emails[0].value,
-						provider: 'google',
-						id: profile.id.toString()
-					});
-
-					user.save(function(err) {
+					// create starter pack
+					createStarterPack(function(err, cardIds) {
 						if(err) {
 							console.log(err);
-							return done(err, null);
+							throw(err);
 						}
-						return done(null, user);
+
+						user = new User({
+							username: username,
+							name: profile.displayName,
+							email: profile.emails[0].value,
+							provider: 'google',
+							id: profile.id.toString(),
+							cards: cardIds
+						});
+
+						user.save(function(err) {
+							if(err) {
+								console.log(err);
+								return done(err, null);
+							}
+							return done(null, user);
+						});
 					});
 				} else {
 					// we found a user
@@ -184,3 +214,29 @@ module.exports = function(passport) {
 		}
 	));
 };
+
+
+/**
+ * Function that creates a new user's starter pack. A starter
+ * pack consists of 10 bronze cards.
+ * @returns {Error|Array} Array of card ids
+ */
+function createStarterPack(callback) {
+	var cardIds = [];
+
+	Card.aggregate([
+		{ $match: { cuntal_order: "Bronze" }},
+		{ $project: { _id: true }},
+		{ $sample: { size: 10 }}
+	], function(err, result) {
+		if(err) {
+			return callback(err, null);
+		}
+		
+		result.forEach(function(item) {
+			cardIds.push(item._id);
+		});
+
+		return callback(null, cardIds);
+	});
+}
