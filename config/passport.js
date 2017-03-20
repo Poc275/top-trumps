@@ -8,8 +8,18 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var config = require('./auth');
 var mongoose = require('mongoose');
+
+var config;
+
+// try and load config/auth.js
+// if it's missing, we are in production mode
+// so we access auth info from env variables instead
+try {
+	config = require('./auth');
+} catch(e) {
+	console.log(e);
+}
 
 mongoose.Promise = global.Promise;
 var db = mongoose.createConnection('localhost', 'tc');
@@ -37,9 +47,9 @@ module.exports = function(passport) {
 
 	// facebook strategy
 	passport.use(new FacebookStrategy({
-			clientID: config.facebook.clientID,
-			clientSecret: config.facebook.clientSecret,
-			callbackURL: config.facebook.callbackURL,
+			clientID: process.env.FacebookClientID || config.facebook.clientID,
+			clientSecret: process.env.FacebookClientSecret || config.facebook.clientSecret,
+			callbackURL: process.env.FacebookCallbackURL || config.facebook.callbackURL,
 			// this isn't documented in passport.js but
 			// we have to pass which fields we want in addition to 
 			// passport's scope due to a Facebook API update
@@ -90,9 +100,9 @@ module.exports = function(passport) {
 
 	// twitter strategy
 	passport.use(new TwitterStrategy({
-			consumerKey: config.twitter.consumerKey,
-			consumerSecret: config.twitter.consumerSecret,
-			callbackURL: config.twitter.callbackURL
+			consumerKey: process.env.TwitterConsumerKey || config.twitter.consumerKey,
+			consumerSecret: process.env.TwitterConsumerSecret || config.twitter.consumerSecret,
+			callbackURL: process.env.TwitterCallbackURL || config.twitter.callbackURL
 		},
 		function(token, tokenSecret, profile, done) {
 			User.findOne({
@@ -128,9 +138,9 @@ module.exports = function(passport) {
 
 	// google strategy
 	passport.use(new GoogleStrategy({
-			clientID: config.google.clientID,
-			clientSecret: config.google.clientSecret,
-			callbackURL: config.google.callbackURL
+			clientID: process.env.GoogleClientID || config.google.clientID,
+			clientSecret: process.env.GoogleClientSecret || config.google.clientSecret,
+			callbackURL: process.env.GoogleCallbackURL || config.google.callbackURL
 		},
 		function(accessToken, refreshToken, profile, done) {
 			User.findOne({
