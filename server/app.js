@@ -84,6 +84,34 @@ app.get('/me', isAuthenticated, function(req, res) {
 	});
 });
 
+app.get('/me/collection', isAuthenticated, function(req, res) {
+	// fetch card collection which is an 
+	// array of card Object Ids
+	user.aggregate([
+		{ $match: { email: app.locals.user }},
+		{ $project: { cards: true }}
+	], function(err, collection) {
+		if(err) {
+			console.log(err);
+		}
+		// now retrieve card objects from the ids
+		// first map the ids to an array of type ObjectId
+		// note this is a mongoose supplied data type
+		var cardIds = collection[0].cards.map(function(cardId) {
+			return mongoose.Types.ObjectId(cardId);
+		});
+
+		// now we have the card ids, fetch the cards and return
+		// you can query with an array using the $in operator in mongo
+		card.find({ "_id": { "$in": cardIds } }, function(err, cards) {
+			if(err) {
+				console.log(err);
+			}
+			res.json(cards);
+		});
+	});
+});
+
 app.get('/logout', function(req, res) {
 	// req.logout() provided by passport
 	req.logout();

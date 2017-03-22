@@ -3,8 +3,11 @@ angular.module('CardsModule').factory('Cards', function CardsFactory($http) {
 		all: function() {
 			return $http.get('/cards');
 		},
-		find: function(name) {
+		findByName: function(name) {
 			return $http.get('/cards/' + name);
+		},
+		getCardCollection: function() {
+			return $http.get('/me/collection');
 		}
 	};
 });

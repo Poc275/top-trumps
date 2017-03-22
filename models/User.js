@@ -12,6 +12,7 @@ var mongoose = require('mongoose');
 exports.UserSchema = new mongoose.Schema({
 	/**
 	 * User schema fields.
+	 * @property {ObjectId} _id - MongoDB primary key - auto generated
 	 * @property {string} username - User's username, retrieved from passport
 	 * @property {string} name - User's name, retrieved from passport
 	 * @property {string} email - User's email address, retrieved from passport. Must be unique
@@ -19,6 +20,7 @@ exports.UserSchema = new mongoose.Schema({
 	 * @property {string} id - User's id, retrieved from passport
 	 * @property {array} cards - User's card collection
 	 */
+	_id: { type: mongoose.Schema.Types.ObjectId, required: true },
 	username: { type: String, required: true },
 	name: { type: String, required: true },
 	email: { type: String, required: true, unique: true },

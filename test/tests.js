@@ -291,6 +291,8 @@ describe('database user collection tests', function() {
 			expect(result.email).to.deep.equal('harry.b@emailme.com');
 			expect(result.provider).to.deep.equal('Google');
 			expect(result.id).to.deep.equal('123456');
+			expect(result.cards[0]).to.deep.equal('123');
+			expect(result.cards[1]).to.deep.equal('456');
 
 			done();
 		});
@@ -329,6 +331,7 @@ describe('database user collection tests', function() {
 // will need to change the url depending on test environment
 // look into testUtils.getRootUrl() for an environment agnostic url method
 // source: http://beletsky.net/2014/03/testable-apis-with-node-dot-js.html
+// Is the use of chaiHttp considered integration testing?
 describe('user authentication tests', function() {
 	it('unauthenticated user cannot get /me', function(done) {
 		chai.request('http://localhost:3000').get('/me').end(function(err, res) {

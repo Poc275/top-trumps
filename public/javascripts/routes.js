@@ -3,10 +3,10 @@ angular.module('CardsModule').config(function($routeProvider) {
 		templateUrl: '/templates/index.html'
 	}).when('/home', {
 		controller: 'routeController',
-		templateUrl: '/templates/logged-in.html'
+		templateUrl: '/templates/home.html'
 	}).when('/collection', {
 		controller: 'routeController',
-		templateUrl: '/templates/logged-in.html'
+		templateUrl: '/templates/home.html'
 	}).otherwise({redirectTo: '/'});
 }).controller('routeController', function($scope, $location) {
 	// if url is /collection then showCollection is true

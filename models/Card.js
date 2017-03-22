@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 exports.CardSchema = new mongoose.Schema({
 	/**
 	 * Card schema fields.
+	 * @property {ObjectId} _id - MongoDB primary key - auto generated
 	 * @property {string} name - Top C's name
 	 * @property {number} unpalatibility - How unpalatible they are (0-100)
 	 * @property {number} up_their_own_arsemanship - How up their own arse they are (0-100)
@@ -25,6 +26,7 @@ exports.CardSchema = new mongoose.Schema({
 	 * @property {string} bio - Biography. A brief background/story as to why they qualify for a TC card
 	 * @property {array} references - Array of links/references to back up the bio
 	 */
+	 _id: { type: mongoose.Schema.Types.ObjectId, required: true },
 	name: { type: String, required: true },
 	unpalatibility: { type: Number, required: true },
 	up_their_own_arsemanship: { type: Number, required: true },
