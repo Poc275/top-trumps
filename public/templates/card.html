@@ -19,11 +19,11 @@
 		</md-card-header>
 
 		<!-- default/not flipped states - show front image -->
-		<img ng-switch-default ng-src="images/donald-trump.jpg" class="md-card-image" alt="card photo" />
-		<img ng-switch-when="false" ng-src="images/donald-trump.jpg" class="md-card-image" alt="card photo" />
+		<img ng-switch-default ng-src="images/{{card.images[0]}}" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="false" ng-src="images/{{card.images[0]}}" class="md-card-image" alt="card photo" />
 
 		<!-- else if flipped show rear image -->
-		<img ng-switch-when="true" ng-src="images/donald-trump-rear.jpg" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="true" ng-src="images/{{card.images[1]}}" class="md-card-image" alt="card photo" />
 
 		<md-card-title>
 			<!-- default/unflipped title - show name -->

@@ -22,6 +22,7 @@ module.exports = function(config) {
         'node_modules/angular-material/angular-material.min.js',
         'node_modules/angular-route/angular-route.js',
         'node_modules/angular-mocks/angular-mocks.js',
+        'node_modules/crypto-js/crypto-js.js',
         'public/javascripts/CardsModule.js',
         'public/javascripts/routes.js',
         'public/javascripts/services/CardsFactory.js',
@@ -29,6 +30,7 @@ module.exports = function(config) {
         'public/javascripts/controllers/CardController.js',
         'public/javascripts/controllers/UserController.js',
         'public/javascripts/directives/CardDirective.js',
+        'public/javascripts/services/gravatar.js',
         'test/client-tests.js'
     ],
 
@@ -44,7 +46,8 @@ module.exports = function(config) {
     preprocessors: {
         'public/javascripts/*.js': 'coverage',
         'public/javascripts/controllers/*.js': 'coverage',
-        'public/javascripts/services/*.js': 'coverage'
+        'public/javascripts/services/*.js': 'coverage',
+        'public/javascripts/directives/*.js': 'coverage'
     },
 
 

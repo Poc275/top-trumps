@@ -25,6 +25,7 @@ exports.CardSchema = new mongoose.Schema({
 	 * @property {string} special_ability_description - A text description of their special ability
 	 * @property {string} bio - Biography. A brief background/story as to why they qualify for a TC card
 	 * @property {array} references - Array of links/references to back up the bio
+	 * @property {array} images - Array of image urls for the front/rear of the card
 	 */
 	 _id: { type: mongoose.Schema.Types.ObjectId, required: true },
 	name: { type: String, required: true },
@@ -38,5 +39,6 @@ exports.CardSchema = new mongoose.Schema({
 	category: { type: String, required: true },
 	special_ability_description: { type: String, required: true },
 	bio: { type: String, required: true },
-	references: { type: Array, required: false }
+	references: { type: Array, required: false },
+	images: { type: Array, required: true }
 });
