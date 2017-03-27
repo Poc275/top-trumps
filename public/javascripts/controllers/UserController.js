@@ -1,4 +1,4 @@
-angular.module('CardsModule').controller('UserController', function($scope, $http, $location, Cards, Gravatar) {
+angular.module('TCModule').controller('UserController', function($scope, $http, $location, $state, Cards, Gravatar) {
 	
 	$scope.getUser = function() {
 		$http.get('/me').success(function(user) {
@@ -27,7 +27,8 @@ angular.module('CardsModule').controller('UserController', function($scope, $htt
 
 		// change the url so the ng-if statement in home.html template
 		// is set to true and loads the collection.html template
-		$location.path('/collection');
+		// $location.path('/collection');
+		$state.go('home.collection');
 	};
 
 	$scope.getUser();

@@ -1,4 +1,4 @@
-angular.module('CardsModule').factory('Gravatar', function GravatarFactory() {
+angular.module('TCModule').factory('Gravatar', function GravatarFactory() {
 	// default avatar size (appended to gravatar url)
 	var avatarSize = 80;
 

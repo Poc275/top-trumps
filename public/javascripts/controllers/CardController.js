@@ -1,4 +1,4 @@
-angular.module('CardsModule').controller('CardController', function($scope, $http, Cards) {
+angular.module('TCModule').controller('CardController', function($scope, $http, Cards) {
 	$scope.cards = [];
 
 	Cards.all().success(function(data) {

@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var uuid = require('uuid');
 var passport = require('passport');
 // we have to initialise passport.js before we can use it
 // (see app.use(passport.initilize() below)
@@ -12,6 +13,9 @@ var passport = require('passport');
 require('../config/passport')(passport);
 
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var game = require('./game.js');
 
 var mongoose = require('mongoose');
 // use default JS promises as mongoose promises are deprecated
@@ -60,6 +64,35 @@ var isAuthenticated = function(req, res, next) {
     });
     res.end();
 };
+
+
+// sockets
+// 'connection' is called when a client connects
+// respond with their unique id so we can maintain a list of players
+io.on('connection', function(client) {
+	// client.userid = app.locals.userid;
+	client.userid = uuid();
+
+	// inform the user they are now connected and return their id
+	client.emit('onconnected', { id: client.userid });
+	console.log('socket.io connection: player ' + client.userid + ' connected');
+
+	// find a game to play someone,
+	// or if a game doesn't exist, create one and wait
+	game.findGame(client);
+
+	// handle messages that clients send
+	// they are passed to game.js to handle
+	client.on('message', function(msg) {
+		game.onMessage(client, msg);
+	});
+
+	client.on('disconnect', function() {
+		// @todo End game properly when someone disconnects
+		console.log('socket.io client disconnected: ' + client.userid);
+		game.endGame(client.game.id, client.userid);
+	});
+});
 
 
 // routes
@@ -112,6 +145,39 @@ app.get('/me/collection', isAuthenticated, function(req, res) {
 	});
 });
 
+// app.get('/play', function(req, res) {
+// 	io.on('connection', function(client) {
+// 		// client.userid = app.locals.userid;
+// 		client.userid = uuid();
+
+// 		console.log('client connected at: ' + client.userid);
+
+// 		// inform the user they are now connected and return their id
+// 		client.emit('onconnected', { id: client.userid });
+// 		console.log('socket.io connection: player ' + client.userid + ' connected');
+
+// 		// find a game to play someone,
+// 		// or if a game doesn't exist, create one and wait
+// 		game.findGame(client);
+
+// 		// handle messages that clients send
+// 		// they are passed to game.js to handle
+// 		client.on('message', function(msg) {
+// 			game.onMessage(client, msg);
+// 		});
+
+// 		client.on('disconnect', function() {
+// 			// @todo End game properly when someone disconnects
+// 			if(client.game && client.game.id) {
+// 				console.log('socket.io client disconnected: ' + client.userid);
+// 				game.endGame(client.game.id, client.userid);
+// 			}
+// 		});
+// 	});
+
+// 	res.status(200).end();
+// });
+
 app.get('/logout', function(req, res) {
 	// req.logout() provided by passport
 	req.logout();
@@ -124,6 +190,7 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] 
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(req, res) {
 	app.locals.user = req.user.email;
+	app.locals.userid = req.user.id;
 	res.writeHead(302, {
         'Location': '/#/home'
     });
@@ -135,6 +202,7 @@ app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req, res) {
 	app.locals.user = req.user.email;
+	app.locals.userid = req.user.id;
 	res.writeHead(302, {
         'Location': '/#/home'
     });
@@ -146,6 +214,7 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.g
 
 app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
 	app.locals.user = req.user.email;
+	app.locals.userid = req.user.id;
 	res.writeHead(302, {
         'Location': '/#/home'
     });
@@ -153,6 +222,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), function(req, 
 });
 
 
-app.listen(3000, function() {
+// start app
+server.listen(3000, function() {
 	console.log('Listening on port 3000');
 });

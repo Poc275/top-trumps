@@ -1,4 +1,4 @@
-angular.module('CardsModule').directive('card', function() {
+angular.module('TCModule').directive('card', function() {
 	return {
 		restrict: 'E',
 		templateUrl: '/templates/card.html',

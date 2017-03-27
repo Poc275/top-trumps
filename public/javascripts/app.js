@@ -1,4 +1,4 @@
-angular.module('CardsModule', ['ngMaterial', 'ngAnimate', 'ngRoute'])
+angular.module('TCModule', ['ngMaterial', 'ngAnimate', 'ui.router'])
 	.config(function($mdThemingProvider) {
 		$mdThemingProvider.theme('default')
 			// .backgroundPalette('cyan')

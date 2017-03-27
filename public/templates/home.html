@@ -1,3 +1,4 @@
+<!-- <div ng-controller="UserController"> -->
 <md-toolbar layout-padding layout="row">
 	<img class="tc-text-logo" src="images/tc-text-logo.png" alt="tc logo" />
 	<span flex></span>
@@ -30,14 +31,21 @@
 
 			<md-divider></md-divider>
 
-			<md-list-item class="md-1-line" ng-click="getCards()">
+			<md-list-item class="md-1-line" ui-sref="home" ng-click="toggleMenu()">
+				<i class="material-icons md-avatar">home</i>
+				<div class="md-list-item-text" layout="column">
+					<h3>Home</h3>
+				</div>
+			</md-list-item>
+
+			<md-list-item class="md-1-line" ng-click="getCards(); toggleMenu()" ui-sref="home.collection">
 				<i class="material-icons md-avatar">collections</i>
 				<div class="md-list-item-text" layout="column">
 					<h3>My Collection</h3>
 				</div>
 			</md-list-item>
 
-			<md-list-item class="md-1-line" ng-click="null">
+			<md-list-item class="md-1-line" ng-click="toggleMenu()">
 				<i class="material-icons md-avatar">history</i>
 				<div class="md-list-item-text" layout="column">
 					<h3>Game History</h3>
@@ -56,6 +64,28 @@
 </md-sidenav>
 
 
-<md-content id="content" flex layout-padding ng-controller="UserController">
-	<div ng-include="'/templates/collection.html'" ng-if="showCollection"></div>
+<md-content ng-controller="GameController" id="content" flex layout-padding>
+	<!-- default home view once logged in -->
+	<!-- <div ng-if="homeView" layout="column" layout-align="center center">
+		<h1>Welcome to TC</h1>
+		<p>Hello {{ user.username }}</p>
+		<md-button class="md-raised md-primary" href="#/play" ng-click="init()">Play</md-button>
+	</div> -->
+
+	<!-- collection view -->
+	<!-- <div ng-if="showCollection" ng-include="'/templates/collection.html'"></div> -->
+
+	<!-- in game view -->
+	<!-- <div ng-if="inGame">
+		<h2>Game in progress...</h2>
+		<p>{{ msg }}</p>
+	</div> -->
+
+	<div ui-view>
+		<!-- initial home view -->
+		<h1>Welcome to TC</h1>
+		<p>Hello {{ user.username }}</p>
+		<md-button class="md-raised md-primary" ui-sref="home.play" ng-click="init()">Play</md-button>
+	</div>
 </md-content>
+<!-- </div> -->

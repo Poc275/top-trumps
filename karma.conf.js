@@ -23,7 +23,7 @@ module.exports = function(config) {
         'node_modules/angular-route/angular-route.js',
         'node_modules/angular-mocks/angular-mocks.js',
         'node_modules/crypto-js/crypto-js.js',
-        'public/javascripts/CardsModule.js',
+        'public/javascripts/app.js',
         'public/javascripts/routes.js',
         'public/javascripts/services/CardsFactory.js',
         'public/javascripts/controllers/AppController.js',

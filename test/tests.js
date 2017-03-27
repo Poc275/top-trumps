@@ -2,7 +2,8 @@ var chai = require('chai');
 var expect = require('chai').expect;
 var chaiHttp = require('chai-http');
 var app = require('../server/app');
-
+var game = require('../server/game');
+var io = require('socket.io-client');
 var mongodb = require('mongo-mock');
 // mimic async db behaviour by setting max_delay
 mongodb.max_delay = 0;
@@ -340,5 +341,37 @@ describe('user authentication tests', function() {
 
 			done();
 		});
+	});
+});
+
+
+describe('socket.io connection tests', function() {
+	var host;
+
+	before(function(done) {
+		expect(game.gameCount).to.deep.equal(0);
+		done();
+	});
+
+	it('should connect', function(done) {
+		host = io.connect('http://localhost:3000');
+
+		host.on('onconnected', function(data) {
+			expect(data.id).to.be.a('string');
+			expect(game.gameCount).to.deep.equal(1);
+			// host.disconnect();
+			// done();
+			done();
+		});
+
+		host.on('message', function(data) {
+			console.log('host message received: ' + data);
+			// done();
+		});
+	});
+
+	after(function(done) {
+		host.disconnect();
+		done();
 	});
 });
