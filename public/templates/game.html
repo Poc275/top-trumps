@@ -1,2 +1,9 @@
 <h2>Game in progress...</h2>
 <p>{{ msg }}</p>
+
+<md-input-container>
+	<label>Message</label>
+	<input ng-model="message">
+</md-input-container>
+
+<md-button class="md-raised md-secondary" ng-click="send()">Send</md-button>

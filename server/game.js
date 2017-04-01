@@ -13,15 +13,23 @@ var uuid = require('uuid');
 
 gameServer.onMessage = function(client, msg) {
 	// get opposition player to send msg to
-	var opponent = client.game.playerHost.game;
+	var sender = client.userid;
+	console.log('sender userid: ' + sender);
 
-	// console.log(opponent);
-
-	// opponent.send('host says: ' + msg);
-	if(client.game.playerClient) {
-		console.log('emitting message');
-		client.to(client.game.playerClient).emit('message', { message: msg });
+	if(client.game.playerHost.userid === sender) {
+		console.log('host sending message to guest: ' + msg);
+		// client.to(client.game.playerClient).emit('message', msg);
+		client.game.playerClient.emit('message', msg);
+	} else {
+		console.log('guest sending message to host: ' + msg);
+		// client.to(client.game.playerHost).emit('message', msg);
+		client.game.playerHost.emit('message', msg);
 	}
+
+	// if(client.game.playerClient) {
+	// 	console.log('emitting message');
+	// 	client.to(client.game.playerHost).emit('message', { message: msg });
+	// }
 };
 
 
@@ -37,8 +45,8 @@ gameServer.startGame = function(game) {
 	// game.playerClient.send('You have joined game: ' + game.playerHost.userid);
 
 	// now tell both the game has started
-	game.playerClient.send('Game has started!');
-	game.playerHost.send('Game has started');
+	// game.playerClient.send('Game has started!');
+	// game.playerHost.send('Game has started');
 
 	game.playerClient.game = game;
 	game.active = true;
@@ -68,7 +76,7 @@ gameServer.createGame = function(player) {
 	gameServer.gameCount++;
 
 	// tell the player they are now hosting a game and waiting
-	player.emit('message', 'You are now the host, waiting for another player');
+	player.emit('message', newGame.id + ': You are now the host, waiting for another player');
 
 	player.game = newGame;
 	player.hosting = true;
@@ -103,6 +111,8 @@ gameServer.findGame = function(player) {
 				joined = true;
 				gameInstance.playerClient = player;
 				gameInstance.playerCount++;
+
+				gameInstance.playerClient.emit('message', 'You have now joined a game');
 
 				gameServer.startGame(gameInstance);
 			}

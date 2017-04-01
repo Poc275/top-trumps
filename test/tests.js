@@ -345,33 +345,114 @@ describe('user authentication tests', function() {
 });
 
 
-describe('socket.io connection tests', function() {
+describe('game lobby setup test', function() {
 	var host;
+	var guest;
+	var interloper;
+	var gameId;
+	var partialGameId;
+
+	var hostMessagesReceived = 0;
+	var guestMessagesReceived = 0;
+	var interloperMessagesReceived = 0;
+
 
 	before(function(done) {
 		expect(game.gameCount).to.deep.equal(0);
 		done();
 	});
 
-	it('should connect', function(done) {
+
+	it('first player should host a game and second player should join it', function(done) {
 		host = io.connect('http://localhost:3000');
 
 		host.on('onconnected', function(data) {
 			expect(data.id).to.be.a('string');
 			expect(game.gameCount).to.deep.equal(1);
-			// host.disconnect();
-			// done();
-			done();
+			
+			// 2nd player joins...
+			guest = io.connect('http://localhost:3000');
+
+			guest.on('onconnected', function(data) {
+				expect(data.id).to.be.a('string');
+				expect(game.gameCount).to.deep.equal(1);
+
+				// now the game has started...
+				// host goes first and plays a card
+				host.emit('message', 'unpalatibility: 75');
+
+
+				// 3rd player joins
+				interloper = io.connect('http://localhost:3000');
+
+				interloper.on('onconnected', function(data) {
+					expect(data.id).to.be.a('string');
+					expect(game.gameCount).to.deep.equal(2);
+
+					// setTimeout function to make sure all messages are emitted
+					// must be a better way of doing this?
+					setTimeout(function() {
+						done();
+					}, 200);
+				});
+
+				interloper.on('message', function(data) {
+					console.log('Interloper has received a message');
+					expect(data).to.contain('You are now the host, waiting for another player');
+					partialGameId = data.split(':')[0];
+
+					interloperMessagesReceived++;
+				});
+
+			});
+
+			guest.on('message', function(data) {
+				console.log('Guest has received a message! ' + data);
+				expect(data).to.satisfy(function(msg) {
+					if(msg === 'You have now joined a game' || 
+						msg === 'unpalatibility: 75') {
+						return true;
+					} else {
+						return false;
+					}
+				});
+				guestMessagesReceived++;
+			});
 		});
 
 		host.on('message', function(data) {
-			console.log('host message received: ' + data);
-			// done();
+			console.log('Host has received a message!');
+			expect(data).to.contain('You are now the host, waiting for another player');
+			gameId = data.split(':')[0];
+
+			hostMessagesReceived++;
 		});
+
+
 	});
 
+
 	after(function(done) {
+		// disconnect and clean up
+		// have to call endGame to kill connections from the server side
+		// (we're using socket.io-client in the tests)
 		host.disconnect();
+		guest.disconnect();
+		interloper.disconnect();
+		game.endGame(gameId, host.userid);
+		game.endGame(partialGameId, interloper.userid);
+
+		// now we're cleaned up there shouldn't be any games left
+		expect(game.gameCount).to.deep.equal(0);
+
+		// Each player gets 1 connect message, and we emitted a 
+		// message from host to guest, so the guest should see 2 messages
+		// the interloper only sees 1 which tests that the lobby 
+		// is working ok
+		expect(hostMessagesReceived).to.deep.equal(1);
+		expect(guestMessagesReceived).to.deep.equal(2);
+		expect(interloperMessagesReceived).to.deep.equal(1);
+
 		done();
 	});
 });
