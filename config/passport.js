@@ -15,11 +15,15 @@ var config;
 // try and load config/auth.js
 // if it's missing, we are in production mode
 // so we access auth info from env variables instead
-try {
+// try {
+// 	config = require('./auth');
+// } catch(e) {
+// 	console.log(e);
+// }
+if(!process.env.FacebookClientID) {
 	config = require('./auth');
-} catch(e) {
-	console.log(e);
 }
+
 
 mongoose.Promise = global.Promise;
 var db = mongoose.createConnection('localhost', 'tc');

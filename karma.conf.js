@@ -20,7 +20,7 @@ module.exports = function(config) {
         'node_modules/angular-animate/angular-animate.min.js',
         'node_modules/angular-aria/angular-aria.min.js',
         'node_modules/angular-material/angular-material.min.js',
-        'node_modules/angular-route/angular-route.js',
+        'node_modules/angular-ui-router/release/angular-ui-router.js',
         'node_modules/angular-mocks/angular-mocks.js',
         'node_modules/crypto-js/crypto-js.js',
         'public/javascripts/app.js',
@@ -29,6 +29,7 @@ module.exports = function(config) {
         'public/javascripts/controllers/AppController.js',
         'public/javascripts/controllers/CardController.js',
         'public/javascripts/controllers/UserController.js',
+        'public/javascripts/controllers/GameController.js',
         'public/javascripts/directives/CardDirective.js',
         'public/javascripts/services/gravatar.js',
         'test/client-tests.js'

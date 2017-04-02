@@ -3,7 +3,7 @@ describe('CardController Tests', function() {
 	var $rootScope;
 	var createController;
 
-	beforeEach(module('CardsModule'));
+	beforeEach(module('TCModule'));
 
 	// beforeEach(module('templates'));
 
@@ -56,7 +56,7 @@ describe('GravatarFactory tests', function() {
 	var gravatarFactory;
 	var email = 'poc275@gmail.com';
 
-	beforeEach(module('CardsModule'));
+	beforeEach(module('TCModule'));
 
 	beforeEach(inject(function(_Gravatar_) {
 		gravatarFactory = _Gravatar_;
@@ -73,7 +73,7 @@ describe('CardsFactory all() tests', function() {
 	var cardsFactory;
 	var httpBackend;
 
-	beforeEach(module('CardsModule'));
+	beforeEach(module('TCModule'));
 
 	beforeEach(inject(function(_Cards_, $httpBackend) {
 		cardsFactory = _Cards_;
@@ -208,7 +208,7 @@ describe('CardsFactory findByName() tests', function() {
 	var cardsFactory;
 	var httpBackend;
 
-	beforeEach(module('CardsModule'));
+	beforeEach(module('TCModule'));
 
 	beforeEach(inject(function(_Cards_, $httpBackend) {
 		cardsFactory = _Cards_;
@@ -265,7 +265,7 @@ describe('CardsFactory getCardCollection() tests', function() {
 	var cardsFactory;
 	var httpBackend;
 
-	beforeEach(module('CardsModule'));
+	beforeEach(module('TCModule'));
 
 	beforeEach(inject(function(_Cards_, $httpBackend) {
 		cardsFactory = _Cards_;
