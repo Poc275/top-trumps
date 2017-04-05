@@ -1,12 +1,7 @@
 angular.module('TCModule').controller('GameController', function($scope, $http) {
 	$scope.socket;
 
-	// set route so game content appears in <md-content>
-	// $scope.inGame = $location.path() === '/play';
-
-	$scope.init = function() {
-		// call server to setup sockets
-		// $http.get('/play');
+	$scope.init = function(user) {
 
 		// create connection to socket.io
 		$scope.socket = io.connect();
@@ -23,19 +18,19 @@ angular.module('TCModule').controller('GameController', function($scope, $http) 
 			$scope.$apply();
 			console.log('client has received message: ' + $scope.msg);
 		});
+
+		// game has started
+		$scope.socket.on('start', function() {
+			$scope.msg = 'Game has begun!';
+			$scope.$apply();
+			console.log('Game has begun!');
+		});
 	};
 
 
 	// test function for socket.io messages
 	$scope.send = function() {
 		$scope.socket.emit('message', $scope.message);
-
-		// $scope.socket.on('message', function(message) {
-		// 	$scope.msg = message;
-		// 	$scope.$apply();
-		// 	console.log('chat message received: ' + $scope.msg);
-		// });
 	};
 
-	// init();
 });

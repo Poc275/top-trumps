@@ -25,11 +25,6 @@ gameServer.onMessage = function(client, msg) {
 		// client.to(client.game.playerHost).emit('message', msg);
 		client.game.playerHost.emit('message', msg);
 	}
-
-	// if(client.game.playerClient) {
-	// 	console.log('emitting message');
-	// 	client.to(client.game.playerHost).emit('message', { message: msg });
-	// }
 };
 
 
@@ -41,12 +36,9 @@ gameServer.startGame = function(game) {
 	// game has 2 players so we can start
 	console.log('game has started');
 
-	// tell the other player they are joining the game
-	// game.playerClient.send('You have joined game: ' + game.playerHost.userid);
-
-	// now tell both the game has started
-	// game.playerClient.send('Game has started!');
-	// game.playerHost.send('Game has started');
+	// send a start game event to kick things off
+	game.playerClient.emit('start');
+	game.playerHost.emit('start');
 
 	game.playerClient.game = game;
 	game.active = true;

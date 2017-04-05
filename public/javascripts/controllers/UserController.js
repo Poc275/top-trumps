@@ -25,9 +25,6 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 			$scope.collection = cards;
 		});
 
-		// change the url so the ng-if statement in home.html template
-		// is set to true and loads the collection.html template
-		// $location.path('/collection');
 		$state.go('home.collection');
 	};
 

@@ -1,6 +1,7 @@
 var chai = require('chai');
 var expect = require('chai').expect;
 var chaiHttp = require('chai-http');
+var request = require('superagent');
 var app = require('../server/app');
 var game = require('../server/game');
 var io = require('socket.io-client');
@@ -355,6 +356,7 @@ describe('game lobby setup test', function() {
 	var hostMessagesReceived = 0;
 	var guestMessagesReceived = 0;
 	var interloperMessagesReceived = 0;
+	var gameStartedMessagesReceived = 0;
 
 
 	before(function(done) {
@@ -418,6 +420,10 @@ describe('game lobby setup test', function() {
 				});
 				guestMessagesReceived++;
 			});
+
+			guest.on('start', function(data) {
+				gameStartedMessagesReceived++;
+			});
 		});
 
 		host.on('message', function(data) {
@@ -428,7 +434,9 @@ describe('game lobby setup test', function() {
 			hostMessagesReceived++;
 		});
 
-
+		host.on('start', function(data) {
+			gameStartedMessagesReceived++;
+		});
 	});
 
 
@@ -452,6 +460,10 @@ describe('game lobby setup test', function() {
 		expect(hostMessagesReceived).to.deep.equal(1);
 		expect(guestMessagesReceived).to.deep.equal(2);
 		expect(interloperMessagesReceived).to.deep.equal(1);
+
+		// we should have had 1 game that started and 
+		// notified both players = 2 messages
+		expect(gameStartedMessagesReceived).to.deep.equal(2);
 
 		done();
 	});
