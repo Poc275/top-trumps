@@ -37,8 +37,8 @@ gameServer.startGame = function(game) {
 	console.log('game has started');
 
 	// send a start game event to kick things off
-	game.playerClient.emit('start');
-	game.playerHost.emit('start');
+	game.playerClient.emit('start', 'client');
+	game.playerHost.emit('start', 'host');
 
 	game.playerClient.game = game;
 	game.active = true;

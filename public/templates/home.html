@@ -1,4 +1,3 @@
-<!-- <div ng-controller="UserController"> -->
 <md-toolbar layout-padding layout="row">
 	<img class="tc-text-logo" src="images/tc-text-logo.png" alt="tc logo" />
 	<span flex></span>
@@ -65,22 +64,6 @@
 
 
 <md-content ng-controller="GameController" id="content" flex layout-padding>
-	<!-- default home view once logged in -->
-	<!-- <div ng-if="homeView" layout="column" layout-align="center center">
-		<h1>Welcome to TC</h1>
-		<p>Hello {{ user.username }}</p>
-		<md-button class="md-raised md-primary" href="#/play" ng-click="init()">Play</md-button>
-	</div> -->
-
-	<!-- collection view -->
-	<!-- <div ng-if="showCollection" ng-include="'/templates/collection.html'"></div> -->
-
-	<!-- in game view -->
-	<!-- <div ng-if="inGame">
-		<h2>Game in progress...</h2>
-		<p>{{ msg }}</p>
-	</div> -->
-
 	<div ui-view>
 		<!-- initial home view -->
 		<h1>Welcome to TC</h1>
@@ -88,4 +71,3 @@
 		<md-button class="md-raised md-primary" ui-sref="home.play" ng-click="init(user)">Play</md-button>
 	</div>
 </md-content>
-<!-- </div> -->

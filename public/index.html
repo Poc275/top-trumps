@@ -13,12 +13,6 @@
 </head>
 
 <body ng-app="TCModule" ng-controller="AppController">
-
-  <!-- UserController here makes a call to /me before anyone has even logged -->
-  <!-- But when I move it to home.html the card collection no longer appears -->
-  <!-- Is this something to do with ng-include not including the controller? -->
-  <!-- http://stackoverflow.com/questions/11412410/angularjs-losing-scope-when-using-ng-include -->
-	<!-- <div ng-view ng-controller="UserController"></div> -->
 	
   <div ui-view></div>
 
@@ -27,7 +21,6 @@
 	<script type='text/javascript' src='/scripts/angular-animate/angular-animate.js'></script>
 	<script type='text/javascript' src='/scripts/angular-aria/angular-aria.js'></script>
 	<script type='text/javascript' src='/scripts/angular-material/angular-material.js'></script>
-	<!--<script type='text/javascript' src='/scripts/angular-route/angular-route.js'></script>-->
   <script type="text/javascript" src="/scripts/angular-ui-router/release/angular-ui-router.js"></script>
 	<script type='text/javascript' src='/javascripts/app.js'></script>
 	<script type='text/javascript' src='/javascripts/routes.js'></script>

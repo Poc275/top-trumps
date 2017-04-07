@@ -1,12 +1,6 @@
-angular.module('TCModule').directive('card', function() {
+angular.module('TCModule').directive('tcCard', function() {
 	return {
 		restrict: 'E',
-		templateUrl: '/templates/card.html',
-		controller: function($scope, Cards) {
-
-			// Cards.findByName('Paul Dacre').success(function(data) {
-			// 	$scope.card = data;
-			// });
-		}
+		templateUrl: '/templates/card.html'
 	};
 });

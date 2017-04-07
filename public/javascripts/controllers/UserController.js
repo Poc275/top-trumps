@@ -16,13 +16,10 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 		});
 	};
 
-	/*
-	 * @todo just display a test card for now
-	 * but eventually this will show a user's card collection
-	 */
 	$scope.getCards = function() {
-		$scope.collection = Cards.getCardCollection().success(function(cards) {
+		Cards.getCardCollection().success(function(cards) {
 			$scope.collection = cards;
+			console.log($scope.collection);
 		});
 
 		$state.go('home.collection');

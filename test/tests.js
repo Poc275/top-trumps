@@ -406,6 +406,12 @@ describe('game lobby setup test', function() {
 					interloperMessagesReceived++;
 				});
 
+				// this shouldn't be called as the 3rd player
+				// doesn't get a game to start
+				interloper.on('start', function(data) {
+					gameStartedMessagesReceived++;
+				});
+
 			});
 
 			guest.on('message', function(data) {

@@ -4,13 +4,18 @@
  * @module config/passport
  * @todo Twitter will not provide email addresses until the application requesting
  * access has a Ts and Cs and privacy policy document.
+ * @todo createStarterPack() returns a callback. Only the Google strategy is set up 
+ * correctly in calling/returning from this function, need to update Twitter & Facebook.
  */
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var mongoose = require('mongoose');
-
 var config;
+
+// THESE VARS REQUIRED FOR TESTING ONLY!!!
+var LocalStrategy = require('passport-local').Strategy;
+
 
 // try and load config/auth.js
 // if it's missing, we are in production mode
@@ -217,6 +222,60 @@ module.exports = function(passport) {
 			});
 		}
 	));
+
+
+	/*
+	* FOR TESTING PURPOSES ONLY!!!
+	* local signup to allow other users to register where 
+	* oauth wouldn't work, for testing gameplay etc.
+	*/
+	passport.use(new LocalStrategy({
+		usernameField : 'email',
+		passwordField : 'password',
+		passReqToCallback : true
+	},
+	function(req, email, password, done) {
+		User.findOne({
+			'email': email
+		}, function(err, user) {
+			if(err) {
+				return done(err);
+			}
+
+			if(!user) {
+				console.log('local signup user not found, creating...');
+
+				// create starter pack
+				createStarterPack(function(err, cardIds) {
+					if(err) {
+						console.log(err);
+						throw(err);
+					}
+
+					user = new User({
+						username: email.split('@')[0],
+						name: email.split('@')[0],
+						email: email,
+						provider: 'local',
+						id: email.split('@')[0],
+						cards: cardIds
+					});
+
+					user.save(function(err) {
+						if(err) {
+							console.log(err);
+							return done(err, null);
+						}
+						return done(null, user);
+					});
+				});
+			} else {
+				// we found a user
+				console.log('local signup user found!');
+				return done(null, user);
+			}
+		});
+	}));
 };
 
 

@@ -20,7 +20,7 @@ exports.UserSchema = new mongoose.Schema({
 	 * @property {string} id - User's id, retrieved from passport
 	 * @property {array} cards - User's card collection
 	 */
-	_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+	_id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 	username: { type: String, required: true },
 	name: { type: String, required: true },
 	email: { type: String, required: true, unique: true },

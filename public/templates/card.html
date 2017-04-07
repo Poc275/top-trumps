@@ -47,7 +47,9 @@
 			<div layout="row">
 				<p>Unpalatibility:</p>
 				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.unpalatibility }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('unpalatibility', card.unpalatibility)">
+					{{ card.unpalatibility }}
+				</md-button>
 			</div>
 
 			<div layout="row">

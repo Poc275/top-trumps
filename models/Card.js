@@ -27,7 +27,7 @@ exports.CardSchema = new mongoose.Schema({
 	 * @property {array} references - Array of links/references to back up the bio
 	 * @property {array} images - Array of image urls for the front/rear of the card
 	 */
-	 _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+	 _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 	name: { type: String, required: true },
 	unpalatibility: { type: Number, required: true },
 	up_their_own_arsemanship: { type: Number, required: true },

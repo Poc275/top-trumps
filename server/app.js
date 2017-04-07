@@ -145,39 +145,6 @@ app.get('/me/collection', isAuthenticated, function(req, res) {
 	});
 });
 
-// app.get('/play', function(req, res) {
-// 	io.on('connection', function(client) {
-// 		// client.userid = app.locals.userid;
-// 		client.userid = uuid();
-
-// 		console.log('client connected at: ' + client.userid);
-
-// 		// inform the user they are now connected and return their id
-// 		client.emit('onconnected', { id: client.userid });
-// 		console.log('socket.io connection: player ' + client.userid + ' connected');
-
-// 		// find a game to play someone,
-// 		// or if a game doesn't exist, create one and wait
-// 		game.findGame(client);
-
-// 		// handle messages that clients send
-// 		// they are passed to game.js to handle
-// 		client.on('message', function(msg) {
-// 			game.onMessage(client, msg);
-// 		});
-
-// 		client.on('disconnect', function() {
-// 			// @todo End game properly when someone disconnects
-// 			if(client.game && client.game.id) {
-// 				console.log('socket.io client disconnected: ' + client.userid);
-// 				game.endGame(client.game.id, client.userid);
-// 			}
-// 		});
-// 	});
-
-// 	res.status(200).end();
-// });
-
 app.get('/logout', function(req, res) {
 	// req.logout() provided by passport
 	req.logout();
@@ -219,6 +186,18 @@ app.get('/auth/google/callback', passport.authenticate('google'), function(req, 
         'Location': '/#/home'
     });
     res.end();
+});
+
+
+/*
+* FOR TESTING ONLY - LOCAL SIGNUP TO ALLOW OTHER USERS TO SIGNUP FOR TESTING
+*/
+app.post('/auth/local', passport.authenticate('local'), function(req, res) {
+	app.locals.user = req.user.email;
+	app.locals.userid = req.user.id;
+	// you can't redirect from an AJAX post request
+	// so just respond with a status and let the front-end redirect
+	res.status(200).end();
 });
 
 
