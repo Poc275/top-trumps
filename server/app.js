@@ -30,7 +30,7 @@ var userSchema = require('../models/User.js').UserSchema;
 var user = db.model('users', userSchema);
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '../public', 'images', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -109,7 +109,7 @@ app.get('/cards/:name', function(req, res) {
 });
 
 app.get('/me', isAuthenticated, function(req, res) {
-	user.findOne({ 'email': app.locals.user }, function(err, user) {
+	user.findOne({ 'email': req.user.email }, function(err, user) {
 		if(err) {
 			console.log(err);
 		}
@@ -121,7 +121,7 @@ app.get('/me/collection', isAuthenticated, function(req, res) {
 	// fetch card collection which is an 
 	// array of card Object Ids
 	user.aggregate([
-		{ $match: { email: app.locals.user }},
+		{ $match: { email: req.user.email }},
 		{ $project: { cards: true }}
 	], function(err, collection) {
 		if(err) {
@@ -156,8 +156,6 @@ app.get('/logout', function(req, res) {
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(req, res) {
-	app.locals.user = req.user.email;
-	app.locals.userid = req.user.id;
 	res.writeHead(302, {
         'Location': '/#/home'
     });
@@ -168,8 +166,6 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(r
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req, res) {
-	app.locals.user = req.user.email;
-	app.locals.userid = req.user.id;
 	res.writeHead(302, {
         'Location': '/#/home'
     });
@@ -180,8 +176,6 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req
 app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.profile.emails.read'] }));
 
 app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
-	app.locals.user = req.user.email;
-	app.locals.userid = req.user.id;
 	res.writeHead(302, {
         'Location': '/#/home'
     });
@@ -193,8 +187,6 @@ app.get('/auth/google/callback', passport.authenticate('google'), function(req, 
 * FOR TESTING ONLY - LOCAL SIGNUP TO ALLOW OTHER USERS TO SIGNUP FOR TESTING
 */
 app.post('/auth/local', passport.authenticate('local'), function(req, res) {
-	app.locals.user = req.user.email;
-	app.locals.userid = req.user.id;
 	// you can't redirect from an AJAX post request
 	// so just respond with a status and let the front-end redirect
 	res.status(200).end();
