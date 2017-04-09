@@ -11,6 +11,35 @@ var gameServer = module.exports = {
 var uuid = require('uuid');
 
 
+/**
+ * Function that handles the in-game play messages. These messages 
+ * are the category/score that a player has chosen to play. This is 
+ * then sent onto the opposing player for comparison to see who wins the card.
+ * @param {object} client - The client whose turn it was to play
+ * @param {object} msg - A JSON object with 2 properties: category and score
+ */
+gameServer.onPlay = function(client, msg) {
+	// get opposition player to send msg to
+	var sender = client.userid;
+	console.log('sender userid: ' + sender);
+
+	if(client.game.playerHost.userid === sender) {
+		console.log('host sending message to guest: ' + msg);
+		client.game.playerClient.emit('play', msg);
+	} else {
+		console.log('guest sending message to host: ' + msg);
+		client.game.playerHost.emit('play', msg);
+	}
+};
+
+
+/**
+ * Function that handles the passing of messages between players.
+ * The 'message' event is for status updates (game found, game created, 
+ * waiting for 2nd player etc.) and in-game chat.
+ * @param {object} client - The client who sent the message
+ * @param {string} msg - The content of the message
+ */
 gameServer.onMessage = function(client, msg) {
 	// get opposition player to send msg to
 	var sender = client.userid;
@@ -18,11 +47,9 @@ gameServer.onMessage = function(client, msg) {
 
 	if(client.game.playerHost.userid === sender) {
 		console.log('host sending message to guest: ' + msg);
-		// client.to(client.game.playerClient).emit('message', msg);
 		client.game.playerClient.emit('message', msg);
 	} else {
 		console.log('guest sending message to host: ' + msg);
-		// client.to(client.game.playerHost).emit('message', msg);
 		client.game.playerHost.emit('message', msg);
 	}
 };

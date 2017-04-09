@@ -55,31 +55,41 @@
 			<div layout="row">
 				<p>Up their own arsemanship:</p>
 				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.up_their_own_arsemanship }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('up_their_own_arsemanship', card.up_their_own_arsemanship)">
+					{{ card.up_their_own_arsemanship }}
+				</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Media attention:</p>
 				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.media_attention }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('media_attention', card.media_attention)">
+					{{ card.media_attention }}
+				</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Legacy:</p>
 				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.legacy }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('legacy', card.legacy)">
+					{{ card.legacy }}
+				</md-button>
 			</div>
 
 			<div layout="row">
 				<p>PPC (price per cunt):</p>
 				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.ppc }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('ppc', card.ppc)">
+					{{ card.ppc }}
+				</md-button>
 			</div>
 
 			<div layout="row">
 				<p>Special ability:</p>
 				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.special_ability }}</md-button>
+				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('special_ability', card.special_ability)">
+					{{ card.special_ability }}
+				</md-button>
 			</div>
 		</md-card-actions>
 

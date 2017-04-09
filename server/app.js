@@ -87,6 +87,12 @@ io.on('connection', function(client) {
 		game.onMessage(client, msg);
 	});
 
+	// in-game play event
+	// again, pass to game.js to handle
+	client.on('play', function(msg) {
+		game.onPlay(client, msg);
+	});
+
 	client.on('disconnect', function() {
 		// @todo End game properly when someone disconnects
 		console.log('socket.io client disconnected: ' + client.userid);
