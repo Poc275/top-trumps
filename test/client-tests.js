@@ -332,3 +332,251 @@ describe('CardsFactory getCardCollection() tests', function() {
 		httpBackend.flush();
 	});
 });
+
+
+describe('UserController Tests', function() {
+	var $httpBackend;
+	var $rootScope;
+	var createController;
+	var location;
+
+	beforeEach(module('TCModule'));
+
+	beforeEach(inject(function($injector, $location) {
+		// set up the mock http service responses
+		$httpBackend = $injector.get('$httpBackend');
+
+		// mock requests
+		$httpBackend.whenRoute('GET', '/me').respond({email: 'abc123@test.com'});
+		$httpBackend.whenRoute('GET', '/logout').respond();
+		$httpBackend.whenRoute('GET', '/templates/home.html').respond('<html></html>');
+		$httpBackend.whenRoute('GET', '/templates/collection.html').respond('<html></html>');
+
+		// mock templates
+		$httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+
+		// setup scope and location (for logout testing)
+		$rootScope = $injector.get('$rootScope');
+		location = $location;
+
+		// the $controller service is used to create instances of controllers
+		var $controller = $injector.get('$controller');
+
+		createController = function() {
+			return $controller('UserController', { '$scope' : $rootScope });
+		};
+	}));
+
+	afterEach(function() {
+		$httpBackend.verifyNoOutstandingExpectation();
+     	$httpBackend.verifyNoOutstandingRequest();
+	});
+
+
+	it('/me call is made when controller instantiated', function() {
+		$httpBackend.when('/me');
+		var controller = createController();
+		$httpBackend.flush();
+
+		expect($rootScope.user.email).toBe('abc123@test.com');
+	});
+
+
+	it('Gravatar address is valid', function() {
+		var controller = createController();
+		var gravatarUrl = $rootScope.gravatarUrl('abc123@test.com');
+		$httpBackend.flush();
+
+		expect(gravatarUrl).not.toBeNull();
+		expect(gravatarUrl).toContain('https://www.gravatar.com/avatar/');
+	});
+
+
+	it('logging out returns you to the home page', function() {
+		var controller = createController();
+		$rootScope.logout();
+		$httpBackend.flush();
+
+		expect(location.path()).toBe('/');
+	});
+
+
+	// not a great test because the cards factory isn't mocked 
+	// inside this function, need to add this in to improve the test...
+	it('user\'s card collection is assigned to scope', function() {
+		var controller = createController();
+		$rootScope.getCards();
+		$httpBackend.flush();
+
+		expect($rootScope.collection).not.toBeNull();
+		expect($rootScope.collection).not.toBeUndefined();
+	});
+});
+
+
+describe('GameController Tests', function() {
+	var $httpBackend;
+	var $rootScope;
+	var createController;
+	var socketMock;
+
+	beforeEach(module('TCModule'));
+
+	beforeEach(inject(function($injector) {
+		// set up the mock http service responses
+		$httpBackend = $injector.get('$httpBackend');
+
+		// mock requests
+		$httpBackend.whenRoute('GET', '/me/collection').respond({id: '12345'});
+
+		// mock templates
+		$httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+
+		// setup scope and location (for logout testing)
+		$rootScope = $injector.get('$rootScope');
+		socketMock = new sockMock($rootScope);
+
+		// the $controller service is used to create instances of controllers
+		var $controller = $injector.get('$controller');
+
+		createController = function() {
+			return $controller('GameController', { '$scope' : $rootScope, socket: socketMock });
+		};
+	}));
+
+	afterEach(function() {
+		$httpBackend.verifyNoOutstandingExpectation();
+     	$httpBackend.verifyNoOutstandingRequest();
+	});
+
+
+	it('Game controller can receive message events', function() {
+		var controller = createController();
+		$rootScope.init('abc@123.com');
+		socketMock.receive('message', 'Joined a room, waiting for opponent');
+		expect($rootScope.msg).toBe('Joined a room, waiting for opponent');
+		$httpBackend.flush();
+	});
+
+
+	it('Host goes first when game starts', function() {
+		var controller = createController();
+		$rootScope.init('abc@123.com');
+		socketMock.receive('start', 'host');
+		expect($rootScope.turn).toBe(true);
+
+		// host can play a card first
+		// verify by checking there is a play event emitted
+		$rootScope.play('ppc', 25);
+		expect(socketMock.emits.play).not.toBeNull();
+		expect(socketMock.emits.play).not.toBeUndefined();
+
+		$httpBackend.flush();
+	});
+
+
+	it('Client goes second when game starts', function() {
+		var controller = createController();
+		$rootScope.init('abc@123.com');
+		socketMock.receive('start', 'client');
+		expect($rootScope.turn).toBe(false);
+
+		// client cannot play a card first
+		// verify by checking there isn't a play event emitted
+		$rootScope.play('ppc', 25);
+		expect(socketMock.emits.play).toBeUndefined();
+
+		$httpBackend.flush();
+	});
+
+
+	it('In game messages can be sent', function() {
+		var controller = createController();
+		$rootScope.init('abc@123.com');
+		$rootScope.message = 'Hi!';
+		$rootScope.send();
+
+		// we should have received a message event
+		expect(socketMock.emits.message).not.toBeNull();
+		expect(socketMock.emits.message).not.toBeUndefined();
+		expect(socketMock.emits.message[0]).toContain('Hi!');
+
+		$httpBackend.flush();
+	});
+
+
+	it('Higher category scores win the round', function() {
+		var controller = createController();
+		var card = {
+			category: 'ppc',
+			score: 25
+		};
+
+		$rootScope.init('abc@123.com');
+
+		// $rootScope.currentCard = [];
+		$rootScope.currentCard = [{ 'ppc': 26 }];
+
+		socketMock.receive('play', card);
+
+		// NO EXPECTATIONS YET!
+		// THE CONTROLLER ONLY LOGS THE RESULT AT THE MOMENT...
+
+		$httpBackend.flush();
+	});
+
+});
+
+
+
+/*
+Simple mock for socket.io
+see: https://github.com/btford/angular-socket-io-seed/issues/4
+thanks to https://github.com/southdesign for the idea
+*/
+var sockMock = function($rootScope) {
+  this.events = {};
+  this.emits = {};
+
+  // intercept connect call - my addition
+  // just push an empty event into the events object
+  // this event is really just for testing connections 
+  // are made, the user doesn't see anything
+  this.connect = function() {
+  	if(!this.events['onconnected']) {
+    	this.events['onconnected'] = [];
+    }
+    this.events['onconnected'].push();
+  };
+
+  // intercept 'on' calls and capture the callbacks
+  this.on = function(eventName, callback){
+    if(!this.events[eventName]) {
+    	this.events[eventName] = [];
+    }
+    this.events[eventName].push(callback);
+  };
+
+  // intercept 'emit' calls from the client and record them to assert against in the test
+  this.emit = function(eventName){
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    if(!this.emits[eventName]) {
+    	this.emits[eventName] = [];
+  	}
+    this.emits[eventName].push(args);
+  };
+
+  // simulate an inbound message to the socket from the server (only called from the test)
+  this.receive = function(eventName){
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    if(this.events[eventName]) {
+      angular.forEach(this.events[eventName], function(callback) {
+        $rootScope.$apply(function() {
+          callback.apply(this, args);
+        });
+      });
+    };
+  };
+};

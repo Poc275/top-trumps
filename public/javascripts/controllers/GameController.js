@@ -1,5 +1,4 @@
-angular.module('TCModule').controller('GameController', function($scope, $http, Cards) {
-	$scope.socket;
+angular.module('TCModule').controller('GameController', function($scope, $http, Cards, socket) {
 	$scope.collection;
 	$scope.currentCard;
 	$scope.turn;
@@ -7,24 +6,20 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 	$scope.init = function(user) {
 
 		// create connection to socket.io
-		$scope.socket = io.connect();
+		socket.connect();
 
 		// now listen for events
-		$scope.socket.on('onconnected', function(data) {
-			console.log('Connected to socket.io server. Player id is ' + data);
+		socket.on('onconnected', function(data) {
+			console.log('Connected to TC via socket.io. Player id is ' + data);
 		});
 
-		// $scope.$apply() forces a new digest 
-		// cycle so the view gets updated immediately
-		$scope.socket.on('message', function(message) {
+		socket.on('message', function(message) {
 			$scope.msg = message;
-			$scope.$apply();
 		});
 
 		// game has started
-		$scope.socket.on('start', function(status) {
+		socket.on('start', function(status) {
 			$scope.msg = 'Game has begun!';
-			$scope.$apply();
 
 			if(status === 'host') {
 				$scope.turn = true;
@@ -45,15 +40,15 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 		});
 
 		// in-game play events
-		$scope.socket.on('play', function(play) {
+		socket.on('play', function(play) {
 			var myScore = $scope.currentCard[0][play.category];
 
 			if(myScore > play.score) {
-				console.log('I win!!!');
+				console.log('I win :)');
 			} else if(myScore < play.score) {
 				console.log('I lose :(');
 			} else {
-				console.log('It\'s a draw!');
+				console.log('It\'s a draw :|');
 			}
 		});
 
@@ -70,14 +65,14 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 
 	// test function for socket.io messages
 	$scope.send = function() {
-		$scope.socket.emit('message', $scope.message);
+		socket.emit('message', $scope.message);
 	};
 
 
 	// user has selected a category to play
 	$scope.play = function(category, score) {
 		if($scope.turn) {
-			$scope.socket.emit('play', { 'category': category, 'score': score });
+			socket.emit('play', { 'category': category, 'score': score });
 		}
 	};
 
