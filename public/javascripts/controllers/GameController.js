@@ -1,7 +1,15 @@
-angular.module('TCModule').controller('GameController', function($scope, $http, Cards, socket) {
+angular.module('TCModule').controller('GameController', function($scope, $http, $mdToast, Cards, socket) {
+
 	$scope.collection;
 	$scope.currentCard;
-	$scope.turn;
+
+	$scope.host = false;
+	$scope.gameInProgress = false;
+	$scope.turn = false;
+
+	// counter for the number of rounds played
+	$scope.round = 0;
+
 
 	$scope.init = function(user) {
 
@@ -20,11 +28,22 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 		// game has started
 		socket.on('start', function(status) {
 			$scope.msg = 'Game has begun!';
+			$scope.gameInProgress = true;
 
 			if(status === 'host') {
+				$scope.host = true;
 				$scope.turn = true;
-				console.log(status);
+				
+				// inform host they go first
+				$mdToast.show(
+		      		$mdToast.simple()
+			        .textContent('Your turn!')
+			        .position('bottom')
+			        .hideDelay(3000)
+			    );
+
 			} else {
+				$scope.host = false;
 				$scope.turn = false;
 			}
 
@@ -35,13 +54,13 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 				// otherwise the card object is at the "wrong level"
 				// and we get a card for each property of a card 
 				// instead of a single object
-				$scope.currentCard = [$scope.collection[0]];
+				$scope.currentCard = [$scope.collection[$scope.round]];
 			});
 		});
 
 		// in-game play events
 		socket.on('play', function(play) {
-			var myScore = $scope.currentCard[0][play.category];
+			var myScore = $scope.currentCard[$scope.round][play.category];
 
 			if(myScore > play.score) {
 				console.log('I win :)');
@@ -50,16 +69,9 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 			} else {
 				console.log('It\'s a draw :|');
 			}
-		});
 
-		// THIS DOESN' WORK AS EXPECTED, A STATE CHANGE IS FIRED WHEN WE 
-		// GO FROM WAITING FOR A GAME TO STARTING A GAME...
-		// this method checks for the start of a route change
-		// i.e. player is leaving the game, so disconnect them
-		// $scope.$on('$stateChangeStart', function(next, current) {
-		// 	console.log('stateChangeStart');
-		//	$scope.socket.disconnect();
- 		//});
+			$scope.round++;
+		});
 	};
 
 
@@ -75,5 +87,21 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 			socket.emit('play', { 'category': category, 'score': score });
 		}
 	};
+
+
+	// this method checks for the start of a route change
+	// i.e. player is leaving the game, so disconnect them
+	$scope.$on('$stateChangeStart', function(next, current) {
+		// if game was in progress and user was host then disconnect
+		if($scope.gameInProgress && $scope.host) {
+			console.log('host is disconnecting');
+			socket.emit('message', 'Host has left the game...');
+			socket.disconnect();
+		} else if($scope.gameInProgress && !$scope.host) {
+			console.log('client is disconnecting');
+			socket.emit('message', 'Opponent has left the game...');
+			socket.disconnect();
+		}
+	});
 
 });

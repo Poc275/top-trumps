@@ -417,12 +417,13 @@ describe('UserController Tests', function() {
 describe('GameController Tests', function() {
 	var $httpBackend;
 	var $rootScope;
+	var location;
 	var createController;
 	var socketMock;
 
 	beforeEach(module('TCModule'));
 
-	beforeEach(inject(function($injector) {
+	beforeEach(inject(function($injector, $location) {
 		// set up the mock http service responses
 		$httpBackend = $injector.get('$httpBackend');
 
@@ -435,6 +436,8 @@ describe('GameController Tests', function() {
 		// setup scope and location (for logout testing)
 		$rootScope = $injector.get('$rootScope');
 		socketMock = new sockMock($rootScope);
+
+		location = $location;
 
 		// the $controller service is used to create instances of controllers
 		var $controller = $injector.get('$controller');
@@ -455,6 +458,11 @@ describe('GameController Tests', function() {
 		$rootScope.init('abc@123.com');
 		socketMock.receive('message', 'Joined a room, waiting for opponent');
 		expect($rootScope.msg).toBe('Joined a room, waiting for opponent');
+		expect($rootScope.host).toBe(false);
+		expect($rootScope.turn).toBe(false);
+		expect($rootScope.gameInProgress).toBe(false);
+		expect($rootScope.round).toBe(0);
+
 		$httpBackend.flush();
 	});
 
@@ -463,7 +471,10 @@ describe('GameController Tests', function() {
 		var controller = createController();
 		$rootScope.init('abc@123.com');
 		socketMock.receive('start', 'host');
+		expect($rootScope.host).toBe(true);
 		expect($rootScope.turn).toBe(true);
+		expect($rootScope.gameInProgress).toBe(true);
+		expect($rootScope.round).toBe(0);
 
 		// host can play a card first
 		// verify by checking there is a play event emitted
@@ -479,7 +490,10 @@ describe('GameController Tests', function() {
 		var controller = createController();
 		$rootScope.init('abc@123.com');
 		socketMock.receive('start', 'client');
+		expect($rootScope.host).toBe(false);
 		expect($rootScope.turn).toBe(false);
+		expect($rootScope.gameInProgress).toBe(true);
+		expect($rootScope.round).toBe(0);
 
 		// client cannot play a card first
 		// verify by checking there isn't a play event emitted
@@ -505,7 +519,7 @@ describe('GameController Tests', function() {
 	});
 
 
-	it('Higher category scores win the round', function() {
+	it('Higher category score wins the round', function() {
 		var controller = createController();
 		var card = {
 			category: 'ppc',
@@ -513,14 +527,31 @@ describe('GameController Tests', function() {
 		};
 
 		$rootScope.init('abc@123.com');
-
-		// $rootScope.currentCard = [];
 		$rootScope.currentCard = [{ 'ppc': 26 }];
-
 		socketMock.receive('play', card);
+		expect($rootScope.round).toBe(1);
 
-		// NO EXPECTATIONS YET!
-		// THE CONTROLLER ONLY LOGS THE RESULT AT THE MOMENT...
+		$httpBackend.flush();
+	});
+
+
+	it('Game disconnected if host leaves page', function() {
+		var controller = createController();
+		$rootScope.init('abc@123.com');
+		socketMock.receive('start', 'host');
+		location.path('/logout');
+		expect(socketMock.emits.message[0]).toContain('Host has left the game...');
+
+		$httpBackend.flush();
+	});
+
+
+	it('Game disconnected if client leaves page', function() {
+		var controller = createController();
+		$rootScope.init('abc@123.com');
+		socketMock.receive('start', 'client');
+		location.path('/logout');
+		expect(socketMock.emits.message[0]).toContain('Opponent has left the game...');
 
 		$httpBackend.flush();
 	});
@@ -543,10 +574,21 @@ var sockMock = function($rootScope) {
   // this event is really just for testing connections 
   // are made, the user doesn't see anything
   this.connect = function() {
-  	if(!this.events['onconnected']) {
-    	this.events['onconnected'] = [];
+  	if(!this.events['on.connected']) {
+    	this.events['on.connected'] = [];
     }
-    this.events['onconnected'].push();
+    this.events['on.connected'].push();
+  };
+
+  // intercept disconnect call - my addition
+  // just push an empty event into the events object
+  // this event is really just for testing connections 
+  // are made, the user doesn't see anything
+  this.disconnect = function() {
+  	if(!this.events['dis.connect']) {
+    	this.events['dis.connect'] = [];
+    }
+    this.events['dis.connect'].push();
   };
 
   // intercept 'on' calls and capture the callbacks
@@ -577,6 +619,6 @@ var sockMock = function($rootScope) {
           callback.apply(this, args);
         });
       });
-    };
+    }
   };
 };

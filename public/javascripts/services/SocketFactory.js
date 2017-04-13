@@ -9,8 +9,10 @@ angular.module('TCModule').factory('socket', function SocketFactory($rootScope) 
 			console.log('SocketFactory connect() called!');
 			socket = io.connect();
 		},
+		disconnect: function() {
+			socket.disconnect();
+		},
 		on: function(eventName, callback) {
-			console.log('SocketFactory on() called!');
 			socket.on(eventName, function() {
 				var args = arguments;
 				$rootScope.$apply(function() {
@@ -19,7 +21,6 @@ angular.module('TCModule').factory('socket', function SocketFactory($rootScope) 
 			});
 		},
 		emit: function(eventName, data, callback) {
-			console.log('SocketFactory emit() called!');
 			socket.emit(eventName, data, function() {
 				var args = arguments;
 				$rootScope.$apply(function() {
