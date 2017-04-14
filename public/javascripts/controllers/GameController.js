@@ -3,12 +3,12 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 	$scope.collection;
 	$scope.currentCard;
 
-	$scope.host = false;
-	$scope.gameInProgress = false;
-	$scope.turn = false;
+	$scope.host;
+	$scope.gameInProgress;
+	$scope.turn;
 
 	// counter for the number of rounds played
-	$scope.round = 0;
+	$scope.round;
 
 
 	$scope.init = function(user) {
@@ -16,19 +16,25 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 		// create connection to socket.io
 		socket.connect();
 
+
 		// now listen for events
 		socket.on('onconnected', function(data) {
 			console.log('Connected to TC via socket.io. Player id is ' + data);
 		});
 
+
 		socket.on('message', function(message) {
 			$scope.msg = message;
 		});
 
+
 		// game has started
 		socket.on('start', function(status) {
+			console.log('Game has started');
+
 			$scope.msg = 'Game has begun!';
 			$scope.gameInProgress = true;
+			$scope.round = 0;
 
 			if(status === 'host') {
 				$scope.host = true;
@@ -58,19 +64,85 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 			});
 		});
 
-		// in-game play events
-		socket.on('play', function(play) {
-			var myScore = $scope.currentCard[$scope.round][play.category];
 
-			if(myScore > play.score) {
-				console.log('I win :)');
-			} else if(myScore < play.score) {
-				console.log('I lose :(');
-			} else {
-				console.log('It\'s a draw :|');
+		// user has been sent a card they've won from an opponent
+		// just add to end of collection
+		socket.on('victorious', function(card) {
+			console.log('I win :)');
+
+			$scope.collection.push(card);
+			$scope.round++;
+			$scope.turn = true;
+
+			// minus 1 from collection length because $scope.round starts at zero
+			if($scope.round > $scope.collection.length - 1) {
+				// go back to beginning of pack
+				$scope.round = 0;
 			}
 
-			$scope.round++;
+			$scope.currentCard = [$scope.collection[$scope.round]];
+		});
+
+
+		// user has lost a round, remove their current card
+		socket.on('defeated', function() {
+			console.log('I lose :(');
+
+			$scope.turn = false;
+			$scope.collection.splice($scope.round, 1);
+
+			// minus 1 from collection length because $scope.round starts at zero
+			if($scope.round > $scope.collection.length - 1) {
+				// go back to beginning of pack
+				$scope.round = 0;
+			}
+
+			$scope.currentCard = [$scope.collection[$scope.round]];
+		});
+
+
+		// in-game play events
+		socket.on('play', function(play) {
+			var myScore = $scope.currentCard[0][play.category];
+
+			console.log(myScore, ' vs ', play.score);
+			console.log('opponents card: ', play.card[0]);
+
+			if(myScore > play.score) {
+				// win! opponent's card is added to collection
+				console.log('I win :)');
+
+				$scope.collection.push(play.card[0]);
+				$scope.round++;
+				$scope.turn = true;
+
+				// tell opponent they have been defeated so their card is removed
+				socket.emit('defeated');
+
+			} else if(myScore < play.score) {
+				// lost, card is removed from collection and sent to winner
+				console.log('I lose :(');
+
+				$scope.turn = false;
+
+				// tell opponent they have won the round and send them their new card
+				var lostCard = $scope.collection.splice($scope.turn, 1);
+				socket.emit('victorious', lostCard);
+
+			} else {
+				console.log('It\'s a draw :|');
+				$scope.round++;
+			}
+
+			// minus 1 from collection length because $scope.round starts at zero
+			if($scope.round > $scope.collection.length - 1) {
+				// go back to beginning of pack
+				$scope.round = 0;
+			}
+
+			console.log('Pack updated. Turn: ', $scope.round);
+			// console.log('Collection: ', $scope.collection);
+			$scope.currentCard = [$scope.collection[$scope.round]];
 		});
 	};
 
@@ -84,7 +156,7 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 	// user has selected a category to play
 	$scope.play = function(category, score) {
 		if($scope.turn) {
-			socket.emit('play', { 'category': category, 'score': score });
+			socket.emit('play', { card: $scope.currentCard, category: category, score: score });
 		}
 	};
 

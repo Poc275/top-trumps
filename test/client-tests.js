@@ -421,6 +421,7 @@ describe('GameController Tests', function() {
 	var createController;
 	var socketMock;
 
+
 	beforeEach(module('TCModule'));
 
 	beforeEach(inject(function($injector, $location) {
@@ -447,6 +448,7 @@ describe('GameController Tests', function() {
 		};
 	}));
 
+
 	afterEach(function() {
 		$httpBackend.verifyNoOutstandingExpectation();
      	$httpBackend.verifyNoOutstandingRequest();
@@ -457,11 +459,8 @@ describe('GameController Tests', function() {
 		var controller = createController();
 		$rootScope.init('abc@123.com');
 		socketMock.receive('message', 'Joined a room, waiting for opponent');
+
 		expect($rootScope.msg).toBe('Joined a room, waiting for opponent');
-		expect($rootScope.host).toBe(false);
-		expect($rootScope.turn).toBe(false);
-		expect($rootScope.gameInProgress).toBe(false);
-		expect($rootScope.round).toBe(0);
 
 		$httpBackend.flush();
 	});
@@ -471,6 +470,7 @@ describe('GameController Tests', function() {
 		var controller = createController();
 		$rootScope.init('abc@123.com');
 		socketMock.receive('start', 'host');
+
 		expect($rootScope.host).toBe(true);
 		expect($rootScope.turn).toBe(true);
 		expect($rootScope.gameInProgress).toBe(true);
@@ -479,6 +479,7 @@ describe('GameController Tests', function() {
 		// host can play a card first
 		// verify by checking there is a play event emitted
 		$rootScope.play('ppc', 25);
+
 		expect(socketMock.emits.play).not.toBeNull();
 		expect(socketMock.emits.play).not.toBeUndefined();
 
@@ -490,6 +491,7 @@ describe('GameController Tests', function() {
 		var controller = createController();
 		$rootScope.init('abc@123.com');
 		socketMock.receive('start', 'client');
+
 		expect($rootScope.host).toBe(false);
 		expect($rootScope.turn).toBe(false);
 		expect($rootScope.gameInProgress).toBe(true);
@@ -498,6 +500,7 @@ describe('GameController Tests', function() {
 		// client cannot play a card first
 		// verify by checking there isn't a play event emitted
 		$rootScope.play('ppc', 25);
+
 		expect(socketMock.emits.play).toBeUndefined();
 
 		$httpBackend.flush();
@@ -514,22 +517,6 @@ describe('GameController Tests', function() {
 		expect(socketMock.emits.message).not.toBeNull();
 		expect(socketMock.emits.message).not.toBeUndefined();
 		expect(socketMock.emits.message[0]).toContain('Hi!');
-
-		$httpBackend.flush();
-	});
-
-
-	it('Higher category score wins the round', function() {
-		var controller = createController();
-		var card = {
-			category: 'ppc',
-			score: 25
-		};
-
-		$rootScope.init('abc@123.com');
-		$rootScope.currentCard = [{ 'ppc': 26 }];
-		socketMock.receive('play', card);
-		expect($rootScope.round).toBe(1);
 
 		$httpBackend.flush();
 	});
@@ -556,6 +543,190 @@ describe('GameController Tests', function() {
 		$httpBackend.flush();
 	});
 
+});
+
+
+describe('Game Logic Tests', function() {
+	var httpBackend;
+	var playerOneController;
+	var playerTwoController;
+	var playerOneScope;
+	var playerTwoScope;
+	var playerOneSockMock;
+	var playerTwoSockMock;
+
+	var dt = {
+		_id: '12345',
+		name: 'Donald Trump',
+		unpalatibility: 87,
+		up_their_own_arsemanship: 92,
+		media_attention: 86,
+		legacy: 77,
+		special_ability: 96,
+		ppc: 200000,
+		cuntal_order: 'Gold',
+		category: 'World Leaders',
+		special_ability_description: 'General bad apple',
+		bio: 'This guy is unbelievable...',
+		references: ['see this here', 'and this as well'],
+		images: ['front.jpg', 'rear.png']
+	};
+
+	var gk = {
+		_id: '13579',
+		name: 'Genghis Khan',
+		unpalatibility: 79,
+		up_their_own_arsemanship: 43,
+		media_attention: 12,
+		legacy: 86,
+		special_ability: 73,
+		ppc: 5,
+		cuntal_order: 'Silver',
+		category: 'World Leaders',
+		special_ability_description: 'Trail blazer',
+		bio: 'Wow!',
+		references: ['novel'],
+		images: ['front-pic.jpg', 'rear-pic.png']
+	};
+
+	var vp = {
+		_id: '67890',
+		name: 'Vladimir Putin',
+		unpalatibility: 84,
+		up_their_own_arsemanship: 92,
+		media_attention: 85,
+		legacy: 85,
+		special_ability: 90,
+		ppc: 100000,
+		cuntal_order: 'Gold',
+		category: 'World Leaders',
+		special_ability_description: 'Bad ass',
+		bio: 'This guy is a real treasure...',
+		references: ['news article', 'video'],
+		images: ['front-pic.jpg', 'rear-pic.png']
+	};
+
+	var sb = {
+		_id: '24680',
+		name: 'Silvio Berlusconi',
+		unpalatibility: 65,
+		up_their_own_arsemanship: 62,
+		media_attention: 70,
+		legacy: 54,
+		special_ability: 80,
+		ppc: 6000,
+		cuntal_order: 'Silver',
+		category: 'World Leaders',
+		special_ability_description: 'Bunga bunga',
+		bio: 'Italian plutocracy for the win',
+		references: ['paparazzi', 'tabloid-scandal'],
+		images: ['front-pic.jpg', 'rear-pic.gif']
+	};
+
+	beforeEach(module('TCModule'));
+
+	// setup 2 players with their own controllers/scope
+	beforeEach(inject(function($httpBackend, $controller, $rootScope) {
+		httpBackend = $httpBackend;
+
+		// mock requests
+		httpBackend.whenRoute('GET', '/me/collection').respond({id: '12345'});
+
+		// mock templates
+		httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+
+		playerOneScope = $rootScope.$new();
+		playerTwoScope = $rootScope.$new();
+
+		playerOneSockMock = new sockMock(playerOneScope);
+		playerTwoSockMock = new sockMock(playerTwoScope);
+
+		playerOneController = $controller('GameController', {
+			$scope: playerOneScope,
+			socket: playerOneSockMock
+		});
+
+		playerTwoController = $controller('GameController', {
+			$scope: playerTwoScope,
+			socket: playerTwoSockMock
+		});
+	}));
+
+
+	it('Game is setup correctly', function() {
+		playerOneScope.init('abc@123.com');
+		playerTwoScope.init('def@456.com');
+
+		playerOneSockMock.receive('start', 'host');
+		playerTwoSockMock.receive('start', 'client');
+
+		expect(playerOneScope.msg).toBe('Game has begun!');
+		expect(playerOneScope.gameInProgress).toBe(true);
+		expect(playerOneScope.round).toBe(0);
+		expect(playerOneScope.host).toBe(true);
+		expect(playerOneScope.turn).toBe(true);
+
+		expect(playerTwoScope.msg).toBe('Game has begun!');
+		expect(playerTwoScope.gameInProgress).toBe(true);
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.host).toBe(false);
+		expect(playerTwoScope.turn).toBe(false);
+	});
+
+
+	it('Player 1 wins the game', function() {
+		playerOneScope.init('abc@123.com');
+		playerTwoScope.init('def@456.com');
+
+		playerOneSockMock.receive('start', 'host');
+		playerTwoSockMock.receive('start', 'client');
+
+		playerOneScope.collection = [dt, gk];
+		playerTwoScope.collection = [vp, sb];
+
+		playerOneScope.currentCard = [dt];
+		playerTwoScope.currentCard = [vp];
+
+		// before game, player 1 goes first
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerTwoScope.turn).toBe(false);
+
+		// player two wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'legacy', score: 77 });
+		playerOneSockMock.receive('defeated');
+
+		expect(playerTwoScope.turn).toBe(true);
+		expect(playerTwoScope.collection.length).toBe(3);
+		expect(playerTwoScope.collection[0].name).toBe('Vladimir Putin');
+		expect(playerTwoScope.collection[1].name).toBe('Silvio Berlusconi');
+		expect(playerTwoScope.collection[2].name).toBe('Donald Trump');
+		expect(playerTwoScope.round).toBe(1);
+		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(1);
+		expect(playerOneScope.collection[0].name).toBe('Genghis Khan');
+		expect(playerOneScope.round).toBe(0);
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
+
+		// player two wins again - game over for player one
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'media_attention', score: 12 });
+		playerOneSockMock.receive('defeated');
+
+		expect(playerTwoScope.turn).toBe(true);
+		expect(playerTwoScope.collection.length).toBe(4);
+		expect(playerTwoScope.collection[0].name).toBe('Vladimir Putin');
+		expect(playerTwoScope.collection[1].name).toBe('Silvio Berlusconi');
+		expect(playerTwoScope.collection[2].name).toBe('Donald Trump');
+		expect(playerTwoScope.collection[3].name).toBe('Genghis Khan');
+		expect(playerTwoScope.round).toBe(2);
+		expect(playerTwoScope.currentCard[0].name).toBe('Donald Trump');
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(0);
+		expect(playerOneScope.round).toBe(0);
+		expect(playerOneScope.currentCard[0]).toBeUndefined();
+	});
 });
 
 

@@ -16,7 +16,7 @@ var uuid = require('uuid');
  * are the category/score that a player has chosen to play. This is 
  * then sent onto the opposing player for comparison to see who wins the card.
  * @param {object} client - The client whose turn it was to play
- * @param {object} msg - A JSON object with 2 properties: category and score
+ * @param {object} msg - Card object
  */
 gameServer.onPlay = function(client, msg) {
 	// get opposition player to send msg to
@@ -29,6 +29,50 @@ gameServer.onPlay = function(client, msg) {
 	} else {
 		console.log('guest sending message to host: ' + msg);
 		client.game.playerHost.emit('play', msg);
+	}
+};
+
+
+/**
+ * The "out-of-turn" player assesses the result because the 
+ * player "in-turn" sends the score to them for comparison. This 
+ * means that the player "out-of-turn" must inform the other player 
+ * the result otherwise the result is only applied to 1 player. This 
+ * function is for when the player "in-turn" has won a round.
+ * @param {object} client - The client who lost the round
+ * @param {object} msg - Card object
+ */
+gameServer.onVictorious = function(client, msg) {
+	// get opposition player to send msg to
+	var sender = client.userid;
+	console.log('sender userid: ' + sender);
+
+	if(client.game.playerHost.userid === sender) {
+		console.log('host lost card: ' + msg);
+		client.game.playerClient.emit('victorious', msg);
+	} else {
+		console.log('guest lost card: ' + msg);
+		client.game.playerHost.emit('victorious', msg);
+	}
+};
+
+
+/**
+ * As onVictorious() but this function is for when the 
+ * player "in-turn" has lost a round.
+ * @param {object} client - The client who won the round
+ */
+gameServer.onDefeated = function(client) {
+	// get opposition player to send msg to
+	var sender = client.userid;
+	console.log('sender userid: ' + sender);
+
+	if(client.game.playerHost.userid === sender) {
+		console.log('host won card');
+		client.game.playerClient.emit('defeated');
+	} else {
+		console.log('guest won card');
+		client.game.playerHost.emit('defeated');
 	}
 };
 

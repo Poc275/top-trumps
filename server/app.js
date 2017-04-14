@@ -93,6 +93,18 @@ io.on('connection', function(client) {
 		game.onPlay(client, msg);
 	});
 
+	// player in-turn has won a round
+	// again, pass to game.js to handle
+	client.on('victorious', function(msg) {
+		game.onVictorious(client, msg);
+	});
+
+	// player in-turn has lost a round
+	// again, pass to game.js to handle
+	client.on('defeated', function() {
+		game.onDefeated(client);
+	});
+
 	client.on('disconnect', function() {
 		// @todo End game properly when someone disconnects
 		console.log('socket.io client disconnected: ' + client.userid);
