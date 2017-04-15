@@ -78,6 +78,26 @@ gameServer.onDefeated = function(client) {
 
 
 /**
+ * As onVictorious() but this function is for when the 
+ * round has been drawn.
+ * @param {object} client - The client sending the draw result
+ */
+gameServer.onDraw = function(client) {
+	// get opposition player to send msg to
+	var sender = client.userid;
+	console.log('sender userid: ' + sender);
+
+	if(client.game.playerHost.userid === sender) {
+		console.log('draw');
+		client.game.playerClient.emit('draw');
+	} else {
+		console.log('draw');
+		client.game.playerHost.emit('draw');
+	}
+};
+
+
+/**
  * Function that handles the passing of messages between players.
  * The 'message' event is for status updates (game found, game created, 
  * waiting for 2nd player etc.) and in-game chat.

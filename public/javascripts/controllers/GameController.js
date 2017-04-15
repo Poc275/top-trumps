@@ -30,8 +30,6 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 
 		// game has started
 		socket.on('start', function(status) {
-			console.log('Game has started');
-
 			$scope.msg = 'Game has begun!';
 			$scope.gameInProgress = true;
 			$scope.round = 0;
@@ -67,10 +65,10 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 
 		// user has been sent a card they've won from an opponent
 		// just add to end of collection
-		socket.on('victorious', function(card) {
-			console.log('I win :)');
+		socket.on('victorious', function(data) {
+			console.log('I win :) ');
 
-			$scope.collection.push(card);
+			$scope.collection.push(data[0]);
 			$scope.round++;
 			$scope.turn = true;
 
@@ -81,6 +79,12 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 			}
 
 			$scope.currentCard = [$scope.collection[$scope.round]];
+
+			console.log('my round: ', $scope.round);
+			$scope.collection.forEach(function(card) {
+				console.log(card.name);
+			});
+			console.log($scope.turn);
 		});
 
 
@@ -98,15 +102,39 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 			}
 
 			$scope.currentCard = [$scope.collection[$scope.round]];
+
+			console.log('my round: ', $scope.round);
+			$scope.collection.forEach(function(card) {
+				console.log(card.name);
+			});
+			console.log($scope.turn);
+		});
+
+
+		// round was drawn, just move onto next card
+		socket.on('draw', function() {
+			console.log('Draw :|');
+			$scope.round++;
+
+			// minus 1 from collection length because $scope.round starts at zero
+			if($scope.round > $scope.collection.length - 1) {
+				// go back to beginning of pack
+				$scope.round = 0;
+			}
+
+			$scope.currentCard = [$scope.collection[$scope.round]];
+
+			console.log('my round: ', $scope.round);
+			$scope.collection.forEach(function(card) {
+				console.log(card.name);
+			});
+			console.log($scope.turn);
 		});
 
 
 		// in-game play events
 		socket.on('play', function(play) {
 			var myScore = $scope.currentCard[0][play.category];
-
-			console.log(myScore, ' vs ', play.score);
-			console.log('opponents card: ', play.card[0]);
 
 			if(myScore > play.score) {
 				// win! opponent's card is added to collection
@@ -126,12 +154,14 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 				$scope.turn = false;
 
 				// tell opponent they have won the round and send them their new card
-				var lostCard = $scope.collection.splice($scope.turn, 1);
+				var lostCard = $scope.collection.splice($scope.round, 1);
 				socket.emit('victorious', lostCard);
 
 			} else {
 				console.log('It\'s a draw :|');
 				$scope.round++;
+
+				socket.emit('draw');
 			}
 
 			// minus 1 from collection length because $scope.round starts at zero
@@ -140,9 +170,13 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 				$scope.round = 0;
 			}
 
-			console.log('Pack updated. Turn: ', $scope.round);
-			// console.log('Collection: ', $scope.collection);
 			$scope.currentCard = [$scope.collection[$scope.round]];
+
+			console.log('my round: ', $scope.round);
+			$scope.collection.forEach(function(card) {
+				console.log(card.name);
+			});
+			console.log('my turn: ', $scope.turn);
 		});
 	};
 

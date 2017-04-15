@@ -105,6 +105,12 @@ io.on('connection', function(client) {
 		game.onDefeated(client);
 	});
 
+	// round was a draw
+	// again, pass to game.js to handle
+	client.on('draw', function() {
+		game.onDraw(client);
+	});
+
 	client.on('disconnect', function() {
 		// @todo End game properly when someone disconnects
 		console.log('socket.io client disconnected: ' + client.userid);

@@ -579,7 +579,7 @@ describe('Game Logic Tests', function() {
 		up_their_own_arsemanship: 43,
 		media_attention: 12,
 		legacy: 86,
-		special_ability: 73,
+		special_ability: 80,
 		ppc: 5,
 		cuntal_order: 'Silver',
 		category: 'World Leaders',
@@ -674,7 +674,7 @@ describe('Game Logic Tests', function() {
 	});
 
 
-	it('Player 1 wins the game', function() {
+	it('Player 2 wins the game', function() {
 		playerOneScope.init('abc@123.com');
 		playerTwoScope.init('def@456.com');
 
@@ -727,6 +727,644 @@ describe('Game Logic Tests', function() {
 		expect(playerOneScope.round).toBe(0);
 		expect(playerOneScope.currentCard[0]).toBeUndefined();
 	});
+
+
+	it('Player 1 wins the game', function() {
+		playerOneScope.init('abc@123.com');
+		playerTwoScope.init('def@456.com');
+
+		playerOneSockMock.receive('start', 'host');
+		playerTwoSockMock.receive('start', 'client');
+
+		playerOneScope.collection = [dt, gk];
+		playerTwoScope.collection = [vp, sb];
+
+		playerOneScope.currentCard = [dt];
+		playerTwoScope.currentCard = [vp];
+
+		// before game, player 1 goes first
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerTwoScope.turn).toBe(false);
+
+		// player one wins
+		// victorious expects an array..
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 87 });
+		playerOneSockMock.receive('victorious', [vp]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(3);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.collection[2].name).toBe('Vladimir Putin');
+		expect(playerOneScope.round).toBe(1);
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(1);
+		expect(playerTwoScope.collection[0].name).toBe('Silvio Berlusconi');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
+
+		// player one wins again - game over for player two
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'legacy', score: 86 });
+		playerOneSockMock.receive('victorious', [sb]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(4);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.collection[2].name).toBe('Vladimir Putin');
+		expect(playerOneScope.collection[3].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.round).toBe(2);
+		expect(playerOneScope.currentCard[0].name).toBe('Vladimir Putin');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(0);
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0]).toBeUndefined();
+	});
+
+	
+	it('A draw just moves onto the next card', function() {
+		playerOneScope.init('abc@123.com');
+		playerTwoScope.init('def@456.com');
+
+		playerOneSockMock.receive('start', 'host');
+		playerTwoSockMock.receive('start', 'client');
+
+		playerOneScope.collection = [dt, gk];
+		playerTwoScope.collection = [vp, sb];
+
+		playerOneScope.currentCard = [dt];
+		playerTwoScope.currentCard = [vp];
+
+		// before game, player 1 goes first
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerTwoScope.turn).toBe(false);
+
+		// draw
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'up_their_own_arsemanship', score: 92 });
+		playerOneSockMock.receive('draw');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(2);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.round).toBe(1);
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(2);
+		expect(playerTwoScope.collection[0].name).toBe('Vladimir Putin');
+		expect(playerTwoScope.collection[1].name).toBe('Silvio Berlusconi');
+		expect(playerTwoScope.round).toBe(1);
+		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
+
+		// another draw, current card should reset to beginning of pack
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'special_ability', score: 80 });
+		playerOneSockMock.receive('draw');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(2);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.round).toBe(0);
+		expect(playerOneScope.currentCard[0].name).toBe('Donald Trump');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(2);
+		expect(playerTwoScope.collection[0].name).toBe('Vladimir Putin');
+		expect(playerTwoScope.collection[1].name).toBe('Silvio Berlusconi');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Vladimir Putin');
+	});
+});
+
+
+describe('Full Game Test', function() {
+	var httpBackend;
+	var playerOneController;
+	var playerTwoController;
+	var playerOneScope;
+	var playerTwoScope;
+	var playerOneSockMock;
+	var playerTwoSockMock;
+
+	// only 1 category per card as it's all that is required for testing
+	var mc = {
+		name: 'Miley Cyrus',
+		unpalatibility: 79
+	};
+
+	var rh = {
+		name: 'Rihanna',
+		unpalatibility: 67
+	};
+
+	var gb = {
+		name: 'George Bush Snr',
+		unpalatibility: 43
+	};
+
+	var jc = {
+		name: 'Johnnie Cochran',
+		unpalatibility: 65
+	};
+
+	var dd = {
+		name: 'Dick Dastardly',
+		unpalatibility: 43
+	};
+
+	var sb = {
+		name: 'Silvio Berlusconi',
+		unpalatibility: 72
+	};
+
+	var tb = {
+		name: 'Tim Burton',
+		unpalatibility: 31
+	};
+
+	var cm = {
+		name: 'Chris Martin (Coldplay)',
+		unpalatibility: 43
+	};
+
+	var ptg = {
+		name: 'Phil the Greek',
+		unpalatibility: 66
+	};
+
+	var nod = {
+		name: 'Noddy',
+		unpalatibility: 17
+	};
+
+
+	beforeEach(module('TCModule'));
+
+	// setup 2 players with their own controllers/scope
+	beforeEach(inject(function($httpBackend, $controller, $rootScope) {
+		httpBackend = $httpBackend;
+
+		// mock requests
+		httpBackend.whenRoute('GET', '/me/collection').respond({id: '12345'});
+
+		// mock templates
+		httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+
+		playerOneScope = $rootScope.$new();
+		playerTwoScope = $rootScope.$new();
+
+		playerOneSockMock = new sockMock(playerOneScope);
+		playerTwoSockMock = new sockMock(playerTwoScope);
+
+		playerOneController = $controller('GameController', {
+			$scope: playerOneScope,
+			socket: playerOneSockMock
+		});
+
+		playerTwoController = $controller('GameController', {
+			$scope: playerTwoScope,
+			socket: playerTwoSockMock
+		});
+	}));
+
+
+	it('Game is setup correctly', function() {
+		playerOneScope.init('abc@123.com');
+		playerTwoScope.init('def@456.com');
+
+		playerOneSockMock.receive('start', 'host');
+		playerTwoSockMock.receive('start', 'client');
+
+		expect(playerOneScope.msg).toBe('Game has begun!');
+		expect(playerOneScope.gameInProgress).toBe(true);
+		expect(playerOneScope.round).toBe(0);
+		expect(playerOneScope.host).toBe(true);
+		expect(playerOneScope.turn).toBe(true);
+
+		expect(playerTwoScope.msg).toBe('Game has begun!');
+		expect(playerTwoScope.gameInProgress).toBe(true);
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.host).toBe(false);
+		expect(playerTwoScope.turn).toBe(false);
+	});
+
+
+	it('Game concludes with 1 winner', function() {
+		playerOneScope.init('abc@123.com');
+		playerTwoScope.init('def@456.com');
+
+		playerOneSockMock.receive('start', 'host');
+		playerTwoSockMock.receive('start', 'client');
+
+		playerOneScope.collection = [mc, rh, gb, jc, dd];
+		playerTwoScope.collection = [sb, tb, cm, ptg, nod];
+
+		playerOneScope.currentCard = [mc];
+		playerTwoScope.currentCard = [sb];
+
+		// before game, player 1 goes first
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerTwoScope.turn).toBe(false);
+
+		// round 1 - player 1 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 79 });
+		playerOneSockMock.receive('victorious', [sb]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(6);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[4].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[5].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.round).toBe(1);
+		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(4);
+		expect(playerTwoScope.collection[0].name).toBe('Tim Burton');
+		expect(playerTwoScope.collection[1].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[2].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[3].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Tim Burton');
+
+		// round 2 - player 1 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 67 });
+		playerOneSockMock.receive('victorious', [tb]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(7);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[4].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[5].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.round).toBe(2);
+		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(3);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[2].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
+
+		// round 3 - draw
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 43 });
+		playerOneSockMock.receive('draw');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(7);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[4].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[5].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.round).toBe(3);
+		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(3);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[2].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(1);
+		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
+
+		// round 4 - player 2 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 65 });
+		playerOneSockMock.receive('defeated');
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(6);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		// expect(playerOneScope.collection[3].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Tim Burton');
+		expect(playerOneScope.round).toBe(3);
+		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
+
+		expect(playerTwoScope.turn).toBe(true);
+		expect(playerTwoScope.collection.length).toBe(4);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[2].name).toBe('Noddy');
+		expect(playerTwoScope.collection[3].name).toBe('Johnnie Cochran');
+		expect(playerTwoScope.round).toBe(2);
+		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
+
+		// round 5 - player 1 wins
+		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 17 });
+		playerTwoSockMock.receive('defeated');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(7);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[6].name).toBe('Noddy');
+		expect(playerOneScope.round).toBe(4);
+		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(3);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		// expect(playerTwoScope.collection[2].name).toBe('Noddy');
+		expect(playerTwoScope.collection[2].name).toBe('Johnnie Cochran');
+		expect(playerTwoScope.round).toBe(2);
+		expect(playerTwoScope.currentCard[0].name).toBe('Johnnie Cochran');
+
+		// round 6 - player 1 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 72 });
+		playerOneSockMock.receive('victorious', [jc]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(8);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[6].name).toBe('Noddy');
+		expect(playerOneScope.collection[7].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.round).toBe(5);
+		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(2);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		// expect(playerTwoScope.collection[2].name).toBe('Johnnie Cochran');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
+
+		// round 7 - player 2 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 31 });
+		playerOneSockMock.receive('defeated');
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(7);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		// expect(playerOneScope.collection[5].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[5].name).toBe('Noddy');
+		expect(playerOneScope.collection[6].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.round).toBe(5);
+		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
+
+		expect(playerTwoScope.turn).toBe(true);
+		expect(playerTwoScope.collection.length).toBe(3);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[2].name).toBe('Tim Burton');
+		expect(playerTwoScope.round).toBe(1);
+		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
+
+		// round 8 - player 2 wins
+		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 66 });
+		playerTwoSockMock.receive('victorious', [nod]);
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(6);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		// expect(playerOneScope.collection[5].name).toBe('Noddy');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.round).toBe(5);
+		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
+
+		expect(playerTwoScope.turn).toBe(true);
+		expect(playerTwoScope.collection.length).toBe(4);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[2].name).toBe('Tim Burton');
+		expect(playerTwoScope.collection[3].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(2);
+		expect(playerTwoScope.currentCard[0].name).toBe('Tim Burton');
+
+		// round 9 - player 1 wins
+		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 31 });
+		playerTwoSockMock.receive('defeated');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(7);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.round).toBe(6);
+		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(3);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		// expect(playerTwoScope.collection[2].name).toBe('Tim Burton');
+		expect(playerTwoScope.collection[2].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(2);
+		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
+
+		// round 10 - player 1 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 31 });
+		playerOneSockMock.receive('victorious', [nod]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(8);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[7].name).toBe('Noddy');
+		expect(playerOneScope.round).toBe(7);
+		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(2);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		// expect(playerTwoScope.collection[2].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
+
+		// round 11 - player 2 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 17 });
+		playerOneSockMock.receive('defeated');
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(7);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		// expect(playerOneScope.collection[7].name).toBe('Noddy');
+		expect(playerOneScope.round).toBe(0);
+		expect(playerOneScope.currentCard[0].name).toBe('Miley Cyrus');
+
+		expect(playerTwoScope.turn).toBe(true);
+		expect(playerTwoScope.collection.length).toBe(3);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[2].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(1);
+		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
+
+		// round 12 - player 1 wins
+		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 66 });
+		playerTwoSockMock.receive('defeated');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(8);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
+		expect(playerOneScope.round).toBe(1);
+		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(2);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		// expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
+		expect(playerTwoScope.collection[1].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(1);
+		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
+
+		// round 13 - player 1 wins
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 67 });
+		playerOneSockMock.receive('victorious', [nod]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(9);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
+		expect(playerOneScope.collection[8].name).toBe('Noddy');
+		expect(playerOneScope.round).toBe(2);
+		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(1);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		// expect(playerTwoScope.collection[1].name).toBe('Noddy');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
+
+		// round 14 - draw
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 43 });
+		playerOneSockMock.receive('draw');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(9);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
+		expect(playerOneScope.collection[8].name).toBe('Noddy');
+		expect(playerOneScope.round).toBe(3);
+		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(1);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
+
+		// round 15 - draw
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 43 });
+		playerOneSockMock.receive('draw');
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(9);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
+		expect(playerOneScope.collection[8].name).toBe('Noddy');
+		expect(playerOneScope.round).toBe(4);
+		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(1);
+		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
+		expect(playerTwoScope.round).toBe(0);
+		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
+
+		// round 16 - player 1 wins - GAME OVER
+		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 72 });
+		playerOneSockMock.receive('victorious', [cm]);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(10);
+		expect(playerOneScope.collection[0].name).toBe('Miley Cyrus');
+		expect(playerOneScope.collection[1].name).toBe('Rihanna');
+		expect(playerOneScope.collection[2].name).toBe('George Bush Snr');
+		expect(playerOneScope.collection[3].name).toBe('Dick Dastardly');
+		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
+		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
+		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
+		expect(playerOneScope.collection[8].name).toBe('Noddy');
+		expect(playerOneScope.collection[9].name).toBe('Chris Martin (Coldplay)');
+		expect(playerOneScope.round).toBe(5);
+		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
+
+		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.collection.length).toBe(0);
+		expect(playerTwoScope.currentCard[0]).toBeUndefined();
+
+	});
+
 });
 
 

@@ -365,7 +365,7 @@ describe('game lobby setup test', function() {
 	});
 
 
-	it('first player should host a game and second player should join it', function(done) {
+	it('Only a maximum of 2 players allowed per room', function(done) {
 		host = io.connect('http://localhost:3000');
 
 		host.on('onconnected', function(data) {
@@ -470,6 +470,167 @@ describe('game lobby setup test', function() {
 		// we should have had 1 game that started and 
 		// notified both players = 2 messages
 		expect(gameStartedMessagesReceived).to.deep.equal(2);
+
+		done();
+	});
+});
+
+
+describe('game event tests', function() {
+	var host;
+	var guest;
+	var gameId;
+	var defeatedCallbacks = 0;
+
+	var dt = {
+		_id: '12345',
+		name: 'Donald Trump',
+		unpalatibility: 87,
+		up_their_own_arsemanship: 92,
+		media_attention: 86,
+		legacy: 77,
+		special_ability: 96,
+		ppc: 200000,
+		cuntal_order: 'Gold',
+		category: 'World Leaders',
+		special_ability_description: 'General bad apple',
+		bio: 'This guy is unbelievable...',
+		references: ['see this here', 'and this as well'],
+		images: ['front.jpg', 'rear.png']
+	};
+
+	var gk = {
+		_id: '13579',
+		name: 'Genghis Khan',
+		unpalatibility: 79,
+		up_their_own_arsemanship: 43,
+		media_attention: 12,
+		legacy: 86,
+		special_ability: 73,
+		ppc: 5,
+		cuntal_order: 'Silver',
+		category: 'World Leaders',
+		special_ability_description: 'Trail blazer',
+		bio: 'Wow!',
+		references: ['novel'],
+		images: ['front-pic.jpg', 'rear-pic.png']
+	};
+
+
+	before(function(done) {
+		expect(game.gameCount).to.deep.equal(0);
+		done();
+	});
+
+
+	it('onVictorious passes the card object to the other player', function(done) {
+		host = io.connect('http://localhost:3000');
+
+		host.on('onconnected', function(data) {
+			expect(game.gameCount).to.deep.equal(1);
+
+			// 2nd player joins...
+			guest = io.connect('http://localhost:3000');
+
+			guest.on('onconnected', function(data) {
+				expect(game.gameCount).to.deep.equal(1);
+
+				// now the game has started...
+				// host goes first and plays a card
+				host.emit('play', { card: dt, category: 'unpalatibility', score: 94 });
+			});
+
+			guest.on('message', function(data) {
+				expect(data).to.contain('You have now joined a game');
+			});
+
+			guest.on('play', function(data) {
+				expect(data.card).to.deep.equal(dt);
+				expect(data.category).to.deep.equal('unpalatibility');
+				expect(data.score).to.deep.equal(94);
+
+				// pretend guest lost, send victorious event to client
+				guest.emit('victorious', gk);
+			});
+		});
+
+		host.on('message', function(data) {
+			expect(data).to.contain('You are now the host, waiting for another player');
+			gameId = data.split(':')[0];
+		});
+
+		host.on('victorious', function(card) {
+			expect(card).to.deep.equal(gk);
+
+			// setTimeout function to make sure all messages are emitted
+			// must be a better way of doing this?
+			setTimeout(function() {
+				done();
+			}, 200);
+		});
+
+	});
+
+
+	it('onDefeated is called when player in-turn loses a round', function(done) {
+		host = io.connect('http://localhost:3000');
+
+		host.on('onconnected', function(data) {
+			expect(game.gameCount).to.deep.equal(1);
+
+			// 2nd player joins...
+			guest = io.connect('http://localhost:3000');
+
+			guest.on('onconnected', function(data) {
+				expect(game.gameCount).to.deep.equal(1);
+
+				// now the game has started...
+				// host goes first and plays a card
+				host.emit('play', { card: dt, category: 'unpalatibility', score: 94 });
+			});
+
+			guest.on('message', function(data) {
+				expect(data).to.contain('You have now joined a game');
+			});
+
+			guest.on('play', function(data) {
+				expect(data.card).to.deep.equal(dt);
+				expect(data.category).to.deep.equal('unpalatibility');
+				expect(data.score).to.deep.equal(94);
+
+				// pretend guest won, send defeated event to client
+				guest.emit('defeated');
+			});
+		});
+
+		host.on('message', function(data) {
+			expect(data).to.contain('You are now the host, waiting for another player');
+			gameId = data.split(':')[0];
+		});
+
+		host.on('defeated', function() {
+			defeatedCallbacks++;
+			expect(defeatedCallbacks).to.deep.equal(1);
+
+			// setTimeout function to make sure all messages are emitted
+			// must be a better way of doing this?
+			setTimeout(function() {
+				done();
+			}, 200);
+		});
+	});
+
+
+	afterEach(function(done) {
+		// disconnect and clean up
+		// have to call endGame to kill connections from the server side
+		// (we're using socket.io-client in the tests)
+		host.disconnect();
+		guest.disconnect();
+		game.endGame(gameId, host.userid);
+
+		// now we're cleaned up there shouldn't be any games left
+		expect(game.gameCount).to.deep.equal(0);
 
 		done();
 	});
