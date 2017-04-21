@@ -181,7 +181,7 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] 
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(req, res) {
 	res.writeHead(302, {
-        'Location': '/#/home'
+        'Location': '/#!/home'
     });
     res.end();
 });
@@ -191,7 +191,7 @@ app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req, res) {
 	res.writeHead(302, {
-        'Location': '/#/home'
+        'Location': '/#!/home'
     });
     res.end();
 });
@@ -201,7 +201,7 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.g
 
 app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
 	res.writeHead(302, {
-        'Location': '/#/home'
+        'Location': '/#!/home'
     });
     res.end();
 });

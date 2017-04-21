@@ -1,12 +1,12 @@
 // this is a wrapper service around socket.io on the client
 // this enables it to be tested
-// we use $scope.$apply() to force a template update after an event
+// we use $rootScope.$apply() to force a template update after an event
+// $rootScope not $scope because services don't have their own $scope, they're singletons
 angular.module('TCModule').factory('socket', function SocketFactory($rootScope) {
 	var socket;
 
 	return {
 		connect: function() {
-			console.log('SocketFactory connect() called!');
 			socket = io.connect();
 		},
 		disconnect: function() {

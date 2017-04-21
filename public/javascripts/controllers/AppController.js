@@ -11,7 +11,7 @@ angular.module('TCModule').controller('AppController', function($scope, $mdSiden
 	// THIS CONTROLLER IS FOR TESTING PURPOSES ONLY!!!
 	// Local signup to test 2 player games etc.
 	$scope.localSignin = function() {
-		$http.post('/auth/local', $scope.local).success(function() {
+		$http.post('/auth/local', $scope.local).then(function() {
 			// you can't redirect from an AJAX post request
 			// so redirect using angular
 			$location.path('/home');

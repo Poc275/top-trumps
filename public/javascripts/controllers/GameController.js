@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('GameController', function($scope, $http, $mdToast, Cards, socket) {
+angular.module('TCModule').controller('GameController', function($scope, $http, $mdToast, $interval, $q, Cards, socket) {
 
 	$scope.collection;
 	$scope.currentCard;
@@ -9,6 +9,20 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 
 	// counter for the number of rounds played
 	$scope.round;
+
+	// $scope.opponentScore = 2;
+	// $scope.opponent = {
+	// 	score: 0
+	// };
+
+	// $interval(function() {
+ //      $scope.opponent.score += 1;      
+
+ //      if ($scope.opponent.score > 100) {
+ //      	$scope.opponent.score = 0;
+ //      }
+
+ //    }, 100, 0, true);
 
 
 	$scope.init = function(user) {
@@ -52,8 +66,8 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 			}
 
 			// get user's card collection
-			Cards.getCardCollection().success(function(cards) {
-				$scope.collection = cards;
+			Cards.getCardCollection().then(function(cards) {
+				$scope.collection = cards.data;
 				// force array creation for ng-repeat to work
 				// otherwise the card object is at the "wrong level"
 				// and we get a card for each property of a card 
@@ -133,6 +147,9 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 
 
 		// in-game play events
+		// this is where the result is calculated, this always happens for the 
+		// player "out-of-turn" i.e. it isn't their turn to play a card.
+		// the result is then passed back to the player "in-turn"
 		socket.on('play', function(play) {
 			var myScore = $scope.currentCard[0][play.category];
 
@@ -177,7 +194,9 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 				console.log(card.name);
 			});
 			console.log('my turn: ', $scope.turn);
+
 		});
+
 	};
 
 

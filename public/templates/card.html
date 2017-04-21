@@ -44,7 +44,7 @@
 
 		<!-- default card actions - show credentials -->
 		<md-card-actions layout="column" layout-align="space-around none" ng-switch-default>
-			<div layout="row">
+			<div class="category-row" layout="row">
 				<p>Unpalatibility:</p>
 				<span flex></span>
 				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('unpalatibility', card.unpalatibility)">
@@ -52,7 +52,30 @@
 				</md-button>
 			</div>
 
-			<div layout="row">
+			<opponent-score></opponent-score>
+
+    		<!-- <md-slider-container ng-disabled="true">
+	      		<md-slider ng-model="opponent.score" aria-label="opponent score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
+	      		<md-input-container>
+	      			<input flex type="number" ng-model="opponent.score" aria-label="green" aria-controls="green-slider">
+      			</md-input-container>
+		    </md-slider-container> -->
+
+
+			<!-- <md-progress-linear class="opponent-score" md-mode="determinate" value="{{ opponentScore }}">
+			</md-progress-linear> -->
+			<!-- <div class="thumb">
+			</div>
+
+			<md-slider-container>
+	      		<span>R</span>
+	      		<md-slider flex min="0" max="255" ng-model="color.red" aria-label="red" id="red-slider"></md-slider>
+	      		<md-input-container>
+	        		<input flex type="number" ng-model="color.red" aria-label="red" aria-controls="red-slider">
+	      		</md-input-container>
+		    </md-slider-container> -->
+
+			<div class="category-row" layout="row">
 				<p>Up their own arsemanship:</p>
 				<span flex></span>
 				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('up_their_own_arsemanship', card.up_their_own_arsemanship)">
@@ -60,7 +83,7 @@
 				</md-button>
 			</div>
 
-			<div layout="row">
+			<div class="category-row" layout="row">
 				<p>Media attention:</p>
 				<span flex></span>
 				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('media_attention', card.media_attention)">
@@ -68,7 +91,7 @@
 				</md-button>
 			</div>
 
-			<div layout="row">
+			<div class="category-row" layout="row">
 				<p>Legacy:</p>
 				<span flex></span>
 				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('legacy', card.legacy)">
@@ -76,7 +99,7 @@
 				</md-button>
 			</div>
 
-			<div layout="row">
+			<div class="category-row" layout="row">
 				<p>PPC (price per cunt):</p>
 				<span flex></span>
 				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('ppc', card.ppc)">
@@ -84,7 +107,7 @@
 				</md-button>
 			</div>
 
-			<div layout="row">
+			<div class="category-row" layout="row">
 				<p>Special ability:</p>
 				<span flex></span>
 				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('special_ability', card.special_ability)">

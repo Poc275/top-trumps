@@ -1,8 +1,8 @@
 angular.module('TCModule').controller('UserController', function($scope, $http, $location, $state, Cards, Gravatar) {
 	
 	$scope.getUser = function() {
-		$http.get('/me').success(function(user) {
-			$scope.user = user;
+		$http.get('/me').then(function(user) {
+			$scope.user = user.data;
 		});
 	};
 
@@ -11,14 +11,14 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 	};
 
 	$scope.logout = function() {
-		$http.get('/logout').success(function() {
+		$http.get('/logout').then(function() {
 			$location.path('/');
 		});
 	};
 
 	$scope.getCards = function() {
-		Cards.getCardCollection().success(function(cards) {
-			$scope.collection = cards;
+		Cards.getCardCollection().then(function(cards) {
+			$scope.collection = cards.data;
 			console.log($scope.collection);
 		});
 

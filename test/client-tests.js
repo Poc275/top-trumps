@@ -40,7 +40,7 @@ describe('CardController Tests', function() {
 		$httpBackend.when('/cards');
 		var controller = createController();
 		$httpBackend.flush();
-		expect($rootScope.cards.name).toBe('Donald Trump');
+		expect($rootScope.cards.data.name).toBe('Donald Trump');
 	});
 
 

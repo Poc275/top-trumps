@@ -81,16 +81,39 @@ md-card-header.grade-Brown Platinum {
 	font-weight: 700;
 }
 
-md-card-actions div {
-	padding: 5px 15px;
-}
-
 .info-button {
 	background-color: transparent;
 	margin: 0;
 	padding: 0;
 	color: #000;
 }
+
+.category-row {
+	margin: 10px 0;
+}
+
+
+/*
+*********************************
+ Opponent score progress bar
+ ********************************
+ */
+/*.thumb {
+	position: absolute;
+}
+
+.thumb:after {
+ 	content: "0";
+ 	position: absolute;
+ 	width: 20px;
+ 	height: 20px;
+ 	border-radius: 20px;
+ 	background-color: rgb(13, 71, 161);
+ 	box-sizing: border-box;
+ 	left: 0;
+ 	top: -60px;
+ }*/
+
 
 
 /*
