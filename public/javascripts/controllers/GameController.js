@@ -293,8 +293,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 					});
 				});
 
-				break;
-
 			case 'up_their_own_arsemanship':
 				$scope.upTheirOwnArsemanshipScoreVisible = true;
 
@@ -305,8 +303,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 						resolve();
 					});
 				});
-
-				break;
 
 			case 'media_attention':
 				$scope.mediaAttentionScoreVisible = true;
@@ -319,8 +315,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 					});
 				});
 
-				break;
-
 			case 'legacy':
 				$scope.legacyScoreVisible = true;
 
@@ -331,8 +325,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 						resolve();
 					});
 				});
-				
-				break;
 
 			case 'ppc':
 				$scope.ppcScoreVisible = true;
@@ -345,8 +337,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 					});
 				});
 
-				break;
-
 			case 'special_ability':
 				$scope.specialAbilityScoreVisible = true;
 
@@ -357,8 +347,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 						resolve();
 					});
 				});
-
-				break;
 		}
 	};
 
