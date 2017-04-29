@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('GameController', function($scope, $http, $mdToast, $interval, $q, Cards, socket) {
+angular.module('TCModule').controller('GameController', function($scope, $mdToast, $interval, $q, Cards, socket, Gravatar) {
 
 	$scope.collection;
 	$scope.currentCard;
@@ -10,22 +10,39 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 	// counter for the number of rounds played
 	$scope.round;
 
-	// $scope.opponentScore = 2;
-	// $scope.opponent = {
-	// 	score: 0
-	// };
+	// result object to compare scores and 
+	// calculate who wins a round
+	$scope.result = {
+		myScore: 0,
+		opponentScore: 0,
+		opponentCard: {},
+		category: ''
+	};
 
-	// $interval(function() {
- //      $scope.opponent.score += 1;      
+	// gravatar images for in-game chat
+	$scope.myGravatarUrl;
+	$scope.opponentGravatarUrl;
 
- //      if ($scope.opponent.score > 100) {
- //      	$scope.opponent.score = 0;
- //      }
+	// chat object sent during in-game chat
+  	$scope.chat = {
+  		messages: [],
+		sendMessage: ''
+	};
 
- //    }, 100, 0, true);
+	// opponent score variables
+	$scope.unpalatibilityScore = 0;
+	$scope.upTheirOwnArsemanshipScore = 0;
+	$scope.mediaAttentionScore = 0;
+	$scope.legacyScore = 0;
+	$scope.ppcScore = 0;
+	$scope.specialAbilityScore = 0;
+
 
 
 	$scope.init = function(user) {
+
+		// get my gravatar
+		$scope.myGravatarUrl = Gravatar(user.email);
 
 		// create connection to socket.io
 		socket.connect();
@@ -37,8 +54,23 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 		});
 
 
+		// in-game chat message received
 		socket.on('message', function(message) {
-			$scope.msg = message;
+			message.me = false;
+			$scope.chat.messages.push(message);
+		});
+
+
+		// status update sent
+		socket.on('status', function(status) {
+			// status messages are not player specific, so
+			// add the TC logo as the avatar
+			var statusMessage = {
+				message: status,
+				gravatarUrl: '/images/tc-avatar.png'
+			};
+
+			$scope.chat.messages.push(statusMessage);
 		});
 
 
@@ -92,7 +124,7 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 				$scope.round = 0;
 			}
 
-			$scope.currentCard = [$scope.collection[$scope.round]];
+			// $scope.currentCard = [$scope.collection[$scope.round]];
 
 			console.log('my round: ', $scope.round);
 			$scope.collection.forEach(function(card) {
@@ -115,7 +147,7 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 				$scope.round = 0;
 			}
 
-			$scope.currentCard = [$scope.collection[$scope.round]];
+			// $scope.currentCard = [$scope.collection[$scope.round]];
 
 			console.log('my round: ', $scope.round);
 			$scope.collection.forEach(function(card) {
@@ -128,6 +160,7 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 		// round was drawn, just move onto next card
 		socket.on('draw', function() {
 			console.log('Draw :|');
+
 			$scope.round++;
 
 			// minus 1 from collection length because $scope.round starts at zero
@@ -136,7 +169,7 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 				$scope.round = 0;
 			}
 
-			$scope.currentCard = [$scope.collection[$scope.round]];
+			// $scope.currentCard = [$scope.collection[$scope.round]];
 
 			console.log('my round: ', $scope.round);
 			$scope.collection.forEach(function(card) {
@@ -146,63 +179,94 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 		});
 
 
+		// opponentScore event
+		// the player "out-of-turn" has sent his score back to
+		// the player "in-turn" and the slider needs to move accordinly
+		// so both players can visually see each other's scores
+		socket.on('opponentScore', function(result) {
+			$scope.moveOpponentScoreSlider(result.category, result.score).then(function() {
+				var resultMessage = {
+					message: '',
+					gravatarUrl: '/images/tc-avatar.png'
+				};
+
+				// inform user in chat if they've won/lost/drawn
+				if($scope.currentCard[0][result.category] > result.score) {
+					resultMessage.message = 'You win';
+				} else if($scope.currentCard[0][result.category] < result.score) {
+					resultMessage.message = 'You lose';
+				} else {
+					resultMessage.message = 'It\'s a draw';
+				}
+
+				$scope.chat.messages.push(resultMessage);
+
+				// ready for next round
+				socket.emit('nextRound');
+			});
+		});
+
+
+		// nextRound event - both players are ready for their next card
+		socket.on('nextRound', function() {
+			console.log('next round!');
+
+			// reset slider visibility and scores
+			$scope.unpalatibilityScoreVisible = false;
+			$scope.upTheirOwnArsemanshipScoreVisible = false;
+			$scope.mediaAttentionScoreVisible = false;
+			$scope.legacyScoreVisible = false;
+			$scope.ppcScoreVisible = false;
+			$scope.specialAbilityScoreVisible = false;
+
+			$scope.unpalatibilityScore = 0;
+			$scope.upTheirOwnArsemanshipScore = 0;
+			$scope.mediaAttentionScore = 0;
+			$scope.legacyScore = 0;
+			$scope.ppcScore = 0;
+			$scope.specialAbilityScore = 0;
+
+			$scope.currentCard = [$scope.collection[$scope.round]];
+		});
+
+
 		// in-game play events
 		// this is where the result is calculated, this always happens for the 
 		// player "out-of-turn" i.e. it isn't their turn to play a card.
 		// the result is then passed back to the player "in-turn"
 		socket.on('play', function(play) {
-			var myScore = $scope.currentCard[0][play.category];
+			$scope.result.myScore = $scope.currentCard[0][play.category];
+			$scope.result.opponentScore = play.score;
+			$scope.result.opponentCard = play.card;
+			$scope.result.category = play.category;
 
-			if(myScore > play.score) {
-				// win! opponent's card is added to collection
-				console.log('I win :)');
+			// send score to opponent to update their slider
+			socket.emit('opponentScore', { category: $scope.result.category, score: $scope.result.myScore });
 
-				$scope.collection.push(play.card[0]);
-				$scope.round++;
-				$scope.turn = true;
+			console.log($scope.result);
 
-				// tell opponent they have been defeated so their card is removed
-				socket.emit('defeated');
-
-			} else if(myScore < play.score) {
-				// lost, card is removed from collection and sent to winner
-				console.log('I lose :(');
-
-				$scope.turn = false;
-
-				// tell opponent they have won the round and send them their new card
-				var lostCard = $scope.collection.splice($scope.round, 1);
-				socket.emit('victorious', lostCard);
-
-			} else {
-				console.log('It\'s a draw :|');
-				$scope.round++;
-
-				socket.emit('draw');
-			}
-
-			// minus 1 from collection length because $scope.round starts at zero
-			if($scope.round > $scope.collection.length - 1) {
-				// go back to beginning of pack
-				$scope.round = 0;
-			}
-
-			$scope.currentCard = [$scope.collection[$scope.round]];
-
-			console.log('my round: ', $scope.round);
-			$scope.collection.forEach(function(card) {
-				console.log(card.name);
+			$scope.moveOpponentScoreSlider($scope.result.category, $scope.result.opponentScore).then(function() {
+				$scope.resultCheck();
 			});
-			console.log('my turn: ', $scope.turn);
 
 		});
 
 	};
 
 
-	// test function for socket.io messages
+	// in-game chat - send message
 	$scope.send = function() {
-		socket.emit('message', $scope.message);
+		var message = {
+			message: $scope.chat.sendMessage,
+			gravatarUrl: $scope.myGravatarUrl,
+			me: true
+		};
+
+		$scope.chat.messages.push(message);
+		socket.emit('message', message);
+
+		// clear input ready for a new message
+		$scope.chat.sendMessage = null;
 	};
 
 
@@ -211,6 +275,151 @@ angular.module('TCModule').controller('GameController', function($scope, $http, 
 		if($scope.turn) {
 			socket.emit('play', { card: $scope.currentCard, category: category, score: score });
 		}
+	};
+
+
+	// move slider function to see opponent's score
+	$scope.moveOpponentScoreSlider = function(category, score) {
+
+		switch(category) {
+			case 'unpalatibility':
+				$scope.unpalatibilityScoreVisible = true;
+
+				return $q(function(resolve, reject) {
+					$interval(function() {
+						$scope.unpalatibilityScore += 1;
+					}, 200, score, true).then(function() {
+						resolve();
+					});
+				});
+
+				break;
+
+			case 'up_their_own_arsemanship':
+				$scope.upTheirOwnArsemanshipScoreVisible = true;
+
+				return $q(function(resolve, reject) {
+					$interval(function() {
+						$scope.upTheirOwnArsemanshipScore += 1;
+					}, 200, score, true).then(function() {
+						resolve();
+					});
+				});
+
+				break;
+
+			case 'media_attention':
+				$scope.mediaAttentionScoreVisible = true;
+
+				return $q(function(resolve, reject) {
+					$interval(function() {
+						$scope.mediaAttentionScore += 1;
+					}, 200, score, true).then(function() {
+						resolve();
+					});
+				});
+
+				break;
+
+			case 'legacy':
+				$scope.legacyScoreVisible = true;
+
+				return $q(function(resolve, reject) {
+					$interval(function() {
+						$scope.legacyScore += 1;
+					}, 200, score, true).then(function() {
+						resolve();
+					});
+				});
+				
+				break;
+
+			case 'ppc':
+				$scope.ppcScoreVisible = true;
+
+				return $q(function(resolve, reject) {
+					$interval(function() {
+						$scope.ppcScore += 1;
+					}, 200, score, true).then(function() {
+						resolve();
+					});
+				});
+
+				break;
+
+			case 'special_ability':
+				$scope.specialAbilityScoreVisible = true;
+
+				return $q(function(resolve, reject) {
+					$interval(function() {
+						$scope.specialAbilityScore += 1;
+					}, 200, score, true).then(function() {
+						resolve();
+					});
+				});
+
+				break;
+		}
+	};
+
+
+	// check the result once sliders have finished moving
+	$scope.resultCheck = function() {
+		var resultMessage = {
+			message: '',
+			gravatarUrl: '/images/tc-avatar.png'
+		};
+
+		if($scope.result.myScore > $scope.result.opponentScore) {
+			// win! opponent's card is added to collection :)
+			console.log('I win :)');
+
+			resultMessage.message = 'You win';
+			$scope.collection.push($scope.result.opponentCard[0]);
+			$scope.round++;
+			$scope.turn = true;
+
+			// tell opponent they have been defeated so their card is removed
+			socket.emit('defeated');
+
+		} else if($scope.result.myScore < $scope.result.opponentScore) {
+			// lost, card is removed from collection and sent to winner :(
+			console.log('I lose :(');
+
+			resultMessage.message = 'You lose';
+			$scope.turn = false;
+
+			// tell opponent they have won the round and send them their new card
+			var lostCard = $scope.collection.splice($scope.round, 1);
+			socket.emit('victorious', lostCard);
+
+		} else {
+			console.log('It\'s a draw :|');
+
+			resultMessage.message = 'It\'s a draw';
+			$scope.round++;
+			socket.emit('draw');
+		}
+
+		// minus 1 from collection length because $scope.round starts at zero
+		if($scope.round > $scope.collection.length - 1) {
+			// go back to beginning of pack
+			$scope.round = 0;
+		}
+
+
+		$scope.chat.messages.push(resultMessage);
+
+		// ready for next round
+		socket.emit('nextRound');
+
+
+		// debugging info...
+		console.log('my round: ', $scope.round);
+		$scope.collection.forEach(function(card) {
+			console.log(card.name);
+		});
+		console.log('my turn: ', $scope.turn);
 	};
 
 

@@ -111,6 +111,19 @@ io.on('connection', function(client) {
 		game.onDraw(client);
 	});
 
+	// opponent score event
+	// moves appropriate category slider to the opponent's score
+	// to show a visual result
+	client.on('opponentScore', function(result) {
+		game.onOpponentScore(client, result);
+	});
+
+	// nextRound event
+	// sent by the players when they're ready for the next round
+	client.on('nextRound', function() {
+		game.onNextRound(client);
+	});
+
 	client.on('disconnect', function() {
 		// @todo End game properly when someone disconnects
 		console.log('socket.io client disconnected: ' + client.userid);

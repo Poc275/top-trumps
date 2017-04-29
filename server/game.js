@@ -98,6 +98,56 @@ gameServer.onDraw = function(client) {
 
 
 /**
+ * Function that passes the player's score to the opponent 
+ * to move the score slider and see the result.
+ * @param {object} client - The client who sent the message
+ * @param {string} result - Result object containing category and score
+ */
+gameServer.onOpponentScore = function(client, result) {
+	// get opposition player to send result to
+	var sender = client.userid;
+	console.log('sender userid: ' + sender);
+
+	if(client.game.playerHost.userid === sender) {
+		console.log('host sending message to guest: ' + result);
+		client.game.playerClient.emit('opponentScore', result);
+	} else {
+		console.log('guest sending message to host: ' + result);
+		client.game.playerHost.emit('opponentScore', result);
+	}
+};
+
+
+/**
+ * Function that records when a player is ready for the next round, 
+ * i.e. when the slider has finished and the result is displayed.
+ * We change the game nextRound property to true and if both are 
+ * players are ready we send an event to start the next round.
+ * @param {object} client - The client who is ready for the next round
+ */
+gameServer.onNextRound = function(client) {
+	var sender = client.userid;
+
+	if(client.game.playerHost.userid === sender) {
+		client.game.playerHostNextRound = true;
+	} else {
+		client.game.playerClientNextRound = true;
+	}
+
+	// are both players ready?
+	if(client.game.playerHostNextRound && client.game.playerClientNextRound) {
+		console.log('both players ready');
+
+		client.game.playerHostNextRound = false;
+		client.game.playerClientNextRound = false;
+
+		client.game.playerHost.emit('nextRound');
+		client.game.playerClient.emit('nextRound');
+	}
+};
+
+
+/**
  * Function that handles the passing of messages between players.
  * The 'message' event is for status updates (game found, game created, 
  * waiting for 2nd player etc.) and in-game chat.
@@ -150,7 +200,9 @@ gameServer.createGame = function(player) {
 	var newGame = {
 		id: uuid(),
 		playerHost: player,
+		playerHostNextRound: false,
 		playerClient: null,
+		playerClientNextRound: false,
 		playerCount: 1
 	};
 
@@ -159,7 +211,7 @@ gameServer.createGame = function(player) {
 	gameServer.gameCount++;
 
 	// tell the player they are now hosting a game and waiting
-	player.emit('message', newGame.id + ': You are now the host, waiting for another player');
+	player.emit('status', newGame.id + ': You are now the host, waiting for another player');
 
 	player.game = newGame;
 	player.hosting = true;
@@ -195,7 +247,7 @@ gameServer.findGame = function(player) {
 				gameInstance.playerClient = player;
 				gameInstance.playerCount++;
 
-				gameInstance.playerClient.emit('message', 'You have now joined a game');
+				gameInstance.playerClient.emit('status', 'You have now joined a game');
 
 				gameServer.startGame(gameInstance);
 			}

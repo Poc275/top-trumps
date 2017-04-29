@@ -1,11 +1,65 @@
-<h2>Game in progress...</h2>
-<p>{{ msg }}</p>
+<div ng-show="!gameInProgress" layout="column" layout-align="space-around">
+	<h2>Waiting for an opponent...</h2>
+	<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
 
-<tc-card ng-repeat="card in currentCard"></tc-card>
+<h2 ng-show="gameInProgress">Game in progress...</h2>
 
-<md-input-container>
-	<label>Message</label>
-	<input ng-model="message">
-</md-input-container>
+<div ng-cloak layout-gt-sm="row" layout="column">
 
-<md-button class="md-raised md-secondary" ng-click="send()">Send</md-button>
+	<!-- card in play column -->
+	<div flex-gt-sm="50" flex>
+		<tc-card ng-repeat="card in currentCard"></tc-card>
+	</div>
+
+	<!-- in-game chat/game status column -->
+	<div flex-gt-sm="40" flex ng-show="gameInProgress">
+
+		<md-toolbar layout="row">
+	      <div class="md-toolbar-tools">
+	        <span>In Game Chat</span>
+	      </div>
+	    </md-toolbar>
+
+	    <md-content>
+	    	<md-list>
+	    		<!-- track by $index adds the array index as the key to prevent duplicate key errors -->
+			    <md-list-item class="md-2-line chat" ng-repeat="msg in chat.messages track by $index" ng-switch on="{{ msg.me }}" layout="row">
+
+					<!-- default message -->
+					<img ng-src="{{ msg.gravatarUrl }}" class="md-avatar" alt="gravatar" ng-switch-default />
+					<div class="md-list-item-text" ng-switch-default>
+						<p>{{ msg.message }}</p>
+					</div>
+
+					<!-- opponent message (same as default) -->
+					<img ng-src="{{ msg.gravatarUrl }}" class="md-avatar" alt="gravatar" ng-switch-when="false" />
+					<div class="md-list-item-text" ng-switch-when="false">
+						<p>{{ msg.message }}</p>
+					</div>
+
+					<!-- if it's my message, move over to right hand side -->
+					<span flex ng-switch-when="true"></span>
+					<div class="md-list-item-text" ng-switch-when="true">
+						<p>{{ msg.message }}</p>
+					</div>
+					<img ng-src="{{ msg.gravatarUrl }}" class="md-avatar" alt="gravatar" ng-switch-when="true" />
+			    </md-list-item>
+
+			    <div layout="row">
+					<md-input-container flex>
+						<label>Message</label>
+						<input ng-model="chat.sendMessage">
+					</md-input-container>
+
+					<md-button class="md-fab" aria-label="Send message" ng-click="send()">
+			            <md-icon>
+			            	<i class="material-icons">send</i>
+			        	</md-icon>
+			        </md-button>
+		    	</div>
+			</md-list>
+		</md-content>
+
+	</div>
+</div>

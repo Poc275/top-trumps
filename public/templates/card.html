@@ -10,40 +10,37 @@
 
 			<md-card-avatar>
 				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
-					<i ng-switch-default class="material-icons info-button">info_outline</i>
 					<i ng-switch-when="false" class="material-icons info-button">info_outline</i>
+
 					<!-- if flipped show filled in info button -->
 					<i ng-switch-when="true" class="material-icons info-button">info</i>
 				</md-button>
 			</md-card-avatar>
 		</md-card-header>
 
-		<!-- default/not flipped states - show front image -->
-		<img ng-switch-default ng-src="images/{{card.images[0]}}" class="md-card-image" alt="card photo" />
+
+		<!-- default, unflipped state - show front image -->
 		<img ng-switch-when="false" ng-src="images/{{card.images[0]}}" class="md-card-image" alt="card photo" />
 
 		<!-- else if flipped show rear image -->
 		<img ng-switch-when="true" ng-src="images/{{card.images[1]}}" class="md-card-image" alt="card photo" />
 
-		<md-card-title>
-			<!-- default/unflipped title - show name -->
-			<md-card-title-text ng-switch-default>
-				<span class="md-headline">{{ card.name }}</span>
-			</md-card-title-text>
 
+		<md-card-title>
+			<!-- unflipped title - show name -->
 			<md-card-title-text ng-switch-when="false">
 				<span class="md-headline">{{ card.name }}</span>
 			</md-card-title-text>
 
 			<!-- flipped state - show biography -->
 			<md-card-title-text ng-switch-when="true">
-				<span class="md-headline">Biography</span>
+				<span class="md-headline">{{ card.name }} Biography</span>
 			</md-card-title-text>
 		</md-card-title>
 
 
-		<!-- default card actions - show credentials -->
-		<md-card-actions layout="column" layout-align="space-around none" ng-switch-default>
+		<!-- unflipped card actions - show credentials -->
+		<md-card-actions layout="column" layout-align="space-around none" ng-switch-when="false">
 			<div class="category-row" layout="row">
 				<p>Unpalatibility:</p>
 				<span flex></span>
@@ -52,28 +49,10 @@
 				</md-button>
 			</div>
 
-			<opponent-score></opponent-score>
+			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="unpalatibilityScoreVisible">
+				<md-slider ng-model="unpalatibilityScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
+			</md-slider-container>
 
-    		<!-- <md-slider-container ng-disabled="true">
-	      		<md-slider ng-model="opponent.score" aria-label="opponent score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
-	      		<md-input-container>
-	      			<input flex type="number" ng-model="opponent.score" aria-label="green" aria-controls="green-slider">
-      			</md-input-container>
-		    </md-slider-container> -->
-
-
-			<!-- <md-progress-linear class="opponent-score" md-mode="determinate" value="{{ opponentScore }}">
-			</md-progress-linear> -->
-			<!-- <div class="thumb">
-			</div>
-
-			<md-slider-container>
-	      		<span>R</span>
-	      		<md-slider flex min="0" max="255" ng-model="color.red" aria-label="red" id="red-slider"></md-slider>
-	      		<md-input-container>
-	        		<input flex type="number" ng-model="color.red" aria-label="red" aria-controls="red-slider">
-	      		</md-input-container>
-		    </md-slider-container> -->
 
 			<div class="category-row" layout="row">
 				<p>Up their own arsemanship:</p>
@@ -83,6 +62,11 @@
 				</md-button>
 			</div>
 
+			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="upTheirOwnArsemanshipScoreVisible">
+				<md-slider ng-model="upTheirOwnArsemanshipScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
+			</md-slider-container>
+
+
 			<div class="category-row" layout="row">
 				<p>Media attention:</p>
 				<span flex></span>
@@ -90,6 +74,11 @@
 					{{ card.media_attention }}
 				</md-button>
 			</div>
+
+			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="mediaAttentionScoreVisible">
+				<md-slider ng-model="mediaAttentionScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
+			</md-slider-container>
+
 
 			<div class="category-row" layout="row">
 				<p>Legacy:</p>
@@ -99,6 +88,11 @@
 				</md-button>
 			</div>
 
+			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="legacyScoreVisible">
+				<md-slider ng-model="legacyScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
+			</md-slider-container>
+
+
 			<div class="category-row" layout="row">
 				<p>PPC (price per cunt):</p>
 				<span flex></span>
@@ -107,6 +101,11 @@
 				</md-button>
 			</div>
 
+			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="ppcScoreVisible">
+				<md-slider ng-model="ppcScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
+			</md-slider-container>
+
+
 			<div class="category-row" layout="row">
 				<p>Special ability:</p>
 				<span flex></span>
@@ -114,60 +113,23 @@
 					{{ card.special_ability }}
 				</md-button>
 			</div>
+
+			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="specialAbilityScoreVisible">
+				<md-slider ng-model="specialAbilityScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
+			</md-slider-container>
+
 		</md-card-actions>
 
-
-		<!-- not flipped - show credentials -->
-		<md-card-actions layout="column" layout-align="space-around none" ng-switch-when="false">
-			<div layout="row">
-				<p>Unpalatibility:</p>
-				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.unpalatibility }}</md-button>
-			</div>
-
-			<div layout="row">
-				<p>Up their own arsemanship:</p>
-				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.up_their_own_arsemanship }}</md-button>
-			</div>
-
-			<div layout="row">
-				<p>Media attention:</p>
-				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.media_attention }}</md-button>
-			</div>
-
-			<div layout="row">
-				<p>Legacy:</p>
-				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.legacy }}</md-button>
-			</div>
-
-			<div layout="row">
-				<p>PPC (price per cunt):</p>
-				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.ppc }}</md-button>
-			</div>
-
-			<div layout="row">
-				<p>Special ability:</p>
-				<span flex></span>
-				<md-button class="play-button grade-{{ card.cuntal_order }}">{{ card.special_ability }}</md-button>
-			</div>
-		</md-card-actions>
 
 		<md-divider></md-divider>
 
-		<!-- default/unflipped - show special ability description -->
-		<md-card-content ng-switch-default>
-			<h4>Special ability description:</h4>
-			<p>{{ card.special_ability_description }}</p>
-		</md-card-content>
 
+		<!-- default, unflipped - show special ability description -->
 		<md-card-content ng-switch-when="false">
 			<h4>Special ability description:</h4>
 			<p>{{ card.special_ability_description }}</p>
 		</md-card-content>
+
 
 		<!-- flipped - show biography -->
 		<md-card-content ng-switch-when="true">

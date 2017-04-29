@@ -18,7 +18,6 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 	})
 	.state('home.play', {
 		url: '/play',
-		templateUrl: '/templates/game.html',
-		controller: 'GameController'
+		templateUrl: '/templates/game.html'
 	});
 });
