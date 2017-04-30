@@ -458,9 +458,9 @@ describe('GameController Tests', function() {
 	it('Game controller can receive message events', function() {
 		var controller = createController();
 		$rootScope.init('abc@123.com');
-		socketMock.receive('message', 'Joined a room, waiting for opponent');
+		socketMock.receive('status', 'Joined a room, waiting for opponent');
 
-		expect($rootScope.msg).toBe('Joined a room, waiting for opponent');
+		expect($rootScope.chat.messages[0].message).toBe('Joined a room, waiting for opponent');
 
 		$httpBackend.flush();
 	});
@@ -510,13 +510,13 @@ describe('GameController Tests', function() {
 	it('In game messages can be sent', function() {
 		var controller = createController();
 		$rootScope.init('abc@123.com');
-		$rootScope.message = 'Hi!';
+		$rootScope.chat.sendMessage = 'Hi!';
 		$rootScope.send();
 
 		// we should have received a message event
 		expect(socketMock.emits.message).not.toBeNull();
 		expect(socketMock.emits.message).not.toBeUndefined();
-		expect(socketMock.emits.message[0]).toContain('Hi!');
+		expect(socketMock.emits.message[0][0].message).toBe('Hi!');
 
 		$httpBackend.flush();
 	});
@@ -691,8 +691,13 @@ describe('Game Logic Tests', function() {
 		expect(playerOneScope.turn).toBe(true);
 		expect(playerTwoScope.turn).toBe(false);
 
-		// player two wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'legacy', score: 77 });
+		// legacy: player two wins
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].legacy;
+		playerTwoScope.result.opponentScore = 77;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'legacy';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('defeated');
 
 		expect(playerTwoScope.turn).toBe(true);
@@ -701,16 +706,26 @@ describe('Game Logic Tests', function() {
 		expect(playerTwoScope.collection[1].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.collection[2].name).toBe('Donald Trump');
 		expect(playerTwoScope.round).toBe(1);
-		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
 
 		expect(playerOneScope.turn).toBe(false);
 		expect(playerOneScope.collection.length).toBe(1);
 		expect(playerOneScope.collection[0].name).toBe('Genghis Khan');
 		expect(playerOneScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
 		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
 
-		// player two wins again - game over for player one
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'media_attention', score: 12 });
+		// media attention: player two wins again - game over for player one
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].media_attention;
+		playerTwoScope.result.opponentScore = 12;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'media_attention';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('defeated');
 
 		expect(playerTwoScope.turn).toBe(true);
@@ -720,11 +735,16 @@ describe('Game Logic Tests', function() {
 		expect(playerTwoScope.collection[2].name).toBe('Donald Trump');
 		expect(playerTwoScope.collection[3].name).toBe('Genghis Khan');
 		expect(playerTwoScope.round).toBe(2);
-		expect(playerTwoScope.currentCard[0].name).toBe('Donald Trump');
 
 		expect(playerOneScope.turn).toBe(false);
 		expect(playerOneScope.collection.length).toBe(0);
 		expect(playerOneScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerTwoScope.currentCard[0].name).toBe('Donald Trump');
 		expect(playerOneScope.currentCard[0]).toBeUndefined();
 	});
 
@@ -748,7 +768,12 @@ describe('Game Logic Tests', function() {
 
 		// player one wins
 		// victorious expects an array..
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 87 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 87;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [vp]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -757,16 +782,26 @@ describe('Game Logic Tests', function() {
 		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
 		expect(playerOneScope.collection[2].name).toBe('Vladimir Putin');
 		expect(playerOneScope.round).toBe(1);
-		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(1);
 		expect(playerTwoScope.collection[0].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
 		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
 
 		// player one wins again - game over for player two
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'legacy', score: 86 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].legacy;
+		playerTwoScope.result.opponentScore = 86;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'legacy';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [sb]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -776,11 +811,16 @@ describe('Game Logic Tests', function() {
 		expect(playerOneScope.collection[2].name).toBe('Vladimir Putin');
 		expect(playerOneScope.collection[3].name).toBe('Silvio Berlusconi');
 		expect(playerOneScope.round).toBe(2);
-		expect(playerOneScope.currentCard[0].name).toBe('Vladimir Putin');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(0);
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Vladimir Putin');
 		expect(playerTwoScope.currentCard[0]).toBeUndefined();
 	});
 
@@ -803,7 +843,12 @@ describe('Game Logic Tests', function() {
 		expect(playerTwoScope.turn).toBe(false);
 
 		// draw
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'up_their_own_arsemanship', score: 92 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].up_their_own_arsemanship;
+		playerTwoScope.result.opponentScore = 92;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'up_their_own_arsemanship';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('draw');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -811,17 +856,27 @@ describe('Game Logic Tests', function() {
 		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
 		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
 		expect(playerOneScope.round).toBe(1);
-		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(2);
 		expect(playerTwoScope.collection[0].name).toBe('Vladimir Putin');
 		expect(playerTwoScope.collection[1].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.round).toBe(1);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
 		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
 
 		// another draw, current card should reset to beginning of pack
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'special_ability', score: 80 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].special_ability;
+		playerTwoScope.result.opponentScore = 80;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'special_ability';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('draw');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -829,13 +884,18 @@ describe('Game Logic Tests', function() {
 		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
 		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
 		expect(playerOneScope.round).toBe(0);
-		expect(playerOneScope.currentCard[0].name).toBe('Donald Trump');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(2);
 		expect(playerTwoScope.collection[0].name).toBe('Vladimir Putin');
 		expect(playerTwoScope.collection[1].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Donald Trump');
 		expect(playerTwoScope.currentCard[0].name).toBe('Vladimir Putin');
 	});
 });
@@ -971,7 +1031,12 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.turn).toBe(false);
 
 		// round 1 - player 1 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 79 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 79;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [sb]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -983,7 +1048,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[4].name).toBe('Dick Dastardly');
 		expect(playerOneScope.collection[5].name).toBe('Silvio Berlusconi');
 		expect(playerOneScope.round).toBe(1);
-		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(4);
@@ -992,10 +1056,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[2].name).toBe('Phil the Greek');
 		expect(playerTwoScope.collection[3].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
 		expect(playerTwoScope.currentCard[0].name).toBe('Tim Burton');
 
 		// round 2 - player 1 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 67 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 67;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [tb]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1008,7 +1083,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[5].name).toBe('Silvio Berlusconi');
 		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
 		expect(playerOneScope.round).toBe(2);
-		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(3);
@@ -1016,10 +1090,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
 		expect(playerTwoScope.collection[2].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
 
 		// round 3 - draw
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 43 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 43;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('draw');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1032,7 +1117,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[5].name).toBe('Silvio Berlusconi');
 		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
 		expect(playerOneScope.round).toBe(3);
-		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(3);
@@ -1040,10 +1124,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
 		expect(playerTwoScope.collection[2].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(1);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
 
 		// round 4 - player 2 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 65 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 65;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('defeated');
 
 		expect(playerOneScope.turn).toBe(false);
@@ -1056,7 +1151,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[4].name).toBe('Silvio Berlusconi');
 		expect(playerOneScope.collection[5].name).toBe('Tim Burton');
 		expect(playerOneScope.round).toBe(3);
-		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
 
 		expect(playerTwoScope.turn).toBe(true);
 		expect(playerTwoScope.collection.length).toBe(4);
@@ -1065,10 +1159,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[2].name).toBe('Noddy');
 		expect(playerTwoScope.collection[3].name).toBe('Johnnie Cochran');
 		expect(playerTwoScope.round).toBe(2);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
 		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
 
 		// round 5 - player 1 wins
-		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 17 });
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].unpalatibility;
+		playerOneScope.result.opponentScore = 17;
+		playerOneScope.result.opponentCard = playerTwoScope.currentCard;
+		playerOneScope.result.category = 'unpalatibility';
+
+		playerOneScope.resultCheck();
 		playerTwoSockMock.receive('defeated');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1081,7 +1186,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[5].name).toBe('Tim Burton');
 		expect(playerOneScope.collection[6].name).toBe('Noddy');
 		expect(playerOneScope.round).toBe(4);
-		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(3);
@@ -1090,10 +1194,21 @@ describe('Full Game Test', function() {
 		// expect(playerTwoScope.collection[2].name).toBe('Noddy');
 		expect(playerTwoScope.collection[2].name).toBe('Johnnie Cochran');
 		expect(playerTwoScope.round).toBe(2);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.currentCard[0].name).toBe('Johnnie Cochran');
 
 		// round 6 - player 1 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 72 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 72;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [jc]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1107,7 +1222,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[6].name).toBe('Noddy');
 		expect(playerOneScope.collection[7].name).toBe('Johnnie Cochran');
 		expect(playerOneScope.round).toBe(5);
-		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(2);
@@ -1115,10 +1229,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
 		// expect(playerTwoScope.collection[2].name).toBe('Johnnie Cochran');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
 
 		// round 7 - player 2 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 31 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 31;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('defeated');
 
 		expect(playerOneScope.turn).toBe(false);
@@ -1132,7 +1257,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[5].name).toBe('Noddy');
 		expect(playerOneScope.collection[6].name).toBe('Johnnie Cochran');
 		expect(playerOneScope.round).toBe(5);
-		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
 
 		expect(playerTwoScope.turn).toBe(true);
 		expect(playerTwoScope.collection.length).toBe(3);
@@ -1140,10 +1264,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
 		expect(playerTwoScope.collection[2].name).toBe('Tim Burton');
 		expect(playerTwoScope.round).toBe(1);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
 		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
 
 		// round 8 - player 2 wins
-		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 66 });
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].unpalatibility;
+		playerOneScope.result.opponentScore = 66;
+		playerOneScope.result.opponentCard = playerTwoScope.currentCard;
+		playerOneScope.result.category = 'unpalatibility';
+
+		playerOneScope.resultCheck();
 		playerTwoSockMock.receive('victorious', [nod]);
 
 		expect(playerOneScope.turn).toBe(false);
@@ -1156,7 +1291,6 @@ describe('Full Game Test', function() {
 		// expect(playerOneScope.collection[5].name).toBe('Noddy');
 		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
 		expect(playerOneScope.round).toBe(5);
-		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 
 		expect(playerTwoScope.turn).toBe(true);
 		expect(playerTwoScope.collection.length).toBe(4);
@@ -1165,10 +1299,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[2].name).toBe('Tim Burton');
 		expect(playerTwoScope.collection[3].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(2);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 		expect(playerTwoScope.currentCard[0].name).toBe('Tim Burton');
 
 		// round 9 - player 1 wins
-		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 31 });
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].unpalatibility;
+		playerOneScope.result.opponentScore = 31;
+		playerOneScope.result.opponentCard = playerTwoScope.currentCard;
+		playerOneScope.result.category = 'unpalatibility';
+
+		playerOneScope.resultCheck();
 		playerTwoSockMock.receive('defeated');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1181,7 +1326,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[5].name).toBe('Johnnie Cochran');
 		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
 		expect(playerOneScope.round).toBe(6);
-		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(3);
@@ -1190,10 +1334,21 @@ describe('Full Game Test', function() {
 		// expect(playerTwoScope.collection[2].name).toBe('Tim Burton');
 		expect(playerTwoScope.collection[2].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(2);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
 		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
 
 		// round 10 - player 1 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 31 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 31;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [nod]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1207,7 +1362,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
 		expect(playerOneScope.collection[7].name).toBe('Noddy');
 		expect(playerOneScope.round).toBe(7);
-		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(2);
@@ -1215,10 +1369,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
 		// expect(playerTwoScope.collection[2].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
 
 		// round 11 - player 2 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 17 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 17;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('defeated');
 
 		expect(playerOneScope.turn).toBe(false);
@@ -1232,7 +1397,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
 		// expect(playerOneScope.collection[7].name).toBe('Noddy');
 		expect(playerOneScope.round).toBe(0);
-		expect(playerOneScope.currentCard[0].name).toBe('Miley Cyrus');
 
 		expect(playerTwoScope.turn).toBe(true);
 		expect(playerTwoScope.collection.length).toBe(3);
@@ -1240,10 +1404,21 @@ describe('Full Game Test', function() {
 		expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
 		expect(playerTwoScope.collection[2].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(1);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Miley Cyrus');
 		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
 
 		// round 12 - player 1 wins
-		playerOneSockMock.receive('play', { card: playerTwoScope.currentCard, category: 'unpalatibility', score: 66 });
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].unpalatibility;
+		playerOneScope.result.opponentScore = 66;
+		playerOneScope.result.opponentCard = playerTwoScope.currentCard;
+		playerOneScope.result.category = 'unpalatibility';
+
+		playerOneScope.resultCheck();
 		playerTwoSockMock.receive('defeated');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1257,7 +1432,6 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[6].name).toBe('Tim Burton');
 		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
 		expect(playerOneScope.round).toBe(1);
-		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(2);
@@ -1265,10 +1439,21 @@ describe('Full Game Test', function() {
 		// expect(playerTwoScope.collection[1].name).toBe('Phil the Greek');
 		expect(playerTwoScope.collection[1].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(1);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
 		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
 
 		// round 13 - player 1 wins
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 67 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 67;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [nod]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1283,17 +1468,27 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
 		expect(playerOneScope.collection[8].name).toBe('Noddy');
 		expect(playerOneScope.round).toBe(2);
-		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(1);
 		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
 		// expect(playerTwoScope.collection[1].name).toBe('Noddy');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
 
 		// round 14 - draw
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 43 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 43;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('draw');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1308,16 +1503,26 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
 		expect(playerOneScope.collection[8].name).toBe('Noddy');
 		expect(playerOneScope.round).toBe(3);
-		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(1);
 		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
 		expect(playerTwoScope.round).toBe(0);
+		
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
 
 		// round 15 - draw
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 43 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 43;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('draw');
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1332,16 +1537,26 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[7].name).toBe('Phil the Greek');
 		expect(playerOneScope.collection[8].name).toBe('Noddy');
 		expect(playerOneScope.round).toBe(4);
-		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(1);
 		expect(playerTwoScope.collection[0].name).toBe('Chris Martin (Coldplay)');
 		expect(playerTwoScope.round).toBe(0);
+
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
 
 		// round 16 - player 1 wins - GAME OVER
-		playerTwoSockMock.receive('play', { card: playerOneScope.currentCard, category: 'unpalatibility', score: 72 });
+		playerTwoScope.result.myScore = playerTwoScope.currentCard[0].unpalatibility;
+		playerTwoScope.result.opponentScore = 72;
+		playerTwoScope.result.opponentCard = playerOneScope.currentCard;
+		playerTwoScope.result.category = 'unpalatibility';
+
+		playerTwoScope.resultCheck();
 		playerOneSockMock.receive('victorious', [cm]);
 
 		expect(playerOneScope.turn).toBe(true);
@@ -1357,12 +1572,16 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.collection[8].name).toBe('Noddy');
 		expect(playerOneScope.collection[9].name).toBe('Chris Martin (Coldplay)');
 		expect(playerOneScope.round).toBe(5);
-		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 
 		expect(playerTwoScope.turn).toBe(false);
 		expect(playerTwoScope.collection.length).toBe(0);
-		expect(playerTwoScope.currentCard[0]).toBeUndefined();
 
+		// next round event
+		playerOneSockMock.receive('nextRound');
+		playerTwoSockMock.receive('nextRound');
+
+		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
+		expect(playerTwoScope.currentCard[0]).toBeUndefined();
 	});
 
 });

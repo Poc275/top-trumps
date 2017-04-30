@@ -33,7 +33,6 @@ module.exports = function(config) {
         'public/javascripts/controllers/UserController.js',
         'public/javascripts/controllers/GameController.js',
         'public/javascripts/directives/CardDirective.js',
-        'public/javascripts/directives/OpponentScoreDirective.js',
         'node_modules/angular-mocks/angular-mocks.js',
         'test/client-tests.js'
     ],
