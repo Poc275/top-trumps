@@ -558,11 +558,31 @@ describe('game event tests', function() {
 		host.on('victorious', function(card) {
 			expect(card).to.deep.equal(gk);
 
-			// setTimeout function to make sure all messages are emitted
+			// next round - should both be false before we emit the events
+			expect(game.games[gameId].playerHostNextRound).to.be.false;
+			expect(game.games[gameId].playerClientNextRound).to.be.false;
+
+			host.emit('nextRound', {});
+
+			// wait for nextRound messages to be sent
 			// must be a better way of doing this?
 			setTimeout(function() {
-				done();
+				expect(game.games[gameId].playerHostNextRound).to.be.true;
+				expect(game.games[gameId].playerClientNextRound).to.be.false;
+				
+				guest.emit('nextRound', {});
+
+				setTimeout(function() {
+					// both players are now ready for the next round
+					// next round property resets to false
+					expect(game.games[gameId].playerHostNextRound).to.be.false;
+					expect(game.games[gameId].playerClientNextRound).to.be.false;
+
+					done();
+				}, 200);
+
 			}, 200);
+			
 		});
 
 	});
@@ -594,7 +614,11 @@ describe('game event tests', function() {
 				expect(data.category).to.deep.equal('unpalatibility');
 				expect(data.score).to.deep.equal(94);
 
-				// pretend guest won, send defeated event to client
+				// pretend guest won
+				// send score back to client so his slider moves
+				guest.emit('opponentScore', 62);
+
+				// now send defeated event to client
 				guest.emit('defeated');
 			});
 		});
@@ -602,6 +626,10 @@ describe('game event tests', function() {
 		host.on('status', function(data) {
 			expect(data).to.contain('You are now the host, waiting for another player');
 			gameId = data.split(':')[0];
+		});
+
+		host.on('opponentScore', function(score) {
+			expect(score).to.deep.equal(62);
 		});
 
 		host.on('defeated', function() {
@@ -626,7 +654,7 @@ describe('game event tests', function() {
 		game.endGame(gameId, host.userid);
 
 		// now we're cleaned up there shouldn't be any games left
-		// expect(game.gameCount).to.deep.equal(0);
+		expect(game.gameCount).to.deep.equal(0);
 
 		done();
 	});

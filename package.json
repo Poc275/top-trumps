@@ -12,10 +12,11 @@
     "protractor": "protractor ./test/protractor-conf.js",
     "http-server": "http-server -a localhost -p 3000",
     "e2e": "(webdriver-manager start &) && sleep 2 && npm run http-server",
-    "docs": "jsdoc . -c conf.json"
+    "docs": "jsdoc . -c conf.json",
+    "back-end-test": "nyc mocha"
   },
   "nyc": {
-    "exclude": "config/auth.js"
+    "exclude": "config/*.js"
   },
   "dependencies": {
     "angular": "^1.5.11",

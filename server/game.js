@@ -21,13 +21,10 @@ var uuid = require('uuid');
 gameServer.onPlay = function(client, msg) {
 	// get opposition player to send msg to
 	var sender = client.userid;
-	console.log('sender userid: ' + sender);
 
 	if(client.game.playerHost.userid === sender) {
-		console.log('host sending message to guest: ' + msg);
 		client.game.playerClient.emit('play', msg);
 	} else {
-		console.log('guest sending message to host: ' + msg);
 		client.game.playerHost.emit('play', msg);
 	}
 };
@@ -45,13 +42,10 @@ gameServer.onPlay = function(client, msg) {
 gameServer.onVictorious = function(client, msg) {
 	// get opposition player to send msg to
 	var sender = client.userid;
-	console.log('sender userid: ' + sender);
 
 	if(client.game.playerHost.userid === sender) {
-		console.log('host lost card: ' + msg);
 		client.game.playerClient.emit('victorious', msg);
 	} else {
-		console.log('guest lost card: ' + msg);
 		client.game.playerHost.emit('victorious', msg);
 	}
 };
@@ -65,13 +59,10 @@ gameServer.onVictorious = function(client, msg) {
 gameServer.onDefeated = function(client) {
 	// get opposition player to send msg to
 	var sender = client.userid;
-	console.log('sender userid: ' + sender);
 
 	if(client.game.playerHost.userid === sender) {
-		console.log('host won card');
 		client.game.playerClient.emit('defeated');
 	} else {
-		console.log('guest won card');
 		client.game.playerHost.emit('defeated');
 	}
 };
@@ -85,13 +76,10 @@ gameServer.onDefeated = function(client) {
 gameServer.onDraw = function(client) {
 	// get opposition player to send msg to
 	var sender = client.userid;
-	console.log('sender userid: ' + sender);
 
 	if(client.game.playerHost.userid === sender) {
-		console.log('draw');
 		client.game.playerClient.emit('draw');
 	} else {
-		console.log('draw');
 		client.game.playerHost.emit('draw');
 	}
 };
@@ -106,13 +94,10 @@ gameServer.onDraw = function(client) {
 gameServer.onOpponentScore = function(client, result) {
 	// get opposition player to send result to
 	var sender = client.userid;
-	console.log('sender userid: ' + sender);
 
 	if(client.game.playerHost.userid === sender) {
-		console.log('host sending message to guest: ' + result);
 		client.game.playerClient.emit('opponentScore', result);
 	} else {
-		console.log('guest sending message to host: ' + result);
 		client.game.playerHost.emit('opponentScore', result);
 	}
 };
@@ -136,8 +121,6 @@ gameServer.onNextRound = function(client) {
 
 	// are both players ready?
 	if(client.game.playerHostNextRound && client.game.playerClientNextRound) {
-		console.log('both players ready');
-
 		client.game.playerHostNextRound = false;
 		client.game.playerClientNextRound = false;
 
@@ -157,13 +140,10 @@ gameServer.onNextRound = function(client) {
 gameServer.onMessage = function(client, msg) {
 	// get opposition player to send msg to
 	var sender = client.userid;
-	console.log('sender userid: ' + sender);
 
 	if(client.game.playerHost.userid === sender) {
-		console.log('host sending message to guest: ' + msg);
 		client.game.playerClient.emit('message', msg);
 	} else {
-		console.log('guest sending message to host: ' + msg);
 		client.game.playerHost.emit('message', msg);
 	}
 };
@@ -175,8 +155,6 @@ gameServer.onMessage = function(client, msg) {
  */
 gameServer.startGame = function(game) {
 	// game has 2 players so we can start
-	console.log('game has started');
-
 	// send a start game event to kick things off
 	game.playerClient.emit('start', 'client');
 	game.playerHost.emit('start', 'host');
