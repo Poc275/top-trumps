@@ -745,7 +745,6 @@ describe('Game Logic Tests', function() {
 		playerTwoSockMock.receive('nextRound');
 
 		expect(playerTwoScope.currentCard[0].name).toBe('Donald Trump');
-		expect(playerOneScope.currentCard[0]).toBeUndefined();
 	});
 
 
@@ -821,7 +820,6 @@ describe('Game Logic Tests', function() {
 		playerTwoSockMock.receive('nextRound');
 
 		expect(playerOneScope.currentCard[0].name).toBe('Vladimir Putin');
-		expect(playerTwoScope.currentCard[0]).toBeUndefined();
 	});
 
 	
@@ -1581,7 +1579,6 @@ describe('Full Game Test', function() {
 		playerTwoSockMock.receive('nextRound');
 
 		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
-		expect(playerTwoScope.currentCard[0]).toBeUndefined();
 	});
 
 });

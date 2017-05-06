@@ -1,6 +1,6 @@
 angular.module('TCModule').factory('Gravatar', function GravatarFactory() {
 	// default avatar size (appended to gravatar url)
-	var avatarSize = 80;
+	var avatarSize = 250;
 
 	// base gravatar url
 	var avatarUrl = 'https://www.gravatar.com/avatar/';

@@ -182,3 +182,45 @@ md-card-header.grade-Brown Platinum {
 .social-text {
 	color: #fff;
 }
+
+
+/*
+*********************************
+ User profile page styles
+*********************************
+*/
+#profile-header {
+	background-color: #00BCD4;
+	height: 250px;
+}
+
+#profile-header h1 {
+	margin: 0;
+}
+
+#inner-profile-header {
+	width: 50%;
+	position: relative;
+	top: 150px;
+	left: 550px;
+}
+
+#profile-title {
+	color: #0D0557;
+	float: left;
+}
+
+md-fab-speed-dial {
+	float: right;
+}
+
+#user-profile-card {
+	width: 400px;
+	position: relative;
+	top: -200px;
+	left: 100px;
+}
+
+.twitter-fab {
+	background-color: #2795E9;
+}

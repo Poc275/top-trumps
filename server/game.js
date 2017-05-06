@@ -131,6 +131,22 @@ gameServer.onNextRound = function(client) {
 
 
 /**
+ * Function that informs the opponent that they've won the game
+ * @param {object} client - The client who lost the game
+ */
+gameServer.onGameOver = function(client) {
+	// get opposition player to send result to
+	var sender = client.userid;
+
+	if(client.game.playerHost.userid === sender) {
+		client.game.playerClient.emit('gameOver');
+	} else {
+		client.game.playerHost.emit('gameOver');
+	}
+};
+
+
+/**
  * Function that handles the passing of messages between players.
  * The 'message' event is for status updates (game found, game created, 
  * waiting for 2nd player etc.) and in-game chat.

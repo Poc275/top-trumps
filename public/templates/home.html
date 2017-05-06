@@ -44,10 +44,10 @@
 				</div>
 			</md-list-item>
 
-			<md-list-item class="md-1-line" ng-click="toggleMenu()">
-				<i class="material-icons md-avatar">history</i>
+			<md-list-item class="md-1-line" ng-click="toggleMenu()" ui-sref="home.profile">
+				<i class="material-icons md-avatar">person</i>
 				<div class="md-list-item-text" layout="column">
-					<h3>Game History</h3>
+					<h3>My Profile</h3>
 				</div>
 			</md-list-item>
 
@@ -63,7 +63,7 @@
 </md-sidenav>
 
 
-<md-content ng-controller="GameController" id="content" flex layout-padding>
+<md-content ng-controller="GameController" id="content" flex>
 	<div ui-view>
 		<!-- initial home view -->
 		<h1>Welcome to TC</h1>

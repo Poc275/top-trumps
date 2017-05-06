@@ -29,6 +29,9 @@ var card = db.model('cards', cardSchema);
 var userSchema = require('../models/User.js').UserSchema;
 var user = db.model('users', userSchema);
 
+// bot vars
+var bot = require('./bot.js');
+
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, '../public', 'images', 'favicon.ico')));
 app.use(logger('dev'));
@@ -122,6 +125,12 @@ io.on('connection', function(client) {
 	// sent by the players when they're ready for the next round
 	client.on('nextRound', function() {
 		game.onNextRound(client);
+	});
+
+	// gameOver event
+	// sent by the losing player to tell the opponent they've won
+	client.on('gameOver', function() {
+		game.onGameOver(client);
 	});
 
 	client.on('disconnect', function() {
@@ -218,6 +227,9 @@ app.get('/auth/google/callback', passport.authenticate('google'), function(req, 
     });
     res.end();
 });
+
+// bot endpoints
+app.post('/api/messages', bot.connector.listen());
 
 
 /*

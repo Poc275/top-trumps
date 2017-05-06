@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('GameController', function($scope, $mdToast, $interval, $q, Cards, socket, Gravatar) {
+angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, Cards, socket, Gravatar) {
 
 	$scope.collection;
 	$scope.currentCard;
@@ -226,7 +226,22 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.ppcScore = 0;
 			$scope.specialAbilityScore = 0;
 
-			$scope.currentCard = [$scope.collection[$scope.round]];
+			if($scope.collection.length === 0) {
+				// I've lost, game over
+				$mdDialog.show(
+					$mdDialog.alert()
+						.parent(angular.element($document.body))
+						.clickOutsideToClose(true)
+						.title('Game Over')
+						.textContent('You lose. The Donald does a cry, you lost to a bad hombre')
+						.ariaLabel('Game Over Dialog')
+						.ok('Home')
+				);
+
+				socket.emit('gameOver');
+			} else {
+				$scope.currentCard = [$scope.collection[$scope.round]];
+			}
 		});
 
 
@@ -249,6 +264,20 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				$scope.resultCheck();
 			});
 
+		});
+
+
+		// game over event, player has won
+		socket.on('gameOver', function() {
+			$mdDialog.show(
+				$mdDialog.alert()
+					.parent(angular.element($document.body))
+					.clickOutsideToClose(true)
+					.title('Game Over')
+					.textContent('You win! The Donald is proud, you\'re making America great again')
+					.ariaLabel('Game Over Dialog')
+					.ok('Home')
+			);
 		});
 
 	};
