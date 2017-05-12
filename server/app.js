@@ -63,7 +63,7 @@ var isAuthenticated = function(req, res, next) {
 
 	// not authenticated, redirect to home page to login
 	res.writeHead(401, {
-        'Location': '/#/'
+        'Location': '/#!/'
     });
     res.end();
 };

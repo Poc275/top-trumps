@@ -1,11 +1,14 @@
 <md-toolbar layout-padding layout="row">
+	<div flex="10"></div>
+
 	<img class="tc-text-logo" src="images/tc-text-logo.png" alt="tc logo" />
 	<span flex></span>
 	<md-button class="md-primary md-accent" ng-click="toggleMenu()">
 		<i class="material-icons menu-icon">menu</i>
 	</md-button>
-</md-toolbar>
 
+	<div flex="10"></div>
+</md-toolbar>
 
 <!-- md-component-id allows the controller to access the sidenav -->
 <md-sidenav class="md-whiteframe-4dp md-sidenav-left" md-component-id="side-menu">
@@ -65,9 +68,17 @@
 
 <md-content ng-controller="GameController" id="content" flex>
 	<div ui-view>
-		<!-- initial home view -->
-		<h1>Welcome to TC</h1>
-		<p>Hello {{ user.username }}</p>
-		<md-button class="md-raised md-primary" ui-sref="home.play" ng-click="init(user)">Play</md-button>
+		<div layout="row">
+			<div flex="10"></div>
+
+			<!-- initial home view -->
+			<div layout="column">
+				<h1>Welcome to TC</h1>
+				<p>Hello {{ user.username }}</p>
+				<md-button class="md-raised md-primary" ui-sref="home.play" ng-click="init(user)">Play</md-button>
+			</div>
+
+			<div flex="10"></div>
+		</div>
 	</div>
 </md-content>
