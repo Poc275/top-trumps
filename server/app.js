@@ -16,11 +16,18 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var game = require('./game.js');
+var config = require('../config/auth');
 
 var mongoose = require('mongoose');
 // use default JS promises as mongoose promises are deprecated
 mongoose.Promise = global.Promise;
-var db = mongoose.createConnection('localhost', 'tc');
+// var db = mongoose.createConnection('localhost', 'tc');
+var options = {
+	user: config.mongo.username,
+	pass: config.mongo.password
+};
+
+var db = mongoose.createConnection('ds062919.mlab.com:62919/tc', options);
 
 // create mongoose schemas and models from the schemas
 // note 'cards' and 'users' refers to the collection names

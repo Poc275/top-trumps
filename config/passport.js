@@ -6,6 +6,8 @@
  * access has a Ts and Cs and privacy policy document.
  * @todo createStarterPack() returns a callback. Only the Google strategy is set up 
  * correctly in calling/returning from this function, need to update Twitter & Facebook.
+ * @todo db connection is duplicated in app.js and passport.js, migrate
+ * to its own file.
  */
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
@@ -31,7 +33,12 @@ if(!process.env.FacebookClientID) {
 
 
 mongoose.Promise = global.Promise;
-var db = mongoose.createConnection('localhost', 'tc');
+var options = {
+	user: config.mongo.username,
+	pass: config.mongo.password
+};
+
+var db = mongoose.createConnection('ds062919.mlab.com:62919/tc', options);
 
 var userSchema = require('../models/User.js').UserSchema;
 var User = db.model('users', userSchema);
