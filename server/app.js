@@ -250,6 +250,14 @@ app.post('/auth/local', passport.authenticate('local'), function(req, res) {
 
 
 // start app
-server.listen(3000, function() {
-	console.log('Listening on port 3000');
+server.listen(process.env.PORT || 3000, function() {
+	if(process.env.port) {
+		console.log('Listening on port ' + process.env.port);
+	} else {
+		console.log('Listening on port 3000');
+	}
 });
+
+// server.listen(3000, function() {
+// 	console.log('Listening on port 3000');
+// });
