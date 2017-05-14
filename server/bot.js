@@ -1,8 +1,9 @@
 var builder = require('botbuilder');
+var config = require('../config/auth');
 
 var connector = new builder.ChatConnector({
-    // id and password go here once registered
-    // but for emulator usage they're not required
+    appId: config.bot.appId,
+    appPassword: config.bot.password
 });
 
 var bot = new builder.UniversalBot(connector);
