@@ -4,7 +4,7 @@ angular.module('TCModule').factory('Cards', function CardsFactory($http) {
 			return $http.get('/cards');
 		},
 		findByName: function(name) {
-			return $http.get('/cards/' + name);
+			return $http.get('/card/' + name);
 		},
 		getCardCollection: function() {
 			return $http.get('/me/collection');

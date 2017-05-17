@@ -20,10 +20,10 @@
 
 
 		<!-- default, unflipped state - show front image -->
-		<img ng-switch-when="false" ng-src="images/{{card.images[0]}}" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="false" ng-src="https://tcmaster.file.core.windows.net/images/{{card.images[0]}}?st=2017-05-17T19%3A37%3A00Z&se=2030-06-01T19%3A37%3A00Z&sp=r&sv=2015-12-11&sr=s&sig=qjsAFDV%2BggBRmdYZ1yTo0P5NDY5ic%2BI1YQFu398jppo%3D" class="md-card-image" alt="card photo" />
 
 		<!-- else if flipped show rear image -->
-		<img ng-switch-when="true" ng-src="images/{{card.images[1]}}" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="true" ng-src="https://tcmaster.file.core.windows.net/images/{{card.images[1]}}?st=2017-05-17T19%3A37%3A00Z&se=2030-06-01T19%3A37%3A00Z&sp=r&sv=2015-12-11&sr=s&sig=qjsAFDV%2BggBRmdYZ1yTo0P5NDY5ic%2BI1YQFu398jppo%3D" class="md-card-image" alt="card photo" />
 
 
 		<md-card-title>
@@ -121,11 +121,9 @@
 		</md-card-actions>
 
 
-		<md-divider></md-divider>
-
-
 		<!-- default, unflipped - show special ability description -->
 		<md-card-content ng-switch-when="false">
+			<md-divider></md-divider>
 			<h4>Special ability description:</h4>
 			<p>{{ card.special_ability_description }}</p>
 		</md-card-content>
@@ -133,15 +131,12 @@
 
 		<!-- flipped - show biography -->
 		<md-card-content ng-switch-when="true">
-			<p>{{ card.bio }}</p>
+			<p ng-bind-html="card.bio"></p>
 
 			<h5>References</h5>
 			<ul>
-				<li ng-repeat="ref in card.references">
-					<a ng-href="{{ ref }}" target="_blank">{{ ref }}</a>
-				</li>
+				<li ng-repeat="ref in card.references" ng-bind-html="displayLink(ref)"></li>
 			</ul>
-
 		</md-card-content>
 
 	</md-card>

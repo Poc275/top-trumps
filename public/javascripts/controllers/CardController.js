@@ -1,8 +1,8 @@
-angular.module('TCModule').controller('CardController', function($scope, $http, Cards) {
-	$scope.cards = [];
+angular.module('TCModule').controller('CardController', function($scope, $http, $stateParams, Cards) {
+	$scope.result = [];
 
-	Cards.all().then(function(data) {
-		console.log(data);
-		$scope.cards = data;
+	Cards.findByName($stateParams.name).then(function(card) {
+		console.log(card.data);
+		$scope.result[0] = card.data;
 	});
 });

@@ -7,5 +7,5 @@
 	"node": true,
 	"mocha": true,
 	"jasmine": true,
-	"predef": ["angular", "CryptoJS", "browser", "element", "by", "inject", "io"]
+	"predef": ["angular", "CryptoJS", "browser", "element", "by", "inject", "io", "showdown"]
 }

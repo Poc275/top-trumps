@@ -149,13 +149,13 @@ io.on('connection', function(client) {
 
 
 // routes
-app.get('/cards', function(req, res) {
+app.get('/cards', isAuthenticated, function(req, res) {
 	card.find({}, function(err, cards) {
 		res.json(cards);
 	});
 });
 
-app.get('/cards/:name', function(req, res) {
+app.get('/card/:name', isAuthenticated, function(req, res) {
 	card.findOne({ 'name': req.params.name }, function(err, card) {
 		res.json(card);
 	});
