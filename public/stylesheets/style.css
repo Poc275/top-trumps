@@ -3,17 +3,10 @@
 Login page
 **********************************
 */
-#login-form-wrapper {
-	flex: 1 0 auto;
+iframe {
+	border: none;
+	height: 250px;
 }
-
-#login-form {
-	width: 384px;
-	max-width: 384px;
-	padding: 32px;
-	text-align: center;
-}
-
 
 /*
 **********************************
@@ -21,9 +14,9 @@ Logo/Icon styles
 **********************************
 */
 .tc-logo {
-	min-width: 250px;
-	min-height: 250px;
-	display: block;
+	min-width: 300px;
+	min-height: 300px;
+	/*display: block;*/
 }
 
 .tc-text-logo {
@@ -111,9 +104,6 @@ md-card-header.grade-Brown Platinum {
  In-game chat/game status messages
  ********************************
  */
-.chat {
-	
-}
 
 
 /*

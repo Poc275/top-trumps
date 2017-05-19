@@ -3,6 +3,8 @@ angular.module('TCModule').controller('AppController', function($scope, $mdSiden
 	// to an object rather than a string on the scope
 	$scope.local = {};
 
+	$scope.flipped = false;
+
 	// toggle sidenav menu
 	$scope.toggleMenu = function() {
 		$mdSidenav('side-menu').toggle();
