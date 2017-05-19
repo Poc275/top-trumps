@@ -1,4 +1,4 @@
-<div layout="column" class="card animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }">
+<div layout="column" class="animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }">
 	<md-card md-whiteframe="12">
 		<md-card-header class="grade-Gold" layout="row">
 			<md-card-header-text ng-switch-when="false">
@@ -24,8 +24,8 @@
 		</md-card-header>
 
 		<!-- default, unflipped state - show front image -->
-		<!--<img ng-switch-when="false" ng-src="/images/tc-logo.svg" />-->
-        <md-icon ng-switch-when="false" class="tc-logo" md-svg-src="images/tc-logo.svg" aria-label="tc logo"></md-icon>
+		<img ng-switch-when="false" ng-src="/images/tc-logo.png" class="md-card-image" alt="card photo" />
+        <!--<md-icon ng-switch-when="false" class="tc-logo" md-svg-src="images/tc-logo.svg" aria-label="tc logo"></md-icon>-->
 
 		<!-- else if flipped show rear image -->
 		<img ng-switch-when="true" ng-src="https://tcmaster.file.core.windows.net/images/Makers_of_Top_Cunts.jpg?st=2017-05-17T19%3A37%3A00Z&se=2030-06-01T19%3A37%3A00Z&sp=r&sv=2015-12-11&sr=s&sig=qjsAFDV%2BggBRmdYZ1yTo0P5NDY5ic%2BI1YQFu398jppo%3D" class="md-card-image" alt="card photo" />
