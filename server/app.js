@@ -23,8 +23,8 @@ var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 // var db = mongoose.createConnection('localhost', 'tc');
 var options = {
-	user: config.mongo.username,
-	pass: config.mongo.password
+	user: process.env.MongoUsername || config.mongo.username,
+	pass: process.env.MongoPassword || config.mongo.password
 };
 
 var db = mongoose.createConnection('ds062919.mlab.com:62919/tc', options);
