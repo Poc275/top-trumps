@@ -42,7 +42,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	$scope.init = function(user) {
 
 		// get my gravatar
-		$scope.myGravatarUrl = Gravatar(user.email);
+		$scope.myGravatarUrl = Gravatar(user.email, 80);
 
 		// create connection to socket.io
 		socket.connect();

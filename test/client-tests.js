@@ -1,57 +1,3 @@
-describe('CardController Tests', function() {
-	var $httpBackend;
-	var $rootScope;
-	var createController;
-
-	beforeEach(module('TCModule'));
-
-	// beforeEach(module('templates'));
-
-	beforeEach(inject(function($injector) {
-		// set up the mock http service responses
-		$httpBackend = $injector.get('$httpBackend');
-
-		// mock a request for /cards
-		$httpBackend.whenRoute('GET', '/cards').respond({name: 'Donald Trump'});
-
-		// root route :)
-		// this should serve templates/index.html but I can't get the html2js preprocessor to work
-		$httpBackend.whenRoute('GET', '/').respond(function(method, url, data, headers, params) {
-			return [200, {}];
-		});
-
-		$rootScope = $injector.get('$rootScope');
-
-		// the $controller service is used to create instances of controllers
-		var $controller = $injector.get('$controller');
-
-		createController = function() {
-			return $controller('CardController', { '$scope' : $rootScope });
-		};
-	}));
-
-	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-     	$httpBackend.verifyNoOutstandingRequest();
-	});
-
-
-	it('http calls are being mocked correctly', function() {
-		$httpBackend.when('/cards');
-		var controller = createController();
-		$httpBackend.flush();
-		expect($rootScope.cards.data.name).toBe('Donald Trump');
-	});
-
-
-	it('home page should show login buttons', function() {
-		$httpBackend.when('/');
-		var controller = createController();
-		$httpBackend.flush();
-	});
-});
-
-
 describe('GravatarFactory tests', function() {
 	var gravatarFactory;
 	var email = 'poc275@gmail.com';
@@ -64,7 +10,7 @@ describe('GravatarFactory tests', function() {
 	}));
 
 	it('should return a url with hashed email', function() {
-		expect(gravatarFactory('poc275@gmail.com')).toEqual('https://www.gravatar.com/avatar/' + email + '?size=80');
+		expect(gravatarFactory('poc275@gmail.com', 80)).toEqual('https://www.gravatar.com/avatar/' + email + '?size=80');
 	});
 });
 
@@ -215,7 +161,7 @@ describe('CardsFactory findByName() tests', function() {
 		httpBackend = $httpBackend;
 
 		// mock api response with some card objects
-		httpBackend.whenRoute('GET', '/cards/thedonald').respond({
+		httpBackend.whenRoute('GET', '/card/thedonald').respond({
 			card: [
 				{
 					"_id": "58962ce045c58e2e78ae0126",

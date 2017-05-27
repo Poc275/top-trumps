@@ -1,4 +1,5 @@
-<div layout="column" class="animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }">
+<!-- mobile view -->
+<div layout="column" class="animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }" hide-gt-sm>
 	<md-card md-whiteframe="12">
 		<md-card-header class="grade-Gold" layout="row">
 			<md-card-header-text ng-switch-when="false">
@@ -123,6 +124,90 @@
 	</md-card>
 </div>
 
-<div layout="column" layout-padding>
+<div layout="column" layout-padding hide-gt-sm>
     <iframe src='https://webchat.botframework.com/embed/thedonaldbot?s=aAhtyvJ2VZ8.cwA.67o.4wUtSRZT75hxekWLUR1Y8fKRQSy3zRi_phnkN5hr_b8'></iframe>
+</div><!-- end of mobile view -->
+
+
+<!-- desktop/tablet view -->
+<div layout="column" hide show-gt-sm>
+    <md-content id="desktop-content">
+        <div layout="row" id="desktop-view">
+            <div id="desktop-logo" flex>
+                <img src="/images/tc-text-logo.png" alt="tc logo" />
+                <h1>WELCOME TO TC</h1>
+                <div id="desktop-info">
+                    <p>Disgusted with the state of the world post Brexit and Trump, your intrepid founders bring you <strong>TC</strong>, the greatest 
+                        political-tongue-in-cheek jamboree this side of D.C. Your favourite despots and general bad hombres are pitted 
+                        against one another in an epic battle of strategy, statistics, and slices of inappropriate humour.</p>
+
+                    <p>Need more info? Then speak to The Donald in the chat below, ask him anything, but don’t expect a well thought out, 
+                        considered answer… you have been warned...[2].</p>
+
+                    <div layout="column" flex>
+                        <iframe src='https://webchat.botframework.com/embed/thedonaldbot?s=aAhtyvJ2VZ8.cwA.67o.4wUtSRZT75hxekWLUR1Y8fKRQSy3zRi_phnkN5hr_b8'></iframe>
+                    </div>
+
+                    <!--<h5>References</h5>
+                    <ol>
+                        <li>
+                            <cite>This was correct as of December 2016 before Trump picked his cabinet.</cite>
+                        </li>
+                        <li>
+                            <cite>If you’re easily offended then... actually, you won’t be here because you voted leave. If you’ve made it 
+                                here by mistake then let us help you return to <a href="http://www.dailymail.co.uk/home/index.html" target="_blank">familiar 
+                                territory</a>.</cite>
+                        </li>
+                    </ol>-->
+                </div>
+            </div>
+
+            <!-- login buttons panel -->
+            <div id="desktop-login" class="md-whiteframe-8dp">
+                <div id="desktop-login-detail">
+                    <h2>Login</h2>
+                    <p>Sign up and get your starter pack of slags to begin. Then play against your fellow post-fact depressed peers to climb the ranks, 
+                        get more cards, and complete what is the ultimate collection of c’s ever assembled in one location [1].</p>
+
+                    <div layout="column">
+                        <md-button class="fb md-raised" href="/auth/facebook">
+                            <md-icon>
+                                <i class="fa fa-facebook" aria-hidden="true"></i>
+                            </md-icon>
+                            <span class="social-text">Login with Facebook</span>
+                        </md-button>
+
+                        <md-button class="google md-raised" href="/auth/google">
+                            <md-icon>
+                                <i class="fa fa-google" aria-hidden="true"></i>
+                            </md-icon>
+                            <span class="social-text">Login with Google</span>
+                        </md-button>
+
+                        <md-button class="twitter md-raised" href="/auth/twitter">
+                            <md-icon>
+                                <i class="fa fa-twitter" aria-hidden="true"></i>
+                            </md-icon>
+                            <span class="social-text">Login with Twitter</span>
+                        </md-button>
+
+                        <md-divider></md-divider>
+
+                        <h5>References</h5>
+                        <ol>
+                            <li>
+                                <cite>This was correct as of December 2016 before Trump picked his cabinet.</cite>
+                            </li>
+                            <li>
+                                <cite>If you’re easily offended then... actually, you won’t be here because you voted leave. If you’ve made it 
+                                    here by mistake then let us help you return to <a href="http://www.dailymail.co.uk/home/index.html" target="_blank">familiar 
+                                    territory</a>.</cite>
+                            </li>
+                        </ol>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </md-content>
 </div>
