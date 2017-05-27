@@ -1,5 +1,8 @@
 var builder = require('botbuilder');
-var config = require('../config/auth');
+var config;
+if(!process.env.FacebookClientID) {
+	config = require('../config/auth');
+}
 
 var connector = new builder.ChatConnector({
     appId: process.env.BotAppId || config.bot.appId,
