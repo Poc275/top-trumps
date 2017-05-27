@@ -2,8 +2,8 @@ var builder = require('botbuilder');
 var config = require('../config/auth');
 
 var connector = new builder.ChatConnector({
-    appId: config.bot.appId,
-    appPassword: config.bot.password
+    appId: process.env.BotAppId || config.bot.appId,
+    appPassword: process.env.BotPassword || config.bot.password
 });
 
 var bot = new builder.UniversalBot(connector);
@@ -13,7 +13,8 @@ var bot = new builder.UniversalBot(connector);
 // });
 
 // LUIS recogniser that points to the model
-var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/07ed3d92-346c-466c-8c97-e91b95ccf3a3?subscription-key=85ef85d19b8940afb875a484617b3112&verbose=true&timezoneOffset=0&q=';
+var model = 
+    'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/07ed3d92-346c-466c-8c97-e91b95ccf3a3?subscription-key=85ef85d19b8940afb875a484617b3112&verbose=true&timezoneOffset=0&q=';
 var recogniser = new builder.LuisRecognizer(model);
 var dialog = new builder.IntentDialog({
     recognizers: [recogniser]
