@@ -18,7 +18,6 @@ iframe {
 
 #desktop-view {
 	height: 100%;
-	/*overflow: scroll;*/
 	background: url("/images/tc-faces.png") no-repeat 50% 100% / 350px 350px;
 }
 
@@ -59,15 +58,10 @@ Logo/Icon styles
 .tc-logo {
 	min-width: 300px;
 	min-height: 300px;
-	/*display: block;*/
 }
 
 .tc-text-logo {
 	height: 100px;
-}
-
-.menu-icon {
-	font-size: 40px;
 }
 
 

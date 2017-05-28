@@ -1,8 +1,6 @@
 angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, Cards, socket, Gravatar) {
-
 	$scope.collection;
 	$scope.currentCard;
-
 	$scope.host;
 	$scope.gameInProgress;
 	$scope.turn;
@@ -38,28 +36,24 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	$scope.specialAbilityScore = 0;
 
 
-
+	// functions...
 	$scope.init = function(user) {
-
 		// get my gravatar
 		$scope.myGravatarUrl = Gravatar(user.email, 80);
 
 		// create connection to socket.io
 		socket.connect();
 
-
 		// now listen for events
 		socket.on('onconnected', function(data) {
 			console.log('Connected to TC via socket.io. Player id is ' + data);
 		});
-
 
 		// in-game chat message received
 		socket.on('message', function(message) {
 			message.me = false;
 			$scope.chat.messages.push(message);
 		});
-
 
 		// status update sent
 		socket.on('status', function(status) {
@@ -73,12 +67,13 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.chat.messages.push(statusMessage);
 		});
 
-
 		// game has started
 		socket.on('start', function(status) {
 			$scope.msg = 'Game has begun!';
 			$scope.gameInProgress = true;
 			$scope.round = 0;
+
+			console.log('start function called - game in progress');
 
 			if(status === 'host') {
 				$scope.host = true;
@@ -108,7 +103,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			});
 		});
 
-
 		// user has been sent a card they've won from an opponent
 		// just add to end of collection
 		socket.on('victorious', function(data) {
@@ -133,7 +127,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			console.log($scope.turn);
 		});
 
-
 		// user has lost a round, remove their current card
 		socket.on('defeated', function() {
 			console.log('I lose :(');
@@ -156,7 +149,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			console.log($scope.turn);
 		});
 
-
 		// round was drawn, just move onto next card
 		socket.on('draw', function() {
 			console.log('Draw :|');
@@ -177,7 +169,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			});
 			console.log($scope.turn);
 		});
-
 
 		// opponentScore event
 		// the player "out-of-turn" has sent his score back to
@@ -205,7 +196,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				socket.emit('nextRound');
 			});
 		});
-
 
 		// nextRound event - both players are ready for their next card
 		socket.on('nextRound', function() {
@@ -244,12 +234,13 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			}
 		});
 
-
 		// in-game play events
 		// this is where the result is calculated, this always happens for the 
 		// player "out-of-turn" i.e. it isn't their turn to play a card.
 		// the result is then passed back to the player "in-turn"
 		socket.on('play', function(play) {
+			console.log('play function called');
+
 			$scope.result.myScore = $scope.currentCard[0][play.category];
 			$scope.result.opponentScore = play.score;
 			$scope.result.opponentCard = play.card;
@@ -265,7 +256,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			});
 
 		});
-
 
 		// game over event, player has won
 		socket.on('gameOver', function() {
@@ -301,6 +291,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 	// user has selected a category to play
 	$scope.play = function(category, score) {
+		console.log('play function called');
+
 		if($scope.turn) {
 			socket.emit('play', { card: $scope.currentCard, category: category, score: score });
 		}
@@ -309,7 +301,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 	// move slider function to see opponent's score
 	$scope.moveOpponentScoreSlider = function(category, score) {
-
 		switch(category) {
 			case 'unpalatibility':
 				$scope.unpalatibilityScoreVisible = true;
@@ -424,12 +415,10 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.round = 0;
 		}
 
-
 		$scope.chat.messages.push(resultMessage);
 
 		// ready for next round
 		socket.emit('nextRound');
-
 
 		// debugging info...
 		console.log('my round: ', $scope.round);

@@ -103,6 +103,7 @@ io.on('connection', function(client) {
 	// in-game play event
 	// again, pass to game.js to handle
 	client.on('play', function(msg) {
+		console.log('play function on server received');
 		game.onPlay(client, msg);
 	});
 

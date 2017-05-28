@@ -4,12 +4,10 @@
 		<md-card-header class="grade-Gold" layout="row">
 			<md-card-header-text ng-switch-when="false">
 				<span class="md-title">Welcome To...</span>
-				<!--<span class="md-subhead">{{ card.cuntal_order }}</span>-->
 			</md-card-header-text>
 
             <md-card-header-text ng-switch-when="true">
 				<span class="md-title">About...</span>
-				<!--<span class="md-subhead">{{ card.cuntal_order }}</span>-->
 			</md-card-header-text>
 
 			<span flex></span>
@@ -26,75 +24,35 @@
 
 		<!-- default, unflipped state - show front image -->
 		<img ng-switch-when="false" ng-src="/images/tc-logo.png" class="md-card-image" alt="card photo" />
-        <!--<md-icon ng-switch-when="false" class="tc-logo" md-svg-src="images/tc-logo.svg" aria-label="tc logo"></md-icon>-->
 
 		<!-- else if flipped show rear image -->
 		<img ng-switch-when="true" ng-src="https://tcmaster.file.core.windows.net/images/Makers_of_Top_Cunts.jpg?st=2017-05-17T19%3A37%3A00Z&se=2030-06-01T19%3A37%3A00Z&sp=r&sv=2015-12-11&sr=s&sig=qjsAFDV%2BggBRmdYZ1yTo0P5NDY5ic%2BI1YQFu398jppo%3D" class="md-card-image" alt="card photo" />
 
 
-		<md-card-title>
-			<!-- unflipped title - show name -->
-			<!--<md-card-title-text ng-switch-when="false">
-				<span class="md-headline">Login</span>
-			</md-card-title-text>-->
-
-			<!-- flipped state - show biography -->
-			<!--<md-card-title-text ng-switch-when="true">
-				<span class="md-headline">About</span>
-			</md-card-title-text>-->
-		</md-card-title>
-
-
 		<!-- unflipped card actions - show credentials -->
 		<md-card-actions layout="column" layout-align="space-around none" ng-switch-when="false">
-			<md-button class="fb md-raised" href="/auth/facebook">
+			<md-button class="fb md-raised" href="/auth/facebook" aria-label="Login with Facebook">
                 <md-icon>
                     <i class="fa fa-facebook" aria-hidden="true"></i>
                 </md-icon>
                 <span class="social-text">Login with Facebook</span>
             </md-button>
 
-            <md-button class="google md-raised" href="/auth/google">
+            <md-button class="google md-raised" href="/auth/google" aria-label="Login with Google">
                 <md-icon>
                     <i class="fa fa-google" aria-hidden="true"></i>
                 </md-icon>
                 <span class="social-text">Login with Google</span>
             </md-button>
 
-            <md-button class="twitter md-raised" href="/auth/twitter">
+            <md-button class="twitter md-raised" href="/auth/twitter" aria-label="Login with Twitter">
                 <md-icon>
                     <i class="fa fa-twitter" aria-hidden="true"></i>
                 </md-icon>
                 <span class="social-text">Login with Twitter</span>
             </md-button>
 
-            <!--<div layout="column">
-                <md-subheader class="md-primary">Local login for testing only</md-subheader>
-
-                <div layout="row" layout-align="center">
-                    <md-input-container>
-                        <label>Email</label>
-                        <input ng-model="local.email" type="email">
-                    </md-input-container>
-
-                    <md-input-container>
-                        <label>Password</label>
-                        <input ng-model="local.password" type="password">
-                    </md-input-container>
-                </div>
-
-                <md-button class="md-raised md-secondary" ng-click="localSignin()">Sign in</md-button>
-            </div>-->
-
 		</md-card-actions>
-
-
-		<!-- default, unflipped - show special ability description -->
-		<!--<md-card-content ng-switch-when="false">
-			<md-divider></md-divider>
-			<h4>Special ability description:</h4>
-			<p>{{ card.special_ability_description }}</p>
-		</md-card-content>-->
 
 
 		<!-- flipped - show biography -->
@@ -114,9 +72,8 @@
                     <cite>This was correct as of December 2016 before Trump picked his cabinet.</cite>
                 </li>
                 <li>
-                    <cite>If you’re easily offended then... actually, you won’t be here because you voted leave. If you’ve made it 
-                        here by mistake then let us help you return to <a href="http://www.dailymail.co.uk/home/index.html" target="_blank">familiar 
-                        territory</a>.</cite>
+                    <cite>If you’re easily offended then... actually, you won’t be here because you voted leave. Let us help you 
+                        return to <a href="http://www.dailymail.co.uk/home/index.html" target="_blank">familiar territory</a>.</cite>
                 </li>
             </ol>
 		</md-card-content>
@@ -148,17 +105,6 @@
                         <iframe src='https://webchat.botframework.com/embed/thedonaldbot?s=aAhtyvJ2VZ8.cwA.67o.4wUtSRZT75hxekWLUR1Y8fKRQSy3zRi_phnkN5hr_b8'></iframe>
                     </div>
 
-                    <!--<h5>References</h5>
-                    <ol>
-                        <li>
-                            <cite>This was correct as of December 2016 before Trump picked his cabinet.</cite>
-                        </li>
-                        <li>
-                            <cite>If you’re easily offended then... actually, you won’t be here because you voted leave. If you’ve made it 
-                                here by mistake then let us help you return to <a href="http://www.dailymail.co.uk/home/index.html" target="_blank">familiar 
-                                territory</a>.</cite>
-                        </li>
-                    </ol>-->
                 </div>
             </div>
 
@@ -170,21 +116,21 @@
                         get more cards, and complete what is the ultimate collection of c’s ever assembled in one location [1].</p>
 
                     <div layout="column">
-                        <md-button class="fb md-raised" href="/auth/facebook">
+                        <md-button class="fb md-raised" href="/auth/facebook" aria-label="Login with Facebook">
                             <md-icon>
                                 <i class="fa fa-facebook" aria-hidden="true"></i>
                             </md-icon>
                             <span class="social-text">Login with Facebook</span>
                         </md-button>
 
-                        <md-button class="google md-raised" href="/auth/google">
+                        <md-button class="google md-raised" href="/auth/google" aria-label="Login with Google">
                             <md-icon>
                                 <i class="fa fa-google" aria-hidden="true"></i>
                             </md-icon>
                             <span class="social-text">Login with Google</span>
                         </md-button>
 
-                        <md-button class="twitter md-raised" href="/auth/twitter">
+                        <md-button class="twitter md-raised" href="/auth/twitter" aria-label="Login with Twitter">
                             <md-icon>
                                 <i class="fa fa-twitter" aria-hidden="true"></i>
                             </md-icon>
@@ -199,9 +145,8 @@
                                 <cite>This was correct as of December 2016 before Trump picked his cabinet.</cite>
                             </li>
                             <li>
-                                <cite>If you’re easily offended then... actually, you won’t be here because you voted leave. If you’ve made it 
-                                    here by mistake then let us help you return to <a href="http://www.dailymail.co.uk/home/index.html" target="_blank">familiar 
-                                    territory</a>.</cite>
+                                <cite>If you’re easily offended then... actually, you won’t be here because you voted leave. Let us help 
+                                    you return to <a href="http://www.dailymail.co.uk/home/index.html" target="_blank">familiar territory</a>.</cite>
                             </li>
                         </ol>
                     </div>
