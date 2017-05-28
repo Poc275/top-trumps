@@ -73,8 +73,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.gameInProgress = true;
 			$scope.round = 0;
 
-			console.log('start function called - game in progress');
-
 			if(status === 'host') {
 				$scope.host = true;
 				$scope.turn = true;
@@ -239,8 +237,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 		// player "out-of-turn" i.e. it isn't their turn to play a card.
 		// the result is then passed back to the player "in-turn"
 		socket.on('play', function(play) {
-			console.log('play function called');
-
 			$scope.result.myScore = $scope.currentCard[0][play.category];
 			$scope.result.opponentScore = play.score;
 			$scope.result.opponentCard = play.card;
@@ -291,8 +287,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 	// user has selected a category to play
 	$scope.play = function(category, score) {
-		console.log('play function called');
-
 		if($scope.turn) {
 			socket.emit('play', { card: $scope.currentCard, category: category, score: score });
 		}

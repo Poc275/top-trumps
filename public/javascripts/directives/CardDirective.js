@@ -16,9 +16,12 @@ angular.module('TCModule').directive('tcCard', function($sce) {
 				return $sce.trustAsHtml(mdLink);
 			};
 		},
-		scope: {
-			card: '='
-		},
+		// isolate scope prevents <card> from accessing GameController, i.e. it can't access parent scope
+		// so a new GameController instance is created which breaks ng-click etc.
+		// Why did I add an isolate scope in the first place? It doesn't seem to break anything...
+		// scope: {
+		// 	card: '='
+		// },
 		link: function(scope, element) {
 			var converter = new showdown.Converter();
 			scope.card.bio = $sce.trustAsHtml(converter.makeHtml(scope.card.bio));
