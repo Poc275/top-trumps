@@ -235,10 +235,94 @@ md-card-header {
 
 /*
 *********************************
- User profile page styles
+ Home/User profile page styles
 *********************************
 */
-#profile-header {
+#profile {
+	/*height: 200px;
+	max-height: 200px;
+	min-height: 200px;*/
+	background-color: #00BCD4;
+}
+
+#profile-image {
+	width: 80px;
+	min-width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	margin-right: 24px;
+}
+
+#user-details h2 {
+	margin-bottom: 0;
+}
+
+#user-details h5 {
+	margin-top: 0;
+}
+
+.news-card {
+	margin-bottom: 35px;
+}
+
+.news-card md-card-header {
+	border: none;
+}
+
+.profile-card {
+	margin-bottom: 35px;
+}
+
+.profile-card header,
+.achievements-card header {
+	background-color: #00BCD4;
+	padding: 0 16px;
+}
+
+.profile-content {
+	padding: 0 16px;
+}
+
+.profile-content md-slider {
+	margin: 12px 20px;
+	width: 50%;
+}
+
+.profile-icon {
+	margin: 24px 0;
+	padding-right: 16px;
+}
+
+.profile-text {
+	margin: 26px 0;
+}
+
+.sidebar {
+	padding-top: 15px;
+}
+
+.badge {
+	margin: 10px 0;
+	padding: 10px;
+	background-color: #505050;
+	border-radius: 4px;
+	color: #fff;
+}
+
+.badge-bronze {
+	background-color: rgba(150, 93, 37, 1);
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+	margin-right: 5px;
+	border-radius: 5px;
+}
+
+
+
+
+
+/*#profile-header {
 	background-color: #00BCD4;
 	height: 250px;
 }
@@ -277,4 +361,4 @@ md-fab-speed-dial {
 	height: 26px;
 	border-radius: 15px 0 0 15px;
 	background-color: rgba(205, 127, 50, 1);
-}
+}*/
