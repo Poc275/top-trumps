@@ -35,6 +35,16 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	$scope.ppcScore = 0;
 	$scope.specialAbilityScore = 0;
 
+	$scope.showScore = false;
+	$scope.result.scoreSlider = 0;
+
+	// overall game score
+	// assumes a 10 card game, will need to 
+	// change when option is added for different
+	// sized games
+	$scope.myScore = 10;
+	$scope.opponentScore = 10;
+
 
 	// functions...
 	$scope.init = function(user) {
@@ -67,11 +77,19 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.chat.messages.push(statusMessage);
 		});
 
+		// opponent's gravatar sent
+		socket.on('opponentGravatar', function(data) {
+			$scope.opponentGravatarUrl = data.gravatar;
+		});
+
 		// game has started
 		socket.on('start', function(status) {
-			$scope.msg = 'Game has begun!';
+			// $scope.msg = 'Game has begun!';
 			$scope.gameInProgress = true;
 			$scope.round = 0;
+
+			// send avatar to opponent for score bar
+			socket.emit('opponentGravatar', { gravatar: $scope.myGravatarUrl });
 
 			if(status === 'host') {
 				$scope.host = true;
@@ -173,6 +191,11 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 		// the player "in-turn" and the slider needs to move accordinly
 		// so both players can visually see each other's scores
 		socket.on('opponentScore', function(result) {
+			// assign out-of-turn player's card to result object
+			// so player-in-turn can see who their opponent
+			$scope.result.opponentCard = result.card;
+			// $scope.result.opponentScore = result.score;
+
 			$scope.moveOpponentScoreSlider(result.category, result.score).then(function() {
 				var resultMessage = {
 					message: '',
@@ -200,6 +223,15 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			console.log('next round!');
 
 			// reset slider visibility and scores
+			$scope.showScore = false;
+			$scope.result.scoreSlider = 0;
+			$scope.hideUnpalatibility = false;
+			$scope.hideUpTheirOwnArsemanship = false;
+			$scope.hideMediaAttention = false;
+			$scope.hideLegacy = false;
+			$scope.hidePpc = false;
+			$scope.hideSpecialAbility = false;
+
 			$scope.unpalatibilityScoreVisible = false;
 			$scope.upTheirOwnArsemanshipScoreVisible = false;
 			$scope.mediaAttentionScoreVisible = false;
@@ -243,7 +275,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.result.category = play.category;
 
 			// send score to opponent to update their slider
-			socket.emit('opponentScore', { category: $scope.result.category, score: $scope.result.myScore });
+			socket.emit('opponentScore', { category: $scope.result.category, score: $scope.result.myScore, card: $scope.currentCard });
 
 			console.log($scope.result);
 
@@ -295,6 +327,10 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 	// move slider function to see opponent's score
 	$scope.moveOpponentScoreSlider = function(category, score) {
+		$scope.showScore = true;
+
+		$scope.maskCategories(category);
+
 		switch(category) {
 			case 'unpalatibility':
 				$scope.unpalatibilityScoreVisible = true;
@@ -302,6 +338,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				return $q(function(resolve, reject) {
 					$interval(function() {
 						$scope.unpalatibilityScore += 1;
+						$scope.result.scoreSlider += 1;
 					}, 200, score, true).then(function() {
 						resolve();
 					});
@@ -313,6 +350,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				return $q(function(resolve, reject) {
 					$interval(function() {
 						$scope.upTheirOwnArsemanshipScore += 1;
+						$scope.result.scoreSlider += 1;
 					}, 200, score, true).then(function() {
 						resolve();
 					});
@@ -324,6 +362,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				return $q(function(resolve, reject) {
 					$interval(function() {
 						$scope.mediaAttentionScore += 1;
+						$scope.result.scoreSlider += 1;
 					}, 200, score, true).then(function() {
 						resolve();
 					});
@@ -335,6 +374,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				return $q(function(resolve, reject) {
 					$interval(function() {
 						$scope.legacyScore += 1;
+						$scope.result.scoreSlider += 1;
 					}, 200, score, true).then(function() {
 						resolve();
 					});
@@ -346,6 +386,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				return $q(function(resolve, reject) {
 					$interval(function() {
 						$scope.ppcScore += 1;
+						$scope.result.scoreSlider += 1;
 					}, 200, score, true).then(function() {
 						resolve();
 					});
@@ -357,11 +398,24 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				return $q(function(resolve, reject) {
 					$interval(function() {
 						$scope.specialAbilityScore += 1;
+						$scope.result.scoreSlider += 1;
 					}, 200, score, true).then(function() {
 						resolve();
 					});
 				});
 		}
+	};
+
+
+	// function that hides all other categories other than the selected one
+	// ready for the result display
+	$scope.maskCategories = function(category) {
+		$scope.hideUnpalatibility = (category === 'unpalatibility') ? false : true;
+		$scope.hideUpTheirOwnArsemanship = (category === 'up_their_own_arsemanship') ? false : true;
+		$scope.hideMediaAttention = (category === 'media_attention') ? false : true;
+		$scope.hideLegacy = (category === 'legacy') ? false : true;
+		$scope.hidePpc = (category === 'ppc') ? false : true;
+		$scope.hideSpecialAbility = (category === 'special_ability') ? false : true;
 	};
 
 

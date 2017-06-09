@@ -166,6 +166,24 @@ gameServer.onMessage = function(client, msg) {
 
 
 /**
+ * Function that handles the passing of a user's gravatar url
+ * to their opponent for display in the in-game score bar
+ * @param {object} client - The client who sent the message
+ * @param {string} msg - The content of the message
+ */
+gameServer.onOpponentGravatar = function(client, msg) {
+	// get opposition player to send msg to
+	var sender = client.userid;
+
+	if(client.game.playerHost.userid === sender) {
+		client.game.playerClient.emit('opponentGravatar', msg);
+	} else {
+		client.game.playerHost.emit('opponentGravatar', msg);
+	}
+};
+
+
+/**
  * Function that starts the game once 2 players are connected.
  * @param {object} game - game object to start
  */

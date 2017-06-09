@@ -139,8 +139,41 @@ md-card-header {
 	color: #000;
 }
 
+.text-center {
+	text-align: center;
+}
+
 .category-row {
 	margin: 10px 0;
+}
+
+.score-slider.md-bar.md-bar2,
+.score-slider.md-container.md-mode-determinate {
+	height: 25px!important;
+}
+
+
+/*
+*********************************
+ Scorebar
+ ********************************
+ */
+#scorebar img {
+	width: 80px;
+	height: 80px;
+	border-radius: 80px;
+}
+
+#scorebar img.turn-indicator {
+	border: 3px solid #00BCD4;
+}
+
+#score {
+	font-size: x-large;
+}
+
+#score-seperator {
+	font-weight: 100;
 }
 
 

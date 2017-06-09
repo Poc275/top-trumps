@@ -6,8 +6,8 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 		});
 	};
 
-	$scope.gravatarUrl = function(email) {
-		return Gravatar(email, 80);
+	$scope.gravatarUrl = function(email, size) {
+		return Gravatar(email, size);
 	};
 
 	$scope.logout = function() {

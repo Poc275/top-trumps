@@ -96,6 +96,13 @@ io.on('connection', function(client) {
 
 	// handle messages that clients send
 	// they are passed to game.js to handle
+	// user has sent their gravatar to the opponent
+	// for display in the score bar
+	client.on('opponentGravatar', function(msg) {
+		game.onOpponentGravatar(client, msg);
+	});
+
+	// message sent via in game chat
 	client.on('message', function(msg) {
 		game.onMessage(client, msg);
 	});
@@ -103,7 +110,6 @@ io.on('connection', function(client) {
 	// in-game play event
 	// again, pass to game.js to handle
 	client.on('play', function(msg) {
-		console.log('play function on server received');
 		game.onPlay(client, msg);
 	});
 
