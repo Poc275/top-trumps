@@ -147,9 +147,17 @@ md-card-header {
 	margin: 10px 0;
 }
 
-.score-slider.md-bar.md-bar2,
-.score-slider.md-container.md-mode-determinate {
-	height: 25px!important;
+.score-slider {
+	width: 85%;
+	margin-top: 12px;
+}
+
+.score-slider .md-container {
+	height: 25px;
+}
+
+md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-bar2 {
+	height: 25px;
 }
 
 

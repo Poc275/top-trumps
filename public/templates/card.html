@@ -49,11 +49,6 @@
 				</md-button>
 			</div>
 
-			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="unpalatibilityScoreVisible">
-				<md-slider ng-model="unpalatibilityScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
-			</md-slider-container>
-
-
 			<div class="category-row" layout="row" ng-hide="hideUpTheirOwnArsemanship">
 				<p>Up their own arsemanship:</p>
 				<span flex></span>
@@ -61,11 +56,6 @@
 					{{ card.up_their_own_arsemanship }}
 				</md-button>
 			</div>
-
-			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="upTheirOwnArsemanshipScoreVisible">
-				<md-slider ng-model="upTheirOwnArsemanshipScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
-			</md-slider-container>
-
 
 			<div class="category-row" layout="row" ng-hide="hideMediaAttention">
 				<p>Media attention:</p>
@@ -75,11 +65,6 @@
 				</md-button>
 			</div>
 
-			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="mediaAttentionScoreVisible">
-				<md-slider ng-model="mediaAttentionScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
-			</md-slider-container>
-
-
 			<div class="category-row" layout="row" ng-hide="hideLegacy">
 				<p>Legacy:</p>
 				<span flex></span>
@@ -87,11 +72,6 @@
 					{{ card.legacy }}
 				</md-button>
 			</div>
-
-			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="legacyScoreVisible">
-				<md-slider ng-model="legacyScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
-			</md-slider-container>
-
 
 			<div class="category-row" layout="row" ng-hide="hidePpc">
 				<p>PPC (price per cunt):</p>
@@ -101,11 +81,6 @@
 				</md-button>
 			</div>
 
-			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="ppcScoreVisible">
-				<md-slider ng-model="ppcScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
-			</md-slider-container>
-
-
 			<div class="category-row" layout="row" ng-hide="hideSpecialAbility">
 				<p>Special ability:</p>
 				<span flex></span>
@@ -114,22 +89,25 @@
 				</md-button>
 			</div>
 
-			<md-slider-container class="animated zoomInLeft" ng-disabled="true" ng-show="specialAbilityScoreVisible">
-				<md-slider ng-model="specialAbilityScore" aria-label="opponent unpalatibility score slider" flex md-discrete ng-readonly="true" min="0" max="100"></md-slider>
-			</md-slider-container>
-
-
-			<!-- opposition details -->
-			<div layout="column" ng-show="showScore">
+			<!-- opposition result - shows when player in turn selects a category -->
+			<div class="animated zoomIn" layout="column" ng-show="showScore">
 				<md-divider></md-divider>
 				<p class="text-center"> - vs - </p>
 				<md-divider></md-divider>
+
 				<md-card-title>
 					<md-card-title-text>
 						<span class="md-headline">{{ result.opponentCard[0].name }}</span>
 					</md-card-title-text>
 				</md-card-title>
-				<md-progress-linear class="score-slider" md-mode="determinate" value="{{ result.scoreSlider }}"></md-progress-linear>
+
+				<div class="category-row" layout="row">
+					<md-progress-linear class="score-slider" md-mode="determinate" value="{{ result.scoreSlider }}"></md-progress-linear>
+					<span flex></span>
+					<md-button class="play-button grade-{{ card.cuntal_order }}">
+						{{ result.scoreSlider }}
+					</md-button>
+				</div>
 			</div>
 
 		</md-card-actions>

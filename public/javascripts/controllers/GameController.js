@@ -17,7 +17,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 		category: ''
 	};
 
-	// gravatar images for in-game chat
+	// gravatar images for score bar and in-game chat
 	$scope.myGravatarUrl;
 	$scope.opponentGravatarUrl;
 
@@ -28,13 +28,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	};
 
 	// opponent score variables
-	$scope.unpalatibilityScore = 0;
-	$scope.upTheirOwnArsemanshipScore = 0;
-	$scope.mediaAttentionScore = 0;
-	$scope.legacyScore = 0;
-	$scope.ppcScore = 0;
-	$scope.specialAbilityScore = 0;
-
 	$scope.showScore = false;
 	$scope.result.scoreSlider = 0;
 
@@ -127,6 +120,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.collection.push(data[0]);
 			$scope.round++;
 			$scope.turn = true;
+			$scope.myScore++;
+			$scope.opponentScore--;
 
 			// minus 1 from collection length because $scope.round starts at zero
 			if($scope.round > $scope.collection.length - 1) {
@@ -149,6 +144,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 			$scope.turn = false;
 			$scope.collection.splice($scope.round, 1);
+			$scope.myScore--;
+			$scope.opponentScore++;
 
 			// minus 1 from collection length because $scope.round starts at zero
 			if($scope.round > $scope.collection.length - 1) {
@@ -194,7 +191,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			// assign out-of-turn player's card to result object
 			// so player-in-turn can see who their opponent
 			$scope.result.opponentCard = result.card;
-			// $scope.result.opponentScore = result.score;
 
 			$scope.moveOpponentScoreSlider(result.category, result.score).then(function() {
 				var resultMessage = {
@@ -231,20 +227,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.hideLegacy = false;
 			$scope.hidePpc = false;
 			$scope.hideSpecialAbility = false;
-
-			$scope.unpalatibilityScoreVisible = false;
-			$scope.upTheirOwnArsemanshipScoreVisible = false;
-			$scope.mediaAttentionScoreVisible = false;
-			$scope.legacyScoreVisible = false;
-			$scope.ppcScoreVisible = false;
-			$scope.specialAbilityScoreVisible = false;
-
-			$scope.unpalatibilityScore = 0;
-			$scope.upTheirOwnArsemanshipScore = 0;
-			$scope.mediaAttentionScore = 0;
-			$scope.legacyScore = 0;
-			$scope.ppcScore = 0;
-			$scope.specialAbilityScore = 0;
 
 			if($scope.collection.length === 0) {
 				// I've lost, game over
@@ -328,82 +310,15 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	// move slider function to see opponent's score
 	$scope.moveOpponentScoreSlider = function(category, score) {
 		$scope.showScore = true;
-
 		$scope.maskCategories(category);
 
-		switch(category) {
-			case 'unpalatibility':
-				$scope.unpalatibilityScoreVisible = true;
-
-				return $q(function(resolve, reject) {
-					$interval(function() {
-						$scope.unpalatibilityScore += 1;
-						$scope.result.scoreSlider += 1;
-					}, 200, score, true).then(function() {
-						resolve();
-					});
-				});
-
-			case 'up_their_own_arsemanship':
-				$scope.upTheirOwnArsemanshipScoreVisible = true;
-
-				return $q(function(resolve, reject) {
-					$interval(function() {
-						$scope.upTheirOwnArsemanshipScore += 1;
-						$scope.result.scoreSlider += 1;
-					}, 200, score, true).then(function() {
-						resolve();
-					});
-				});
-
-			case 'media_attention':
-				$scope.mediaAttentionScoreVisible = true;
-
-				return $q(function(resolve, reject) {
-					$interval(function() {
-						$scope.mediaAttentionScore += 1;
-						$scope.result.scoreSlider += 1;
-					}, 200, score, true).then(function() {
-						resolve();
-					});
-				});
-
-			case 'legacy':
-				$scope.legacyScoreVisible = true;
-
-				return $q(function(resolve, reject) {
-					$interval(function() {
-						$scope.legacyScore += 1;
-						$scope.result.scoreSlider += 1;
-					}, 200, score, true).then(function() {
-						resolve();
-					});
-				});
-
-			case 'ppc':
-				$scope.ppcScoreVisible = true;
-
-				return $q(function(resolve, reject) {
-					$interval(function() {
-						$scope.ppcScore += 1;
-						$scope.result.scoreSlider += 1;
-					}, 200, score, true).then(function() {
-						resolve();
-					});
-				});
-
-			case 'special_ability':
-				$scope.specialAbilityScoreVisible = true;
-
-				return $q(function(resolve, reject) {
-					$interval(function() {
-						$scope.specialAbilityScore += 1;
-						$scope.result.scoreSlider += 1;
-					}, 200, score, true).then(function() {
-						resolve();
-					});
-				});
-		}
+		return $q(function(resolve, reject) {
+			$interval(function() {
+				$scope.result.scoreSlider += 1;
+			}, 200, score, true).then(function() {
+				resolve();
+			});
+		});
 	};
 
 
@@ -434,6 +349,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.collection.push($scope.result.opponentCard[0]);
 			$scope.round++;
 			$scope.turn = true;
+			$scope.myScore++;
+			$scope.opponentScore--;
 
 			// tell opponent they have been defeated so their card is removed
 			socket.emit('defeated');
@@ -444,6 +361,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 			resultMessage.message = 'You lose';
 			$scope.turn = false;
+			$scope.myScore--;
+			$scope.opponentScore++;
 
 			// tell opponent they have won the round and send them their new card
 			var lostCard = $scope.collection.splice($scope.round, 1);
