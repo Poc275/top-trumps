@@ -330,7 +330,7 @@ describe('UserController Tests', function() {
 
 	it('Gravatar address is valid', function() {
 		var controller = createController();
-		var gravatarUrl = $rootScope.gravatarUrl('abc123@test.com');
+		var gravatarUrl = $rootScope.gravatarUrl('abc123@test.com', 80);
 		$httpBackend.flush();
 
 		expect(gravatarUrl).not.toBeNull();
@@ -606,21 +606,22 @@ describe('Game Logic Tests', function() {
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
 
-		expect(playerOneScope.msg).toBe('Game has begun!');
 		expect(playerOneScope.gameInProgress).toBe(true);
 		expect(playerOneScope.round).toBe(0);
 		expect(playerOneScope.host).toBe(true);
 		expect(playerOneScope.turn).toBe(true);
 
-		expect(playerTwoScope.msg).toBe('Game has begun!');
 		expect(playerTwoScope.gameInProgress).toBe(true);
 		expect(playerTwoScope.round).toBe(0);
 		expect(playerTwoScope.host).toBe(false);
 		expect(playerTwoScope.turn).toBe(false);
 	});
 
-
-	it('Player 2 wins the game', function() {
+	// inject $timeout so we can flush them from the nextRound event
+	// the timeout in nextRound() is just to give the players time
+	// to see the result before moving onto the next round
+	// flushing the timeout means the tests don't have to be async
+	it('Player 2 wins the game', inject(function ($timeout) {
 		playerOneScope.init('abc@123.com');
 		playerTwoScope.init('def@456.com');
 
@@ -661,6 +662,7 @@ describe('Game Logic Tests', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
 		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
@@ -689,12 +691,13 @@ describe('Game Logic Tests', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerTwoScope.currentCard[0].name).toBe('Donald Trump');
-	});
+	}));
 
 
-	it('Player 1 wins the game', function() {
+	it('Player 1 wins the game', inject(function ($timeout) {
 		playerOneScope.init('abc@123.com');
 		playerTwoScope.init('def@456.com');
 
@@ -736,6 +739,7 @@ describe('Game Logic Tests', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
 		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
@@ -764,12 +768,13 @@ describe('Game Logic Tests', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Vladimir Putin');
-	});
+	}));
 
 	
-	it('A draw just moves onto the next card', function() {
+	it('A draw just moves onto the next card', inject(function ($timeout) {
 		playerOneScope.init('abc@123.com');
 		playerTwoScope.init('def@456.com');
 
@@ -810,6 +815,7 @@ describe('Game Logic Tests', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
 		expect(playerTwoScope.currentCard[0].name).toBe('Silvio Berlusconi');
@@ -838,10 +844,11 @@ describe('Game Logic Tests', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Donald Trump');
 		expect(playerTwoScope.currentCard[0].name).toBe('Vladimir Putin');
-	});
+	}));
 });
 
 
@@ -943,13 +950,11 @@ describe('Full Game Test', function() {
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
 
-		expect(playerOneScope.msg).toBe('Game has begun!');
 		expect(playerOneScope.gameInProgress).toBe(true);
 		expect(playerOneScope.round).toBe(0);
 		expect(playerOneScope.host).toBe(true);
 		expect(playerOneScope.turn).toBe(true);
 
-		expect(playerTwoScope.msg).toBe('Game has begun!');
 		expect(playerTwoScope.gameInProgress).toBe(true);
 		expect(playerTwoScope.round).toBe(0);
 		expect(playerTwoScope.host).toBe(false);
@@ -957,7 +962,7 @@ describe('Full Game Test', function() {
 	});
 
 
-	it('Game concludes with 1 winner', function() {
+	it('Game concludes with 1 winner', inject(function ($timeout) {
 		playerOneScope.init('abc@123.com');
 		playerTwoScope.init('def@456.com');
 
@@ -1004,6 +1009,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
 		expect(playerTwoScope.currentCard[0].name).toBe('Tim Burton');
@@ -1038,6 +1044,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
@@ -1072,6 +1079,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
@@ -1107,6 +1115,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
 		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
@@ -1142,6 +1151,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.currentCard[0].name).toBe('Johnnie Cochran');
@@ -1177,6 +1187,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
@@ -1212,6 +1223,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
 		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
@@ -1247,6 +1259,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 		expect(playerTwoScope.currentCard[0].name).toBe('Tim Burton');
@@ -1282,6 +1295,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Tim Burton');
 		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
@@ -1317,6 +1331,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Noddy');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
@@ -1352,6 +1367,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Miley Cyrus');
 		expect(playerTwoScope.currentCard[0].name).toBe('Phil the Greek');
@@ -1387,6 +1403,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Rihanna');
 		expect(playerTwoScope.currentCard[0].name).toBe('Noddy');
@@ -1422,6 +1439,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('George Bush Snr');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
@@ -1456,6 +1474,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Dick Dastardly');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
@@ -1490,6 +1509,7 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Silvio Berlusconi');
 		expect(playerTwoScope.currentCard[0].name).toBe('Chris Martin (Coldplay)');
@@ -1523,9 +1543,10 @@ describe('Full Game Test', function() {
 		// next round event
 		playerOneSockMock.receive('nextRound');
 		playerTwoSockMock.receive('nextRound');
+		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
-	});
+	}));
 
 });
 

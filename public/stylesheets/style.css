@@ -74,6 +74,11 @@ Card styles
 	width: 400px;
 }
 
+/* override padding on title to align title with categories */
+md-card-title {
+	padding-left: 8px!important;
+}
+
 md-card-header.grade-Bronze {
 	border-top: 3px solid rgba(205, 127, 50, 1);
 }

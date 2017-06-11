@@ -91,22 +91,28 @@
 
 			<!-- opposition result - shows when player in turn selects a category -->
 			<div class="animated zoomIn" layout="column" ng-show="showScore">
-				<md-divider></md-divider>
-				<p class="text-center"> - vs - </p>
-				<md-divider></md-divider>
+				<!--<md-divider></md-divider>-->
+				<p class="text-center">
+					<img src="/images/vs.png" alt="versus" />
+				</p>
+				<!--<md-divider></md-divider>-->
 
-				<md-card-title>
-					<md-card-title-text>
-						<span class="md-headline">{{ result.opponentCard[0].name }}</span>
-					</md-card-title-text>
-				</md-card-title>
+				<h2>{{ result.opponentCard[0].name }}</h2>
 
+				<!-- opponent score slider -->
 				<div class="category-row" layout="row">
 					<md-progress-linear class="score-slider" md-mode="determinate" value="{{ result.scoreSlider }}"></md-progress-linear>
 					<span flex></span>
 					<md-button class="play-button grade-{{ card.cuntal_order }}">
 						{{ result.scoreSlider }}
 					</md-button>
+				</div>
+				
+				<!-- result message -->
+				<div class="animated zoomIn" layout="column" ng-show="showResult">
+					<h3 class="text-center">{{ result.message }}</h3>
+					<p class="text-center">Loading next round...</p>
+					<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 				</div>
 			</div>
 
