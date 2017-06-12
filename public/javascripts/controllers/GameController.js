@@ -30,7 +30,12 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	// opponent score variables
 	$scope.showScore = false;
 	$scope.showResult = false;
+	// scoreSlider moves the opponent score slider bar
 	$scope.result.scoreSlider = 0;
+	// scoreSliderValue increments the opponent's score value
+	// required as a separate value because scoreSlider is 
+	// incremented in different steps depending on the values
+	$scope.result.scoreSliderValue = 0;
 	$scope.result.message = '';
 
 	// overall game score
@@ -184,7 +189,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			// so player-in-turn can see who their opponent
 			$scope.result.opponentCard = result.card;
 
-			$scope.moveOpponentScoreSlider(result.category, result.score).then(function() {
+			$scope.moveOpponentScoreSlider(result.category, result.score, $scope.result.myScore).then(function() {
 				// show result then emit nextRound event
 				// to show you're ready to proceed
 				if($scope.result.myScore > result.score) {
@@ -216,6 +221,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				$scope.showScore = false;
 				$scope.showResult = false;
 				$scope.result.scoreSlider = 0;
+				$scope.result.scoreSliderValue = 0;
 				$scope.result.message = '';
 
 				$scope.hideUnpalatibility = false;
@@ -259,7 +265,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 			console.log($scope.result);
 
-			$scope.moveOpponentScoreSlider($scope.result.category, $scope.result.opponentScore).then(function() {
+			$scope.moveOpponentScoreSlider($scope.result.category, $scope.result.opponentScore, $scope.result.myScore).then(function() {
 				$scope.resultCheck();
 			});
 
@@ -310,14 +316,18 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 
 	// move slider function to see opponent's score
-	$scope.moveOpponentScoreSlider = function(category, score) {
+	$scope.moveOpponentScoreSlider = function(category, opponentScore, myScore) {
 		$scope.showScore = true;
 		$scope.maskCategories(category);
 
+		console.log('opponentScore: ', opponentScore, ' myScore: ', myScore);
+
 		return $q(function(resolve, reject) {
 			$interval(function() {
-				$scope.result.scoreSlider += 1;
-			}, 200, score, true).then(function() {
+				// $scope.result.scoreSlider += 1;
+				$scope.result.scoreSlider += (100 / myScore);
+				$scope.result.scoreSliderValue += 1;
+			}, 200, opponentScore, true).then(function() {
 				resolve();
 			});
 		});

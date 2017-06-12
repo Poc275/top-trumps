@@ -107,7 +107,13 @@ module.exports = function(passport) {
 							email: profile.emails[0].value.toString(),
 							provider: 'facebook',
 							id: profile.id.toString(),
-							cards: createStarterPack()
+							cards: cardIds,
+							level: 1,
+							played: 0,
+							won: 0,
+							lost: 0,
+							xp: 0,
+							coin: 0
 						});
 
 						user.save(function(err) {
@@ -154,7 +160,13 @@ module.exports = function(passport) {
 							email: 'test@twitter.com',
 							provider: 'twitter',
 							id: profile.id.toString(),
-							cards: createStarterPack()
+							cards: cardIds,
+							level: 1,
+							played: 0,
+							won: 0,
+							lost: 0,
+							xp: 0,
+							coin: 0
 						});
 
 						user.save(function(err) {
@@ -211,7 +223,13 @@ module.exports = function(passport) {
 							email: profile.emails[0].value,
 							provider: 'google',
 							id: profile.id.toString(),
-							cards: cardIds
+							cards: cardIds,
+							level: 1,
+							played: 0,
+							won: 0,
+							lost: 0,
+							xp: 0,
+							coin: 0
 						});
 
 						user.save(function(err) {
@@ -265,7 +283,13 @@ module.exports = function(passport) {
 						email: email,
 						provider: 'local',
 						id: email.split('@')[0],
-						cards: cardIds
+						cards: cardIds,
+						level: 1,
+						played: 0,
+						won: 0,
+						lost: 0,
+						xp: 0,
+						coin: 0
 					});
 
 					user.save(function(err) {

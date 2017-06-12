@@ -79,6 +79,11 @@ md-card-title {
 	padding-left: 8px!important;
 }
 
+/* remove margin on info button to prevent card header from line wrapping */
+md-card-avatar {
+	margin: 0!important;
+}
+
 md-card-header.grade-Bronze {
 	border-top: 3px solid rgba(205, 127, 50, 1);
 }
@@ -300,10 +305,11 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 }
 
 #user-details h2 {
+	margin-top: 5px;
 	margin-bottom: 0;
 }
 
-#user-details h5 {
+#user-details h4 {
 	margin-top: 0;
 }
 
@@ -362,6 +368,20 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 	display: inline-block;
 	margin-right: 5px;
 	border-radius: 5px;
+}
+
+.xp-slider {
+	width: 250px;
+	margin-top: 22px;
+	margin-left: 16px;
+}
+
+.xp-slider .md-container {
+	height: 25px;
+}
+
+.emoji {
+	font-size: 200%;
 }
 
 

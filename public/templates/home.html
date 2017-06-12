@@ -80,7 +80,10 @@
 					<img ng-src="{{ gravatarUrl(user.email, 80) }}" alt="user's gravatar" id="profile-image" />
 					<div id="user-details" layout="column">
 						<h2>{{ user.name }}</h2>
-						<h5>Mouth Breather</h5>
+						<h4>{{ user.level | levelFilter }}
+							<!-- todo - create filter for correct medal colour -->
+							<span class="emoji">&#x1F949;</span>
+						</h4>
 					</div>
 
 					<!--<md-button class="md-raised md-accent" layout-align="center center" ui-sref="home.play" ng-click="init(user)">Play</md-button>-->
@@ -115,9 +118,21 @@
 					</md-card>
 
 					<!--<h1>Chat</h1>-->
-					<div class="chatbot-panel" layout="column" layout-padding>
-						<iframe src='https://webchat.botframework.com/embed/thedonaldbot?s=aAhtyvJ2VZ8.cwA.67o.4wUtSRZT75hxekWLUR1Y8fKRQSy3zRi_phnkN5hr_b8'></iframe>
-					</div>
+					<md-card class="news-card">
+						<md-card-header>
+							<md-card-avatar>
+								<img src="images/tc-avatar.png"/>
+							</md-card-avatar>
+							<md-card-header-text>
+								<span class="md-title">What's on your mind?</span>
+								<span class="md-subhead">Chat to The Donald</span>
+							</md-card-header-text>
+						</md-card-header>
+						<md-divider></md-divider>
+						<div class="chatbot-panel" layout="column" layout-padding>
+							<iframe src='https://webchat.botframework.com/embed/thedonaldbot?s=aAhtyvJ2VZ8.cwA.67o.4wUtSRZT75hxekWLUR1Y8fKRQSy3zRi_phnkN5hr_b8'></iframe>
+						</div>
+					</md-card>
 				</div><!-- end of timeline -->
 
 				<!--<span flex></span>-->
@@ -130,37 +145,32 @@
 
 						<div class="profile-content" layout="row">
 							<md-icon class="profile-icon" md-svg-src="icons/ic_person_black_24px.svg" aria-label="games played icon"></md-icon>
-							<p class="profile-text">Level 1 - Bronze Mouth Breather</p>
+							<p class="profile-text">Level: {{ user.level }} ({{ user.level | levelFilter }})</p>
 						</div>
 
 						<div class="profile-content" layout="row">
 							<md-icon class="profile-icon" md-svg-src="icons/ic_games_black_24px.svg" aria-label="games played icon"></md-icon>
-							<p class="profile-text">Played: 0</p>
+							<p class="profile-text">Played: {{ user.played }}</p>
 						</div>
 
 						<div class="profile-content" layout="row">
 							<md-icon class="profile-icon" md-svg-src="icons/ic_thumb_up_black_24px.svg" aria-label="games played icon"></md-icon>
-							<p class="profile-text">Won: 0</p>
+							<p class="profile-text">Won: {{ user.won }}</p>
 						</div>
 
 						<div class="profile-content" layout="row">
 							<md-icon class="profile-icon" md-svg-src="icons/ic_thumb_down_black_24px.svg" aria-label="games played icon"></md-icon>
-							<p class="profile-text">Lost: 0</p>
-						</div>
-
-						<!--<div class="profile-content" layout="row">
-							<md-icon class="profile-icon" md-svg-src="icons/ic_forward_black_24px.svg" aria-label="games played icon"></md-icon>
-							<p class="profile-text">Next level - Silver Mouth Breather</p>
-						</div>-->
-
-						<div class="profile-content" layout="row">
-							<p class="profile-text">XP: </p>
-							<md-slider ng-disabled="true" step="3" md-discrete min="0" max="10" aria-label="Disabled discrete 2"></md-slider>
+							<p class="profile-text">Lost: {{ user.lost }}</p>
 						</div>
 
 						<div class="profile-content" layout="row">
 							<md-icon class="profile-icon" md-svg-src="icons/ic_attach_money_black_24px.svg" aria-label="games played icon"></md-icon>
-							<p class="profile-text">0</p>
+							<p class="profile-text">Coin: {{ user.coin }}</p>
+						</div>
+
+						<div class="profile-content" layout="row">
+							<p class="profile-text">XP:</p>
+							<md-progress-linear class="xp-slider" md-mode="determinate" value="{{ user.xp }}"></md-progress-linear>
 						</div>
 
 					</div><!-- end of profile card -->
