@@ -3,27 +3,27 @@
 		<md-card-header class="grade-{{ card.cuntal_order }}" layout="row">
 			<md-card-header-text>
 				<span class="md-title">{{ card.category }}</span>
-				<span class="md-subhead">{{ card.cuntal_order }}</span>
+				<!--<span class="md-subhead">{{ card.cuntal_order }}</span>-->
 			</md-card-header-text>
 
 			<span flex></span>
 
 			<md-card-avatar>
 				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
-					<i ng-switch-when="false" class="material-icons info-button">info_outline</i>
+					<md-icon ng-switch-when="false" md-svg-src="icons/ic_info_outline_black_24px.svg" class="material-icons info-button"></md-icon>
 
 					<!-- if flipped show filled in info button -->
-					<i ng-switch-when="true" class="material-icons info-button">info</i>
+					<md-icon ng-switch-when="true" md-svg-src="icons/ic_info_black_24px.svg" class="material-icons info-button"></md-icon>
 				</md-button>
 			</md-card-avatar>
 		</md-card-header>
 
 
 		<!-- default, unflipped state - show front image -->
-		<img ng-switch-when="false" ng-src="https://tcmaster.file.core.windows.net/images/{{card.images[0]}}?sv=2016-05-31&ss=f&srt=sco&sp=r&se=2027-06-15T02:32:29Z&st=2017-06-14T18:32:29Z&spr=https,http&sig=Zdsf9%2BA1oi5QavILbKy3RUjuzy%2F63nRBEgU4HHTA77M%3D" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="false" ng-src="https://tcmaster.blob.core.windows.net/images/{{card.images[0]}}" class="md-card-image" alt="card photo" />
 
 		<!-- else if flipped show rear image -->
-		<img ng-switch-when="true" ng-src="https://tcmaster.file.core.windows.net/images/{{card.images[1]}}?sv=2016-05-31&ss=f&srt=sco&sp=r&se=2027-06-15T02:32:29Z&st=2017-06-14T18:32:29Z&spr=https,http&sig=Zdsf9%2BA1oi5QavILbKy3RUjuzy%2F63nRBEgU4HHTA77M%3D" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="true" ng-src="https://tcmaster.blob.core.windows.net/images/{{card.images[1]}}" class="md-card-image" alt="card photo" />
 
 
 		<md-card-title>
@@ -40,7 +40,59 @@
 
 
 		<!-- unflipped card actions - show credentials -->
-		<md-card-actions layout="column" layout-align="space-around none" ng-switch-when="false">
+		<md-card-actions ng-switch-when="false">
+			<div layout="row">
+				<div layout="column" layout-align="center center" flex="33" ng-hide="hideUnpalatibility">
+					<p>Unpalatibility</p>
+					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('unpalatibility', card.unpalatibility)">
+						{{ card.unpalatibility }}
+					</md-button>
+				</div>
+
+				<div layout="column" layout-align="center center" flex="33" ng-hide="hideUnpalatibility">
+					<p>Up their own arsemanship</p>
+					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('up_their_own_arsemanship', card.up_their_own_arsemanship)">
+						{{ card.up_their_own_arsemanship }}
+					</md-button>
+				</div>
+
+				<div layout="column" layout-align="center center" flex="33" ng-hide="hideUnpalatibility">
+					<p>Media attention</p>
+					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('media_attention', card.media_attention)">
+						{{ card.media_attention }}
+					</md-button>
+				</div>
+			</div>
+
+			<div layout="row" layout-align="space-around none">
+				<div layout="column" layout-align="center center" flex="33" ng-hide="hideUnpalatibility">
+					<p>Legacy:</p>
+					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('legacy', card.legacy)">
+						{{ card.legacy }}
+					</md-button>
+				</div>
+
+				<div layout="column" layout-align="center center" flex="33" ng-hide="hideUnpalatibility">
+					<p>PPC (price per cunt):</p>
+					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('ppc', card.ppc)">
+						{{ card.ppc }}
+					</md-button>
+				</div>
+
+				<div layout="column" layout-align="center center" flex="33" ng-hide="hideUnpalatibility">
+					<p>Special ability:</p>
+					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('special_ability', card.special_ability)">
+						{{ card.special_ability }}
+					</md-button>
+				</div>
+			</div>
+		</md-card-actions>
+
+
+
+
+
+		<!--<md-card-actions layout="column" layout-align="space-around none" ng-switch-when="false">
 			<div class="category-row" layout="row" ng-hide="hideUnpalatibility">
 				<p>Unpalatibility:</p>
 				<span flex></span>
@@ -87,42 +139,40 @@
 				<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('special_ability', card.special_ability)">
 					{{ card.special_ability }}
 				</md-button>
-			</div>
+			</div>-->
 
 			<!-- opposition result - shows when player in turn selects a category -->
-			<div class="animated zoomIn" layout="column" ng-show="showScore">
-				<!--<md-divider></md-divider>-->
+			<!--<div class="animated zoomIn" layout="column" ng-show="showScore">
 				<p class="text-center">
 					<img src="/images/vs.png" alt="versus" />
 				</p>
-				<!--<md-divider></md-divider>-->
 
-				<h2>{{ result.opponentCard[0].name }}</h2>
+				<h2>{{ result.opponentCard[0].name }}</h2>-->
 
 				<!-- opponent score slider -->
-				<div class="category-row" layout="row">
+				<!--<div class="category-row" layout="row">
 					<md-progress-linear class="score-slider" md-mode="determinate" value="{{ result.scoreSlider }}"></md-progress-linear>
 					<span flex></span>
 					<md-button class="play-button grade-{{ card.cuntal_order }}">
 						{{ result.scoreSliderValue }}
 					</md-button>
-				</div>
+				</div>-->
 				
 				<!-- result message -->
-				<div class="animated zoomIn" layout="column" ng-show="showResult">
+				<!--<div class="animated zoomIn" layout="column" ng-show="showResult">
 					<h3 class="text-center">{{ result.message }}</h3>
 					<p class="text-center">Loading next round...</p>
 					<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 				</div>
 			</div>
 
-		</md-card-actions>
+		</md-card-actions>-->
 
 
 		<!-- default, unflipped - show special ability description -->
-		<md-card-content ng-switch-when="false" ng-hide="showScore">
-			<md-divider></md-divider>
-			<h4>Special ability description:</h4>
+		<md-card-content ng-switch-when="false" ng-hide="showScore" id="special-ability-section">
+			<!--<md-divider></md-divider>-->
+			<h5>Special ability:</h5>
 			<p>{{ card.special_ability_description }}</p>
 		</md-card-content>
 

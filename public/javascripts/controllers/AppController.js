@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('AppController', function($scope, $mdSidenav, $http, $location) {
+angular.module('TCModule').controller('AppController', function($scope, $mdSidenav, $http, $location, $mdDialog) {
 	// it's good practice to bind ng-model properties
 	// to an object rather than a string on the scope
 	$scope.local = {};
@@ -19,4 +19,22 @@ angular.module('TCModule').controller('AppController', function($scope, $mdSiden
 			$location.path('/home');
 		});
 	};
+
+	// show the donald bot webchat
+	$scope.showTheDonald = function(ev) {
+		$mdDialog.show({
+			controller: DialogController,
+			templateUrl: '../templates/bot-dialog.html',
+			parent: angular.element(document.body),
+			targetEvent: ev,
+			clickOutsideToClose: true,
+			fullscreen: true // Only for -xs, -sm breakpoints.
+		});
+	};
+
+	function DialogController($scope, $mdDialog) {
+		$scope.cancel = function() {
+			$mdDialog.cancel();
+		};
+	}
 });

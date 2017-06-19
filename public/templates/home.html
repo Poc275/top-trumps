@@ -88,11 +88,11 @@
 
 					<!--<md-button class="md-raised md-accent" layout-align="center center" ui-sref="home.play" ng-click="init(user)">Play</md-button>-->
 				</div>
-			</div>
+			</div>			
 
 			<div layout="row" layout-padding layout-wrap>
 				<div class="timeline" layout="column" flex-gt-sm="55">
-					<!--<h1>News</h1>-->
+					<md-subheader>News Feed</md-subheader>
 					<!-- eventually - for each news feed in user's feed... -->
 					<md-card class="news-card">
 						<md-card-header>
@@ -115,23 +115,6 @@
 								I mean some of them are real losers. See them <a ng-click="getCards()" ui-sref="home.collection">here</a>.</p>
 							<p>Put them to task now by <a ng-click="init(user)" ui-sref="home.play">starting a new game</a>.</p>
 						</md-card-content>
-					</md-card>
-
-					<!--<h1>Chat</h1>-->
-					<md-card class="news-card">
-						<md-card-header>
-							<md-card-avatar>
-								<img src="images/tc-avatar.png"/>
-							</md-card-avatar>
-							<md-card-header-text>
-								<span class="md-title">What's on your mind?</span>
-								<span class="md-subhead">Chat to The Donald</span>
-							</md-card-header-text>
-						</md-card-header>
-						<md-divider></md-divider>
-						<div class="chatbot-panel" layout="column" layout-padding>
-							<iframe src='https://webchat.botframework.com/embed/thedonaldbot?s=aAhtyvJ2VZ8.cwA.67o.4wUtSRZT75hxekWLUR1Y8fKRQSy3zRi_phnkN5hr_b8'></iframe>
-						</div>
 					</md-card>
 				</div><!-- end of timeline -->
 
@@ -190,6 +173,12 @@
 					</div><!-- end of achievements card -->
 						
 				</div><!-- end of sidebar -->
+
+				<div id="chatbot">
+					<md-button class="md-fab" aria-label="chat to the donald" ng-click="showTheDonald($event)">
+						<md-icon id="chatbot-icon" md-svg-src="icons/the-pinch.svg"></md-icon>
+					</md-button>
+				</div>
 
 			</div>
 		</div>

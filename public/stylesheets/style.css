@@ -8,6 +8,19 @@ iframe {
 	height: 250px;
 }
 
+/* set on login card header to bring image more
+* towards the top of the card */
+#login-card-header {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* set on login card header when flipped
+* to nicely space the title */
+#flipped-login-header-text {
+	padding-top: 8px;
+}
+
 #desktop-content {
 	position: absolute;
 	top: 0;
@@ -71,7 +84,7 @@ Card styles
 **********************************
 */
 .card {
-	width: 400px;
+	max-width: 400px;
 }
 
 /* override padding on title to align title with categories */
@@ -84,20 +97,60 @@ md-card-avatar {
 	margin: 0!important;
 }
 
+/* reduce category title text size to fit card on mobile */
+md-card-actions p {
+	font-size: small;
+	text-align: center;
+	height: 34px;
+}
+
+/* reduce card title padding for mobile */
+md-card md-card-title {
+	padding: 12px 16px 0;
+}
+
+/* spread width of card header title to keep it on a single line */
+.md-title {
+	min-width: 162px;
+}
+
+/* align card header with info button */
+md-card-header-text {
+	padding-top: 6px;
+}
+
+/* shrink card content to fit on mobile */
+#special-ability-section {
+	padding-top: 0!important;
+	margin-top: 0!important;
+}
+
+md-card-content h5 {
+	margin: 16px 0;
+}
+
+md-card-content p {
+	padding-top: 0px;
+}
+
 md-card-header.grade-Bronze {
 	border-top: 3px solid rgba(205, 127, 50, 1);
+	padding: 8px;
 }
 
 md-card-header.grade-Silver {
 	border-top: 3px solid rgba(192, 192, 192, 1);
+	padding: 8px;
 }
 
 md-card-header.grade-Gold {
 	border-top: 3px solid rgba(253, 181, 21, 1);
+	padding: 8px;
 }
 
 md-card-header {
 	border-top: 3px solid rgba(128, 70, 27, 1);
+	padding: 8px;
 }
 
 .play-button {
@@ -193,35 +246,6 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 #score-seperator {
 	font-weight: 100;
 }
-
-
-/*
-*********************************
- In-game chat/game status messages
- ********************************
- */
-
-
-/*
-*********************************
- Opponent score progress bar
- ********************************
- */
-/*.thumb {
-	position: absolute;
-}
-
-.thumb:after {
- 	content: "0";
- 	position: absolute;
- 	width: 20px;
- 	height: 20px;
- 	border-radius: 20px;
- 	background-color: rgb(13, 71, 161);
- 	box-sizing: border-box;
- 	left: 0;
- 	top: -60px;
- }*/
 
 
 
@@ -384,47 +408,13 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 	font-size: 200%;
 }
 
-
-
-
-
-/*#profile-header {
-	background-color: #00BCD4;
-	height: 250px;
+#chatbot {
+	position: fixed;
+	bottom: 0;
+	right: 0;
 }
 
-#profile-title h1 {
-	margin: 0;
+#chatbot-icon {
+	height: 35px;
+	width: 35px;
 }
-
-#profile-title {
-	color: #0D0557;
-	justify-content: flex-end;
-}
-
-md-fab-speed-dial {
-	position: relative;
-	top: 125px;
-}
-
-#user-profile-card {
-	position: relative;
-	top: -225px;
-	margin: 0;
-}
-
-#level-progress {
-	width: 100%;
-	height: 30px;
-	border: 2px solid black;
-	border-radius: 15px;
-	box-sizing: border-box;
-}
-
-#level-progress-indicator {
-	width: 30%;
-	border-right: 2px solid black;
-	height: 26px;
-	border-radius: 15px 0 0 15px;
-	background-color: rgba(205, 127, 50, 1);
-}*/

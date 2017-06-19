@@ -1,12 +1,9 @@
 <!-- mobile view -->
 <div layout="column" class="animated" ng-switch on="flipped" ng-class="{ flipInY: flipped, fadeIn: !flipped }" hide-gt-sm>
 	<md-card md-whiteframe="12">
-		<md-card-header class="grade-Gold" layout="row">
-			<md-card-header-text ng-switch-when="false">
-				<span class="md-title">Welcome To...</span>
-			</md-card-header-text>
-
-            <md-card-header-text ng-switch-when="true">
+		<md-card-header class="grade-Gold" id="login-card-header" layout="row">
+            <!-- flipped header text shows the title 'About' -->
+            <md-card-header-text ng-switch-when="true" id="flipped-login-header-text">
 				<span class="md-title">About...</span>
 			</md-card-header-text>
 
@@ -23,10 +20,10 @@
 		</md-card-header>
 
 		<!-- default, unflipped state - show front image -->
-		<img ng-switch-when="false" ng-src="/images/tc-logo.png" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="false" ng-src="/images/tc-logo.png" class="md-card-image" alt="tc logo" />
 
 		<!-- else if flipped show rear image -->
-		<img ng-switch-when="true" ng-src="https://tcmaster.file.core.windows.net/images/Makers_of_Top_Cunts.jpg?sv=2016-05-31&ss=f&srt=sco&sp=r&se=2027-06-15T02:32:29Z&st=2017-06-14T18:32:29Z&spr=https,http&sig=Zdsf9%2BA1oi5QavILbKy3RUjuzy%2F63nRBEgU4HHTA77M%3D" class="md-card-image" alt="card photo" />
+		<img ng-switch-when="true" ng-src="/images/tc-about.jpg" class="md-card-image" alt="about tc" />
 
 
 		<!-- unflipped card actions - show credentials -->
