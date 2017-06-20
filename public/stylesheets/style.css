@@ -97,6 +97,15 @@ md-card-avatar {
 	margin: 0!important;
 }
 
+#front-card-image {
+	background-size: cover;
+	background-position: 50% 50%;
+	width: 100%;
+	height: 225px;
+	max-height: 225px;
+	border-radius: 2px 2px 0 0;
+}
+
 /* reduce category title text size to fit card on mobile */
 md-card-actions p {
 	font-size: small;
