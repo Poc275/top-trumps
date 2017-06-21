@@ -8,7 +8,6 @@
 			<!--<h2 flex md-truncate>Home</h2>-->
 			<span flex></span>
 
-			<!-- This button won't work yet as it's not under GameController -->
 			<md-button class="md-raised md-accent" ui-sref="home.play" ng-click="init(user)">Play</md-button>
 		</div>
 	</md-toolbar>
@@ -80,12 +79,12 @@
 					<img ng-src="{{ gravatarUrl(user.email, 80) }}" alt="user's gravatar" id="profile-image" />
 					<div id="user-details" layout="column">
 						<h2>{{ user.name }}</h2>
-						<h4>{{ user.level | levelFilter }}
-							<!-- todo - create filter for correct medal colour -->
-							<span class="emoji">&#x1F949;</span>
-						</h4>
+						<h4>Rank: {{ user.level | levelFilter }}</h4>
 					</div>
 
+					<!-- todo - create filter for correct medal colour -->
+					<span class="emoji">&#x1F949;</span>
+					
 					<!--<md-button class="md-raised md-accent" layout-align="center center" ui-sref="home.play" ng-click="init(user)">Play</md-button>-->
 				</div>
 			</div>			

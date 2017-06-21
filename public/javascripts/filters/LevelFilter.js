@@ -20,31 +20,31 @@ angular.module('TCModule').filter('levelFilter', function() {
                     levelDesc = 'Gold Fictional';
                     break;
                 case 4:
-                    levelDesc = 'Bronze Wrong\'n';
-                    break;
-                case 5:
-                    levelDesc = 'Silver Wrong\'n';
-                    break;
-                case 6:
-                    levelDesc = 'Gold Wrong\'n';
-                    break;
-                case 7:
                     levelDesc = 'Bronze Mouth Breather';
                     break;
-                case 8:
+                case 5:
                     levelDesc = 'Silver Mouth Breather';
                     break;
-                case 9:
+                case 6:
                     levelDesc = 'Gold Mouth Breather';
                     break;
-                case 10:
+                case 7:
                     levelDesc = 'Bronze Sport';
                     break;
-                case 11:
+                case 8:
                     levelDesc = 'Silver Sport';
                     break;
-                case 12:
+                case 9:
                     levelDesc = 'Gold Sport';
+                    break;
+                case 10:
+                    levelDesc = 'Bronze Wrong\'n';
+                    break;
+                case 11:
+                    levelDesc = 'Silver Wrong\'n';
+                    break;
+                case 12:
+                    levelDesc = 'Gold Wrong\'n';
                     break;
                 case 13:
                     levelDesc = 'Bronze Attention Seeker';
