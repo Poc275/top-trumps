@@ -4,6 +4,7 @@ angular.module('TCModule').directive('tcCard', function($sce) {
 		templateUrl: '/templates/card.html',
 		controller: function($scope) {
 			$scope.flipped = false;
+			$scope.showCategoryInfo = false;
 
 			// doing the references in the same way as the bio
 			// inside an array doesn't return a string, but a trustedHelperObject

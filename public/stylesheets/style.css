@@ -87,11 +87,6 @@ Card styles
 	max-width: 400px;
 }
 
-/* override padding on title to align title with categories */
-md-card-title {
-	padding-left: 8px!important;
-}
-
 /* remove margin on info button to prevent card header from line wrapping */
 md-card-avatar {
 	margin: 0!important;
@@ -159,7 +154,8 @@ md-card-header.grade-Gold {
 
 md-card-header {
 	border-top: 3px solid rgba(128, 70, 27, 1);
-	padding: 8px;
+	padding-top: 8px!important;
+	padding-bottom: 8px!important;
 }
 
 .play-button {
@@ -231,6 +227,23 @@ md-card-header {
 md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-bar2 {
 	height: 25px;
 }
+
+
+/*
+*********************************
+ card category info overlay
+ ********************************
+ */
+ .category-info-popup {
+	/*width: 100%;
+	height: 100%;*/
+	background-color: rgba(255, 255, 255, 0.7);
+	padding: 8px;
+ }
+
+ .category-info-popup p {
+	margin-top: 0;
+ }
 
 
 /*

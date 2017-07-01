@@ -8,8 +8,8 @@
 
 			<span flex></span>
 
-			<md-card-avatar>
-				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
+			<md-card-avatar ng-switch on="showCategoryInfo">
+				<md-button class="md-icon-button md-primary" ng-click="showCategoryInfo = !showCategoryInfo" aria-label="card information">
 					<md-icon ng-switch-when="false" md-svg-src="icons/ic_info_outline_black_24px.svg" class="material-icons info-button"></md-icon>
 
 					<!-- if flipped show filled in info button -->
@@ -20,11 +20,23 @@
 
 
 		<!-- default, unflipped state - show front image -->
-		<!--<img ng-switch-when="false" ng-src="https://tcmaster.blob.core.windows.net/images/{{card.images[0]}}" class="md-card-image" alt="card photo" />-->
-		<div ng-switch-when="false" id="front-card-image" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}"></div>
+		<!-- the ng-switch on is for the category info popup -->
+		<div ng-switch-when="false" id="front-card-image" ng-switch on="showCategoryInfo" 
+			ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}">
+			<div class="category-info-popup animated" ng-switch-when="true" ng-class="{ fadeInDown: showCategoryInfo, fadeOutUp: !showCategoryInfo }">
+				<p>
+					<em>Tory</em>
+					<ol>
+						<li>A member or supporter of an homogeneous band of wealthy individuals who consider themselves as having a divine 
+							right to exert control over a "lower" class of people. <q>The best argument against democracy is a 
+							five-minute conversation with the average voter.</q><cite> - Winston Churchill</cite>
+						</li>
+					</ol>
+				</p>
+			</div>
+		</div>
 
 		<!-- else if flipped show rear image -->
-		<!--<img ng-switch-when="true" ng-src="https://tcmaster.blob.core.windows.net/images/{{card.images[1]}}" class="md-card-image" alt="card photo" />-->
 		<div ng-switch-when="true" id="front-card-image" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[1]}})'}"></div>
 
 		<md-card-title>
@@ -37,6 +49,18 @@
 			<md-card-title-text ng-switch-when="true">
 				<span class="md-headline">{{ card.name }} Biography</span>
 			</md-card-title-text>
+
+			<!--<span flex></span>-->
+
+			<md-card-avatar>
+				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
+					<md-icon ng-switch-when="false" md-svg-src="icons/ic_info_outline_black_24px.svg" class="material-icons info-button"></md-icon>
+
+					<!-- if flipped show filled in info button -->
+					<md-icon ng-switch-when="true" md-svg-src="icons/ic_info_black_24px.svg" class="material-icons info-button"></md-icon>
+				</md-button>
+			</md-card-avatar>
+
 		</md-card-title>
 
 
