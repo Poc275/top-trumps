@@ -31,7 +31,7 @@ iframe {
 
 #desktop-view {
 	height: 100%;
-	background: url("/images/tc-faces.png") no-repeat 50% 100% / 350px 350px;
+	/* background: url("/images/tc-faces.png") no-repeat 50% 100% / 350px 350px; */
 }
 
 #desktop-logo {
