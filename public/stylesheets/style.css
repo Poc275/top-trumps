@@ -84,8 +84,7 @@ Card styles
 **********************************
 */
 .card {
-	width: 400px;
-	max-width: 400px;
+	max-width: 500px;
 }
 
 /* remove margin on info button to prevent card header from line wrapping */
