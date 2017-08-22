@@ -1,0 +1,15 @@
+<md-dialog class="card-dialog" aria-label="card">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{ mdDialogData[0].name }}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-src="icons/ic_close_black_24px.svg" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content class="card-dialog-content">
+        <tc-card card='card' ng-repeat="card in mdDialogData"></tc-card>
+    </md-dialog-content>
+</md-dialog>

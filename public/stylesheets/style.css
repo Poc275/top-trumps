@@ -439,3 +439,50 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 	height: 35px;
 	width: 35px;
 }
+
+
+/*
+*********************************
+ Collection page styles
+*********************************
+*/
+.card-dialog {
+	width: 650px;
+	max-height: 90%!important;
+}
+
+.card-dialog-content {
+	/* margin: 0 auto; */
+	overflow: hidden;
+}
+
+.collection-group {
+	margin-bottom: 32px;
+}
+
+.collection-item-container {
+	text-align: center;
+	width: 150px;
+}
+
+.collection-item {
+	width: 100px;
+	height: 100px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center center;
+	border-radius: 50px;
+	border: 2px solid #818181;
+	margin: 0 auto;
+	cursor: pointer;
+}
+
+.collection-parent.ng-hide {
+	max-height: 0;
+}
+
+.collection-parent {
+	transition: all 0.45s cubic-bezier(0.35, 0, 0.25, 1);
+	max-height: 3500px;
+	overflow: hidden;
+}
