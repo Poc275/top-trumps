@@ -44,7 +44,6 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 		// get all cards and user's cards to see which are missing from the collection
 		Cards.all().then(function(cards) {
 			Cards.getCardCollection().then(function(myCards) {
-				console.log('CONTROLLER TEST: ', myCards.data);
 				// compare arrays and append 'collected' property
 				cards.data.forEach(function(card) {
 					if(myCards.data.filter(function(el) { return el.name === card.name; }).length > 0) {

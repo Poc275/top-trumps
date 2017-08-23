@@ -295,64 +295,9 @@ describe('UserController Tests', function() {
 		// mock requests
 		$httpBackend.whenRoute('GET', '/me').respond({email: 'abc123@test.com'});
 		$httpBackend.whenRoute('GET', '/logout').respond();
-		// $httpBackend.whenRoute('GET', '/cards').respond({
-		// 	cards: [
-		// 		{
-		// 			"_id": "58962a7f11671b2e78b6ec8f",
-		// 			"name": "Vladimir Putin",
-		// 			"unpalatibility": 87,
-		// 			"up_their_own_arsemanship": 92,
-		// 			"media_attention": 86,
-		// 			"legacy": 77,
-		// 			"special_ability": 96,
-		// 			"ppc": 200000,
-		// 			"cuntal_order": "Gold",
-		// 			"category": "World Leaders",
-		// 			"special_ability_description": "Land grabbing election interfering miscreant",
-		// 			"bio":"",
-		// 			"references": ["https://goo.gl/W59LNx"]
-		// 		},
-		// 		{
-		// 			"_id": "58962b5845c58e2e78ae0121",
-		// 			"name": "Genghis Khan",
-		// 			"unpalatibility": 75,
-		// 			"up_their_own_arsemanship": 70,
-		// 			"media_attention": 3,
-		// 			"legacy": 70,
-		// 			"special_ability": 85,
-		// 			"ppc": 150000,
-		// 			"cuntal_order": "Silver",
-		// 			"category": "World Leaders",
-		// 			"special_ability_description": "0.5% of global male population directly descended from this lad",
-		// 			"bio": "",
-		// 			"references": []
-		// 		}
-		// 	]
-		// });
-		// $httpBackend.whenRoute('GET', '/me/collection').respond({
-		// 	cards: [
-		// 		{
-		// 			"_id": "58962a7f11671b2e78b6ec8f",
-		// 			"name": "Vladimir Putin",
-		// 			"unpalatibility": 87,
-		// 			"up_their_own_arsemanship": 92,
-		// 			"media_attention": 86,
-		// 			"legacy": 77,
-		// 			"special_ability": 96,
-		// 			"ppc": 200000,
-		// 			"cuntal_order": "Gold",
-		// 			"category": "World Leaders",
-		// 			"special_ability_description": "Land grabbing election interfering miscreant",
-		// 			"bio":"",
-		// 			"references": ["https://goo.gl/W59LNx"]
-		// 		}
-		// 	]
-		// });
 		$httpBackend.whenRoute('GET', '/templates/home.html').respond('<html></html>');
 		$httpBackend.whenRoute('GET', '/templates/collection.html').respond('<html></html>');
-
-		// mock templates
-		$httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+		$httpBackend.whenRoute('GET', '/templates/index.html').respond('<html></html>');
 
 		// setup scope and location (for logout testing)
 		$rootScope = $injector.get('$rootScope');
@@ -398,21 +343,166 @@ describe('UserController Tests', function() {
 
 		expect(location.path()).toBe('/');
 	});
+});
+
+
+describe('Card Collection Tests', function() {
+	var $httpBackend;
+	var $rootScope;
+	var createController;
+
+	beforeEach(module('TCModule'));
+
+	beforeEach(inject(function($injector) {
+		// set up the mock http service responses
+		$httpBackend = $injector.get('$httpBackend');
+
+		// mock requests
+		$httpBackend.whenRoute('GET', '/me').respond({email: 'abc123@test.com'});
+		$httpBackend.whenRoute('GET', '/cards').respond([
+			{
+				"name": "Donald Trump",
+				"category": "World Leaders"
+			},
+			{
+				"name": "Vladimir Putin",
+				"category": "World Leaders"
+			},
+			{
+				"name": "Genghis Khan",
+				"category": "Attention Seekers"
+			},
+			{
+				"name": "Bill Cosby",
+				"category": "Wrong\'n"
+			},
+			{
+				"name": "Lionel Messi",
+				"category": "Sports"
+			},
+			{
+				"name": "Tim Martin",
+				"category": "Mouth Breathers"
+			},
+			{
+				"name": "Jeffrey Archer",
+				"category": "Tories"
+			},
+			{
+				"name": "Gargamel",
+				"category": "Fictional"
+			},
+			{
+				"name": "Lew Ranieri",
+				"category": "1%er"
+			},
+			{
+				"name": "Kris Akabusi",
+				"category": "Jokers"
+			}
+		]);
+
+		$httpBackend.expect('GET', '/me/collection').respond([
+			{
+				"name": "Vladimir Putin",
+				"category": "World Leaders"
+			},
+			{
+				"name": "Genghis Khan",
+				"category": "Attention Seekers"
+			},
+			{
+				"name": "Bill Cosby",
+				"category": "Wrong\'n"
+			},
+			{
+				"name": "Lionel Messi",
+				"category": "Sports"
+			},
+			{
+				"name": "Tim Martin",
+				"category": "Mouth Breathers"
+			},
+			{
+				"name": "Jeffrey Archer",
+				"category": "Tories"
+			},
+			{
+				"name": "Gargamel",
+				"category": "Fictional"
+			},
+			{
+				"name": "Lew Ranieri",
+				"category": "1%er"
+			},
+			{
+				"name": "Kris Akabusi",
+				"category": "Jokers"
+			}
+		]);
+
+		// setup scope and location (for logout testing)
+		$rootScope = $injector.get('$rootScope');
+
+		// the $controller service is used to create instances of controllers
+		var $controller = $injector.get('$controller');
+
+		createController = function() {
+			return $controller('UserController', { '$scope' : $rootScope });
+		};
+	}));
+
+	afterEach(function() {
+		$httpBackend.verifyNoOutstandingExpectation();
+     	$httpBackend.verifyNoOutstandingRequest();
+	});
 
 
 	// not a great test because the cards factory isn't mocked 
 	// inside this function, need to add this in to improve the test...
-	// it('user\'s card collection is assigned to scope', function() {
-		// var controller = createController();
-		// $rootScope.getCards();
+	it('user\'s card collection is correct', function() {
+		var controller = createController();
+		$rootScope.getCards();
+		$httpBackend.flush();
 
-		// $httpBackend.flush();
+		expect($rootScope.totalCollection).not.toBeNull();
+		expect($rootScope.totalCollection).not.toBeUndefined();
+		expect($rootScope.totalCollection.length).toEqual(10);
 
-		// console.log('TEST FAILING: ', $rootScope.totalCollection);
+		// got everyone but trump (first card) in collection
+		expect($rootScope.totalCollection[0].collected).toBe(false);
+		expect($rootScope.totalCollection[0].name).toBe('Donald Trump');
+		expect($rootScope.totalCollection[1].collected).toBe(true);
+		expect($rootScope.totalCollection[1].name).toBe('Vladimir Putin');
+		expect($rootScope.totalCollection[2].collected).toBe(true);
+		expect($rootScope.totalCollection[2].name).toBe('Genghis Khan');
+		expect($rootScope.totalCollection[3].collected).toBe(true);
+		expect($rootScope.totalCollection[3].name).toBe('Bill Cosby');
+		expect($rootScope.totalCollection[4].collected).toBe(true);
+		expect($rootScope.totalCollection[4].name).toBe('Lionel Messi');
+		expect($rootScope.totalCollection[5].collected).toBe(true);
+		expect($rootScope.totalCollection[5].name).toBe('Tim Martin');
+		expect($rootScope.totalCollection[6].collected).toBe(true);
+		expect($rootScope.totalCollection[6].name).toBe('Jeffrey Archer');
+		expect($rootScope.totalCollection[7].collected).toBe(true);
+		expect($rootScope.totalCollection[7].name).toBe('Gargamel');
+		expect($rootScope.totalCollection[8].collected).toBe(true);
+		expect($rootScope.totalCollection[8].name).toBe('Lew Ranieri');
+		expect($rootScope.totalCollection[9].collected).toBe(true);
+		expect($rootScope.totalCollection[9].name).toBe('Kris Akabusi');
 
-		// expect($rootScope.totalCollection).not.toBeNull();
-		// expect($rootScope.totalCollection).not.toBeUndefined();
-	// });
+		// category count checks
+		expect($rootScope.categoriesCollected.total).toEqual(9);
+		expect($rootScope.categoriesCollected.worldLeaders).toEqual(1);
+		expect($rootScope.categoriesCollected.attSeekers).toEqual(1);
+		expect($rootScope.categoriesCollected.wrongNs).toEqual(1);
+		expect($rootScope.categoriesCollected.sports).toEqual(1);
+		expect($rootScope.categoriesCollected.mouthBreathers).toEqual(1);
+		expect($rootScope.categoriesCollected.tories).toEqual(1);
+		expect($rootScope.categoriesCollected.fictional).toEqual(1);
+		expect($rootScope.categoriesCollected.onePercenters).toEqual(1);
+		expect($rootScope.categoriesCollected.jokers).toEqual(1);
+	});
 });
 
 

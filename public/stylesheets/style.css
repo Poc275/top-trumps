@@ -453,7 +453,7 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 
 .card-dialog-content {
 	/* margin: 0 auto; */
-	overflow: hidden;
+	/* overflow: hidden; */
 }
 
 .collection-group {

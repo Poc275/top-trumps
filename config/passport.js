@@ -219,7 +219,7 @@ module.exports = function(passport) {
 
 						user = new User({
 							username: username,
-							name: profile.displayName,
+							name: profile.name.givenName + " " + profile.name.familyName,
 							email: profile.emails[0].value,
 							provider: 'google',
 							id: profile.id.toString(),
