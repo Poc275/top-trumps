@@ -1,253 +1,255 @@
-<h2 layout-padding class="md-display-1">My Collection - {{ categoriesCollected.total }} / {{ totalCollection.length }}</h2>
+<div layout-padding>
+	<h2 layout-padding class="md-display-1">My Collection - {{ categoriesCollected.total }} / {{ totalCollection.length }}</h2>
 
-<!-- world leaders -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">World Leaders - {{ categoriesCollected.worldLeaders }} / {{ worldLeaders.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showWorldLeaders = !showWorldLeaders" aria-label="expand world leaders collection">
-				<md-icon ng-if="!showWorldLeaders" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showWorldLeaders" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-	
-	<div layout="row" layout-padding layout-wrap ng-show="showWorldLeaders" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'World Leaders'} as worldLeaders" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- world leaders -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">World Leaders - {{ categoriesCollected.worldLeaders }} / {{ worldLeaders.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showWorldLeaders = !showWorldLeaders" aria-label="expand world leaders collection">
+					<md-icon ng-if="!showWorldLeaders" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showWorldLeaders" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
+		
+		<div layout="row" layout-padding layout-wrap ng-show="showWorldLeaders" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'World Leaders'} as worldLeaders" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- attention seekers -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">Attention Seekers - {{ categoriesCollected.attSeekers }} / {{ attSeekers.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showAttSeekers = !showAttSeekers" aria-label="expand attention seekers collection">
-				<md-icon ng-if="!showAttSeekers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showAttSeekers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showAttSeekers" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Attention Seekers'} as attSeekers" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- attention seekers -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">Attention Seekers - {{ categoriesCollected.attSeekers }} / {{ attSeekers.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showAttSeekers = !showAttSeekers" aria-label="expand attention seekers collection">
+					<md-icon ng-if="!showAttSeekers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showAttSeekers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showAttSeekers" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Attention Seekers'} as attSeekers" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- wrong'n's -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">Wrong'n's - {{ categoriesCollected.wrongNs }} / {{ wrongNs.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showWrongNs = !showWrongNs" aria-label="expand wrong'n's collection">
-				<md-icon ng-if="!showWrongNs" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showWrongNs" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showWrongNs" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Wrong\'n'} as wrongNs" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- wrong'n's -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">Wrong'n's - {{ categoriesCollected.wrongNs }} / {{ wrongNs.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showWrongNs = !showWrongNs" aria-label="expand wrong'n's collection">
+					<md-icon ng-if="!showWrongNs" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showWrongNs" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showWrongNs" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Wrong\'n'} as wrongNs" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- sports -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">Sports - {{ categoriesCollected.sports }} / {{ sports.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showSports = !showSports" aria-label="expand sports collection">
-				<md-icon ng-if="!showSports" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showSports" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showSports" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Sports'} as sports" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- sports -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">Sports - {{ categoriesCollected.sports }} / {{ sports.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showSports = !showSports" aria-label="expand sports collection">
+					<md-icon ng-if="!showSports" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showSports" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showSports" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Sports'} as sports" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- mouth breathers -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">Mouth Breathers - {{ categoriesCollected.mouthBreathers }} / {{ mouthBreathers.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showMouthBreathers = !showMouthBreathers" aria-label="expand mouth breathers collection">
-				<md-icon ng-if="!showMouthBreathers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showMouthBreathers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showMouthBreathers" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Mouth Breathers'} as mouthBreathers" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- mouth breathers -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">Mouth Breathers - {{ categoriesCollected.mouthBreathers }} / {{ mouthBreathers.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showMouthBreathers = !showMouthBreathers" aria-label="expand mouth breathers collection">
+					<md-icon ng-if="!showMouthBreathers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showMouthBreathers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showMouthBreathers" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Mouth Breathers'} as mouthBreathers" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- tories -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">Tories - {{ categoriesCollected.tories }} / {{ tories.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showTories = !showTories" aria-label="expand tories collection">
-				<md-icon ng-if="!showTories" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showTories" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showTories" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Tories'} as tories" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- tories -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">Tories - {{ categoriesCollected.tories }} / {{ tories.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showTories = !showTories" aria-label="expand tories collection">
+					<md-icon ng-if="!showTories" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showTories" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showTories" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Tories'} as tories" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- fictional -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">Fictionals - {{ categoriesCollected.fictional }} / {{ fictional.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showFictional = !showFictional" aria-label="expand fictional collection">
-				<md-icon ng-if="!showFictional" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showFictional" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showFictional" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Fictional'} as fictional" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- fictional -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">Fictionals - {{ categoriesCollected.fictional }} / {{ fictional.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showFictional = !showFictional" aria-label="expand fictional collection">
+					<md-icon ng-if="!showFictional" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showFictional" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showFictional" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Fictional'} as fictional" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- 1%ers -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">1%ers - {{ categoriesCollected.onePercenters }} / {{ onePercenters.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showOnePercenters = !showOnePercenters" aria-label="expand 1 percenters collection">
-				<md-icon ng-if="!showOnePercenters" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showOnePercenters" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showOnePercenters" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: '1%er'} as onePercenters" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- 1%ers -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">1%ers - {{ categoriesCollected.onePercenters }} / {{ onePercenters.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showOnePercenters = !showOnePercenters" aria-label="expand 1 percenters collection">
+					<md-icon ng-if="!showOnePercenters" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showOnePercenters" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showOnePercenters" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: '1%er'} as onePercenters" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
 
-<!-- jokers -->
-<section class="md-whiteframe-z1 collection-group">
-	<md-toolbar class="md-primary">
-		<div class="md-toolbar-tools">
-			<h4 class="md-headline">Jokers - {{ categoriesCollected.jokers }} / {{ jokers.length }}</h4>
-			<span flex></span>
-			<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showJokers = !showJokers" aria-label="expand jokers collection">
-				<md-icon ng-if="!showJokers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
-				<md-icon ng-if="showJokers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
-			</md-button>
-		</div>
-	</md-toolbar>
-
-	<div layout="row" layout-padding layout-wrap ng-show="showJokers" class="collection-parent">
-		<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Jokers'} as jokers" class="collection-item-container">
-			<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+	<!-- jokers -->
+	<section class="md-whiteframe-z1 collection-group">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools">
+				<h4 class="md-headline">Jokers - {{ categoriesCollected.jokers }} / {{ jokers.length }}</h4>
+				<span flex></span>
+				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showJokers = !showJokers" aria-label="expand jokers collection">
+					<md-icon ng-if="!showJokers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
+					<md-icon ng-if="showJokers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
-			<p ng-if="!card.collected">&mdash;</p>
+		</md-toolbar>
 
-			<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
-				ng-click="showCard($event, card)" class="collection-item">
+		<div layout="row" layout-padding layout-wrap ng-show="showJokers" class="collection-parent">
+			<div layout="column" ng-repeat="card in totalCollection | filter: { category: 'Jokers'} as jokers" class="collection-item-container">
+				<div ng-if="!card.collected" ng-style="{'background-image':'url(images/card-not-collected.png)'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="!card.collected">&mdash;</p>
+
+				<div ng-if="card.collected" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}" 
+					ng-click="showCard($event, card)" class="collection-item">
+				</div>
+				<p ng-if="card.collected">{{ card.name }}</p>
 			</div>
-			<p ng-if="card.collected">{{ card.name }}</p>
 		</div>
-	</div>
-</section>
+	</section>
+</div>

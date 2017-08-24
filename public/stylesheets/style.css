@@ -101,6 +101,17 @@ md-card-avatar {
 	border-radius: 2px 2px 0 0;
 }
 
+#front-card-image-not-collected {
+	background-image: url('../images/tc-text-logo.png');
+	background-size: contain;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	width: 100%;
+	height: 225px;
+	max-height: 225px;
+	border-radius: 2px 2px 0 0;
+}
+
 /* reduce category title text size to fit card on mobile */
 md-card-actions p {
 	font-size: small;
@@ -158,6 +169,12 @@ md-card-header {
 	padding-bottom: 8px!important;
 }
 
+/* card not collected */
+md-card-header.card-not-collected {
+	border-top: 3px solid #818181;
+	padding: 8px;
+}
+
 .play-button {
 	min-width: 50px;
 	min-height: 50px;
@@ -176,6 +193,10 @@ md-card-header {
 	background-color: rgba(253, 181, 21, 1);
 }
 
+.play-button.grade-not-collected {
+	background-color: #818181;
+}
+
 .play-button {
 	background-color: rgba(128, 70, 27, 1);
 }
@@ -190,6 +211,10 @@ md-card-header {
 
 .play-button.grade-Gold:not([disabled]):hover {
 	background-color: rgba(174, 122, 0, 1)
+}
+
+.play-button.grade-not-collected:not([disabled]):hover {
+	background-color: #ABABAB;
 }
 
 .play-button:not([disabled]):hover {
@@ -447,13 +472,8 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 *********************************
 */
 .card-dialog {
-	width: 650px;
+	width: 500px;
 	max-height: 90%!important;
-}
-
-.card-dialog-content {
-	/* margin: 0 auto; */
-	/* overflow: hidden; */
 }
 
 .collection-group {
