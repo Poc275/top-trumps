@@ -4,6 +4,15 @@ if(!process.env.FacebookClientID) {
 	config = require('../config/auth');
 }
 
+// responses...
+var whatIntentResponses = [
+    "This game is the greatest… and everyone… a lot of people, agree!",
+    "You get to enjoy learning about some wonderful people. This is truly amazing.",
+    "This is a game that never gets an easy ride in the press. That's so unfair. It's a great game. I love it, you’re going to love it too.",
+    "TC is so great. So Great. So new. It's hard to say just how fantastic it is. I love it.",
+    "I have assembled for you an amazing bunch of people. You can use them to do fantastic things. To achieve great things."
+];
+
 var connector = new builder.ChatConnector({
     appId: process.env.BotAppId || config.bot.appId,
     appPassword: process.env.BotPassword || config.bot.password
@@ -64,8 +73,9 @@ dialog.matches('What', [
         session.sendTyping();
         next();
     },
-    builder.DialogAction.send('TC is the greatest game, we\'re very proud of it')
+    builder.DialogAction.send(whatIntentResponses[Math.floor(Math.random() * whatIntentResponses.length)])
 ]);
+
 
 dialog.onDefault(builder.DialogAction.send('I don\'t understand, who\'d have thought answering questions would be so difficult'));
 

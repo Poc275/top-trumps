@@ -8,6 +8,12 @@ iframe {
 	height: 250px;
 }
 
+/* styling for iframe once logged in */
+.in-app-chat-frame {
+	height: 500px;
+	width: 100%;
+}
+
 /* set on login card header to bring image more
 * towards the top of the card */
 #login-card-header {
