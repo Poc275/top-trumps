@@ -134,16 +134,17 @@ bot.dialog('AgeIntent', [
 // Appearance intent
 bot.dialog('AppearanceIntent', [
     function(session, args, next) {
+        // var msg = session.message;
+
         session.send(appearanceIntentResponses[Math.floor(Math.random() * appearanceIntentResponses.length)]);
-        session.endDialog({
+        session.send({
             text: "Judge for yourself, let me know what you think I look like.",
             attachments: [{
-                fallbackText: "I can't send photos",
                 contentType: "image/jpeg",
                 contentUrl: "https://tcmaster.blob.core.windows.net/images/trump-shocked.jpg",
                 name: "DonaldBotAppearance.jpg"
             }]
-        });
+        }).endDialog();
     }
 ]).triggerAction({
     matches: 'Appearance'
