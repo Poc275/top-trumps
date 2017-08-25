@@ -53,7 +53,7 @@ var hobbiesIntentResponses = [
 ];
 
 var languageIntentResponses = [
-    "I speak God’s language. The only true language. I use the greatest countries greatest voice to speak the language Americans own, and which will always be ours. English.",
+    "I speak God’s language. The only true language. I use the greatest country's greatest voice to speak the language Americans own, and which will always be ours. English.",
     "I’m learning Spanish so I can get some landscaping done on my deep southern border...",
     "I speak only English hombre!",
     "I don't speak French, and why would I ever? They don't even have a word for Entrepreneur!",
@@ -134,7 +134,16 @@ bot.dialog('AgeIntent', [
 // Appearance intent
 bot.dialog('AppearanceIntent', [
     function(session, args, next) {
-        session.endDialog(appearanceIntentResponses[Math.floor(Math.random() * appearanceIntentResponses.length)]);
+        session.send(appearanceIntentResponses[Math.floor(Math.random() * appearanceIntentResponses.length)]);
+        session.endDialog({
+            text: "Judge for yourself, let me know what you think I look like.",
+            attachments: [{
+                fallbackText: "I can't send photos",
+                contentType: "image/jpeg",
+                contentUrl: "https://tcmaster.blob.core.windows.net/images/trump-shocked.jpg",
+                name: "DonaldBotAppearance.jpg"
+            }]
+        });
     }
 ]).triggerAction({
     matches: 'Appearance'
