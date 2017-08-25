@@ -106,8 +106,8 @@ var whatIntentResponses = [
 
 
 var connector = new builder.ChatConnector({
-    // appId: process.env.BotAppId || config.bot.appId,
-    // appPassword: process.env.BotPassword || config.bot.password
+    appId: process.env.BotAppId || config.bot.appId,
+    appPassword: process.env.BotPassword || config.bot.password
 });
 
 var bot = new builder.UniversalBot(connector);
