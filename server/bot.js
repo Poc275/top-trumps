@@ -22,7 +22,7 @@ var recogniser = new builder.LuisRecognizer(model);
 // using intent dialogs instead of global dialogs, this
 // prevents dialogs from exiting when a new intent is matched
 // and we're still waiting for user input
-//// bot.recognizer(recogniser);
+// bot.recognizer(recogniser);
 var intents = new builder.IntentDialog({
     recognizers: [recogniser]
 });
