@@ -256,7 +256,7 @@ function getSentimentAnalysis(text, cb) {
     };
 
     request.post(options, function(error, response, body) {
-        if(!error && response.statusCode == 200) {
+        if(!error && response.statusCode === 200) {
             cb(null, JSON.parse(body));
         } else {
             cb(error, null);
