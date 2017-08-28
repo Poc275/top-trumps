@@ -322,15 +322,26 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		console.log('opponentScore: ', opponentScore, ' myScore: ', myScore);
 
-		return $q(function(resolve, reject) {
-			$interval(function() {
-				// $scope.result.scoreSlider += 1;
-				$scope.result.scoreSlider += (100 / myScore);
-				$scope.result.scoreSliderValue += 1;
-			}, 200, opponentScore, true).then(function() {
+		if(opponentScore > 0) {
+			if(category === 'ppc') {
+
+			} else {
+				return $q(function(resolve, reject) {
+					$interval(function() {
+						// $scope.result.scoreSlider += 1;
+						$scope.result.scoreSlider += (100 / myScore);
+						$scope.result.scoreSliderValue += 1;
+					}, 200, opponentScore, true).then(function() {
+						resolve();
+					});
+				});
+			}
+		} else {
+			// score slider doesn't need to move, just return a completed promise
+			return $q(function(resolve, reject) {
 				resolve();
 			});
-		});
+		}
 	};
 
 
