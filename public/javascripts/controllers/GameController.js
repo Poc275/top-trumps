@@ -1,4 +1,6 @@
 angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, $timeout, Cards, socket, Gravatar) {
+	const ppcMax = Math.log(200001);
+	
 	$scope.collection;
 	$scope.currentCard;
 	$scope.host;
@@ -324,7 +326,24 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		if(opponentScore > 0) {
 			if(category === 'ppc') {
-
+				var logScore = Math.log(opponentScore + 1);
+				var normalisedLogScore = Math.round((logScore / ppcMax) * 100, 0);
+				console.log(normalisedLogScore);
+				if(normalisedLogScore > 0) {
+					return $q(function(resolve, reject) {
+						$interval(function() {
+							$scope.result.scoreSlider += (100 / myScore);
+							$scope.result.scoreSliderValue += 1;
+						}, 200, normalisedLogScore, true).then(function() {
+							resolve();
+						});
+					});
+				} else {
+					// score slider doesn't need to move, just return a completed promise
+					return $q(function(resolve, reject) {
+						resolve();
+					});
+				}
 			} else {
 				return $q(function(resolve, reject) {
 					$interval(function() {
