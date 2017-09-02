@@ -477,6 +477,10 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
  Collection page styles
 *********************************
 */
+.collection-toolbar {
+	cursor: pointer;
+}
+
 .card-dialog {
 	width: 500px;
 	max-height: 90%!important;

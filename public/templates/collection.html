@@ -3,11 +3,11 @@
 
 	<!-- world leaders -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showWorldLeaders = !showWorldLeaders">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">World Leaders - {{ categoriesCollected.worldLeaders }} / {{ worldLeaders.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showWorldLeaders = !showWorldLeaders" aria-label="expand world leaders collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand world leaders collection">
 					<md-icon ng-if="!showWorldLeaders" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showWorldLeaders" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
@@ -31,11 +31,11 @@
 
 	<!-- attention seekers -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showAttSeekers = !showAttSeekers">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">Attention Seekers - {{ categoriesCollected.attSeekers }} / {{ attSeekers.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showAttSeekers = !showAttSeekers" aria-label="expand attention seekers collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand attention seekers collection">
 					<md-icon ng-if="!showAttSeekers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showAttSeekers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
@@ -59,11 +59,11 @@
 
 	<!-- wrong'n's -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showWrongNs = !showWrongNs">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">Wrong'n's - {{ categoriesCollected.wrongNs }} / {{ wrongNs.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showWrongNs = !showWrongNs" aria-label="expand wrong'n's collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand wrong'n's collection">
 					<md-icon ng-if="!showWrongNs" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showWrongNs" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
@@ -87,7 +87,7 @@
 
 	<!-- sports -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showSports = !showSports">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">Sports - {{ categoriesCollected.sports }} / {{ sports.length }}</h4>
 				<span flex></span>
@@ -115,11 +115,11 @@
 
 	<!-- mouth breathers -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showMouthBreathers = !showMouthBreathers">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">Mouth Breathers - {{ categoriesCollected.mouthBreathers }} / {{ mouthBreathers.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showMouthBreathers = !showMouthBreathers" aria-label="expand mouth breathers collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand mouth breathers collection">
 					<md-icon ng-if="!showMouthBreathers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showMouthBreathers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
@@ -143,11 +143,11 @@
 
 	<!-- tories -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showTories = !showTories">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">Tories - {{ categoriesCollected.tories }} / {{ tories.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showTories = !showTories" aria-label="expand tories collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand tories collection">
 					<md-icon ng-if="!showTories" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showTories" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
@@ -171,11 +171,11 @@
 
 	<!-- fictional -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showFictional = !showFictional">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">Fictionals - {{ categoriesCollected.fictional }} / {{ fictional.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showFictional = !showFictional" aria-label="expand fictional collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand fictional collection">
 					<md-icon ng-if="!showFictional" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showFictional" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
@@ -199,11 +199,11 @@
 
 	<!-- 1%ers -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showOnePercenters = !showOnePercenters">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">1%ers - {{ categoriesCollected.onePercenters }} / {{ onePercenters.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showOnePercenters = !showOnePercenters" aria-label="expand 1 percenters collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand 1 percenters collection">
 					<md-icon ng-if="!showOnePercenters" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showOnePercenters" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
@@ -227,11 +227,11 @@
 
 	<!-- jokers -->
 	<section class="md-whiteframe-z1 collection-group">
-		<md-toolbar class="md-primary">
+		<md-toolbar class="md-primary collection-toolbar" ng-click="showJokers = !showJokers">
 			<div class="md-toolbar-tools">
 				<h4 class="md-headline">Jokers - {{ categoriesCollected.jokers }} / {{ jokers.length }}</h4>
 				<span flex></span>
-				<md-button class="md-icon-button md-button md-ink-ripple" ng-click="showJokers = !showJokers" aria-label="expand jokers collection">
+				<md-button class="md-icon-button md-button md-ink-ripple" aria-label="expand jokers collection">
 					<md-icon ng-if="!showJokers" md-svg-src="icons/ic_expand_more_black_24px.svg"></md-icon>
 					<md-icon ng-if="showJokers" md-svg-src="icons/ic_expand_less_black_24px.svg"></md-icon>
 				</md-button>
