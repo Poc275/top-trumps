@@ -3,9 +3,13 @@ var request = require('request');
 var uuid = require('uuid');
 var botResponses = require('./botResponses.js');
 var config;
+var model;
 
 if(!process.env.FacebookClientID) {
-	config = require('../config/auth');
+    config = require('../config/auth');
+    model = config.bot.luisModel;
+} else {
+    model = process.env.BotLuisModel;
 }
 
 var connector = new builder.ChatConnector({
@@ -16,7 +20,6 @@ var connector = new builder.ChatConnector({
 var bot = new builder.UniversalBot(connector);
 
 // LUIS recogniser that points to the model
-var model = process.env.BotLuisModel;
 var recogniser = new builder.LuisRecognizer(model);
 
 // using intent dialogs instead of global dialogs, this

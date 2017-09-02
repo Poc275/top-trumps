@@ -55,7 +55,12 @@ app.use('/scripts', express.static(path.join(__dirname, '../node_modules')));
 app.use(session({ 
 	secret: 'thedonald',
 	resave: false,
-	saveUninitialized: false 
+	saveUninitialized: false,
+	cookie: {
+		httpOnly: true
+		// for prod uncomment below for https only cookies
+		// secure: true
+	}
 }));
 app.use(passport.initialize());
 // remember to let passport access the session for req.isAuthenticated to work!
@@ -267,7 +272,3 @@ server.listen(process.env.PORT || 3000, function() {
 		console.log('Listening on port 3000');
 	}
 });
-
-// server.listen(3000, function() {
-// 	console.log('Listening on port 3000');
-// });
