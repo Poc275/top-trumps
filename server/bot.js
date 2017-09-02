@@ -16,7 +16,7 @@ var connector = new builder.ChatConnector({
 var bot = new builder.UniversalBot(connector);
 
 // LUIS recogniser that points to the model
-var model = config.bot.luisModel || process.env.BotLuisModel;
+var model = process.env.BotLuisModel;
 var recogniser = new builder.LuisRecognizer(model);
 
 // using intent dialogs instead of global dialogs, this
