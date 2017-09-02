@@ -1,5 +1,5 @@
 angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, $timeout, Cards, socket, Gravatar) {
-	const ppcMax = Math.log(200001);
+	var ppcMax = Math.log(200001);
 	
 	$scope.collection;
 	$scope.currentCard;
@@ -249,7 +249,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				} else {
 					$scope.currentCard = [$scope.collection[$scope.round]];
 				}
-			}, 5000);
+			}, 3000);
 		});
 
 		// in-game play events
@@ -320,21 +320,25 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	// move slider function to see opponent's score
 	$scope.moveOpponentScoreSlider = function(category, opponentScore, myScore) {
 		$scope.showScore = true;
+		// this value stores the full slider value including decimal places
+		// $scope.scoreSliderValue is for the Math.round() score
+		$scope.totalSliderValue = 0;
 		$scope.maskCategories(category);
-
-		console.log('opponentScore: ', opponentScore, ' myScore: ', myScore);
 
 		if(opponentScore > 0) {
 			if(category === 'ppc') {
-				var logScore = Math.log(opponentScore + 1);
-				var normalisedLogScore = Math.round((logScore / ppcMax) * 100, 0);
-				console.log(normalisedLogScore);
-				if(normalisedLogScore > 0) {
+				var opponentLogScore = Math.round((Math.log(opponentScore + 1) / ppcMax) * 100, 0);
+				var myLogScore = Math.round((Math.log(myScore + 1) / ppcMax) * 100, 0);
+				
+				if(opponentLogScore > 0) {
 					return $q(function(resolve, reject) {
 						$interval(function() {
-							$scope.result.scoreSlider += (100 / myScore);
-							$scope.result.scoreSliderValue += 1;
-						}, 200, normalisedLogScore, true).then(function() {
+							$scope.result.scoreSlider += (100 / myLogScore);
+							$scope.totalSliderValue += opponentScore / opponentLogScore;
+							$scope.result.scoreSliderValue = Math.floor($scope.totalSliderValue, 0);
+						}, 200, opponentLogScore, true).then(function() {
+							// update final score to account for any missing decimal places due to rounding
+							$scope.result.scoreSliderValue = opponentScore;
 							resolve();
 						});
 					});
