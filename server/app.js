@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var uuid = require('uuid');
+var helmet = require('helmet');
 var passport = require('passport');
 // we have to initialise passport.js before we can use it
 // (see app.use(passport.initilize() below)
@@ -62,6 +63,7 @@ app.use(session({
 		// secure: true
 	}
 }));
+app.use(helmet());
 app.use(passport.initialize());
 // remember to let passport access the session for req.isAuthenticated to work!
 app.use(passport.session());
