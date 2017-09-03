@@ -118,15 +118,16 @@ md-card-avatar {
 	border-radius: 2px 2px 0 0;
 }
 
-md-card-actions {
+.card-actions {
 	margin: 0!important;
 }
 
 /* reduce category title text size to fit card on mobile */
-md-card-actions p {
+.card-actions p {
 	font-size: small;
 	text-align: center;
-	/* height: 34px; */
+	height: 34px;
+	margin-bottom: 6px;
 }
 
 /* reduce card title padding for mobile */

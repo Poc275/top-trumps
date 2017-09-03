@@ -9,10 +9,10 @@
 
 			<md-card-avatar>
 				<md-button class="md-icon-button md-primary" ng-click="showCategoryInfo = !showCategoryInfo" aria-label="category information">
-					<md-icon ng-if="!showCategoryInfo" md-svg-src="icons/ic_info_outline_black_24px.svg" class="material-icons info-button"></md-icon>
+					<md-icon ng-if="!showCategoryInfo" md-svg-src="icons/ic_expand_more_black_24px.svg" class="info-button"></md-icon>
 
 					<!-- if category shown filled in info button -->
-					<md-icon ng-if="showCategoryInfo" md-svg-src="icons/ic_info_black_24px.svg" class="material-icons info-button"></md-icon>
+					<md-icon ng-if="showCategoryInfo" md-svg-src="icons/ic_expand_less_black_24px.svg" class="info-button"></md-icon>
 				</md-button>
 			</md-card-avatar>
 		</md-card-header>
@@ -100,7 +100,7 @@
 
 
 		<!-- show credentials, gives a glimpse of who the card could be -->
-		<md-card-actions>
+		<md-card-actions class="card-actions">
 			<div layout="row">
 				<div layout="column" layout-align="center center" flex="33">
 					<p>Unpalatibility</p>
