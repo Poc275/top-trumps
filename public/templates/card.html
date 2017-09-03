@@ -10,10 +10,10 @@
 
 			<md-card-avatar>
 				<md-button class="md-icon-button md-primary" ng-click="showCategoryInfo = !showCategoryInfo" aria-label="category information">
-					<md-icon ng-if="!showCategoryInfo" md-svg-src="icons/ic_info_outline_black_24px.svg" class="material-icons info-button"></md-icon>
+					<md-icon ng-if="!showCategoryInfo" md-svg-src="icons/ic_expand_more_black_24px.svg" class="info-button"></md-icon>
 
 					<!-- if category shown show filled in info button -->
-					<md-icon ng-if="showCategoryInfo" md-svg-src="icons/ic_info_black_24px.svg" class="material-icons info-button"></md-icon>
+					<md-icon ng-if="showCategoryInfo" md-svg-src="icons/ic_expand_less_black_24px.svg" class="info-button"></md-icon>
 				</md-button>
 			</md-card-avatar>
 		</md-card-header>
@@ -22,8 +22,7 @@
 		<!-- default, unflipped state - show front image -->
 		<!-- the ng-switch on is for the category info popup -->
 		<div ng-switch-when="false" id="front-card-image" ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{card.images[0]}})'}">
-			<div class="category-info-popup animated" 
-				ng-show="showCategoryInfo"
+			<div class="category-info-popup animated" ng-show="showCategoryInfo"
 				ng-class="{ fadeInDown: showCategoryInfo, fadeOutUp: !showCategoryInfo }">
 				<!-- switch on category -->
 				<div ng-if="card.category == 'Tories'">
@@ -110,14 +109,14 @@
 				<span class="md-headline">{{ card.name }} Biography</span>
 			</md-card-title-text>
 
-			<!--<span flex></span>-->
+			<!-- <span flex></span> -->
 
 			<md-card-avatar>
-				<md-button class="md-icon-button md-primary" ng-click="flipped = !flipped" aria-label="card information">
-					<md-icon ng-switch-when="false" md-svg-src="icons/ic_info_outline_black_24px.svg" class="material-icons info-button"></md-icon>
+				<md-button class="md-icon-button md-primary bio-button" ng-click="flipped = !flipped" aria-label="card information">
+					<md-icon ng-switch-when="false" md-svg-src="icons/ic_info_outline_black_24px.svg"></md-icon>
 
 					<!-- if flipped show filled in info button -->
-					<md-icon ng-switch-when="true" md-svg-src="icons/ic_info_black_24px.svg" class="material-icons info-button"></md-icon>
+					<md-icon ng-switch-when="true" md-svg-src="icons/ic_info_black_24px.svg"></md-icon>
 				</md-button>
 			</md-card-avatar>
 
@@ -151,21 +150,21 @@
 
 			<div layout="row" layout-align="space-around none">
 				<div layout="column" layout-align="center center" flex="33" ng-hide="hideLegacy">
-					<p>Legacy:</p>
+					<p>Legacy</p>
 					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('legacy', card.legacy)">
 						{{ card.legacy }}
 					</md-button>
 				</div>
 
 				<div layout="column" layout-align="center center" flex="33" ng-hide="hidePpc">
-					<p>PPC (price per c*nt):</p>
+					<p>PPC (price per c*nt)</p>
 					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('ppc', card.ppc)">
 						{{ card.ppc }}
 					</md-button>
 				</div>
 
 				<div layout="column" layout-align="center center" flex="33" ng-hide="hideSpecialAbility">
-					<p>Special ability:</p>
+					<p>Special ability</p>
 					<md-button class="play-button grade-{{ card.cuntal_order }}" ng-click="play('special_ability', card.special_ability)">
 						{{ card.special_ability }}
 					</md-button>
@@ -202,7 +201,7 @@
 		<!-- default, unflipped - show special ability description -->
 		<md-card-content ng-switch-when="false" ng-hide="showScore" id="special-ability-section">
 			<!--<md-divider></md-divider>-->
-			<h5>Special ability:</h5>
+			<h5>Special ability</h5>
 			<p>{{ card.special_ability_description }}</p>
 		</md-card-content>
 

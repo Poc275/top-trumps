@@ -118,11 +118,15 @@ md-card-avatar {
 	border-radius: 2px 2px 0 0;
 }
 
+md-card-actions {
+	margin: 0!important;
+}
+
 /* reduce category title text size to fit card on mobile */
 md-card-actions p {
 	font-size: small;
 	text-align: center;
-	height: 34px;
+	/* height: 34px; */
 }
 
 /* reduce card title padding for mobile */
@@ -236,6 +240,13 @@ md-card-header.card-not-collected {
 	margin: 0;
 	padding: 0;
 	color: #000;
+}
+
+.bio-button {
+	margin: 0!important;
+	padding: 0!important;
+	height: auto!important;
+	width: auto!important;
 }
 
 .text-center {
