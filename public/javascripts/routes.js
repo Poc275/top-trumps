@@ -25,6 +25,11 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 		templateUrl: '/templates/profile.html',
 		controller: 'ProfileController'
 	})
+	.state('home.store', {
+		url: '/store',
+		templateUrl: '/templates/store.html',
+		controller: 'StoreController'
+	})
 	.state('card', {
 		url: '/card/:name',
 		templateUrl: '/templates/card-admin.html',

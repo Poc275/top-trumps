@@ -213,7 +213,7 @@ md-card-header.card-not-collected {
 }
 
 .play-button.grade-Bronze:not([disabled]):hover {
-	background-color: rgba(150, 93, 37, 1);
+	background-color: rgb(150, 93, 37);
 }
 
 .play-button.grade-Silver:not([disabled]):hover {
@@ -483,6 +483,10 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 	width: 35px;
 }
 
+.menu-icon {
+	height: auto!important;
+}
+
 
 /*
 *********************************
@@ -527,4 +531,34 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 	transition: all 0.45s cubic-bezier(0.35, 0, 0.25, 1);
 	max-height: 3500px;
 	overflow: hidden;
+}
+
+/*
+*********************************
+ Store page styles
+*********************************
+*/
+md-grid-list {
+	max-width: 1000px;
+}
+
+md-grid-tile {
+	cursor: pointer;
+}
+
+md-grid-tile.bronze {
+	background-color: rgba(205, 127, 50, 1);
+}
+
+md-grid-tile.silver {
+	background-color: rgba(192, 192, 192, 1);
+}
+
+md-grid-tile.gold {
+	background-color: rgba(253, 181, 21, 1);
+}
+
+.store-icon {
+	width: 75%!important;
+	height: auto!important;
 }

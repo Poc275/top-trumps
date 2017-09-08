@@ -39,28 +39,28 @@
 				<md-divider></md-divider>
 
 				<md-list-item class="md-1-line" ui-sref="home" ng-click="toggleMenu()">
-					<i class="material-icons md-avatar">home</i>
+					<i class="material-icons md-avatar menu-icon">home</i>
 					<div class="md-list-item-text" layout="column">
 						<h3>Home</h3>
 					</div>
 				</md-list-item>
 
 				<md-list-item class="md-1-line" ng-click="getCards(); toggleMenu()" ui-sref="home.collection">
-					<i class="material-icons md-avatar">collections</i>
+					<i class="material-icons md-avatar menu-icon">collections</i>
 					<div class="md-list-item-text" layout="column">
 						<h3>My Collection</h3>
 					</div>
 				</md-list-item>
 
-				<!--<md-list-item class="md-1-line" ng-click="toggleMenu()" ui-sref="home.profile">
-					<i class="material-icons md-avatar">person</i>
+				<md-list-item class="md-1-line" ng-click="toggleMenu()" ui-sref="home.store">
+					<i class="material-icons md-avatar menu-icon">shopping_cart</i>
 					<div class="md-list-item-text" layout="column">
-						<h3>My Profile</h3>
+						<h3>Store</h3>
 					</div>
-				</md-list-item>-->
+				</md-list-item>
 
 				<md-list-item class="md-1-line" ng-click="logout()">
-					<i class="material-icons md-avatar">exit_to_app</i>
+					<i class="material-icons md-avatar menu-icon">exit_to_app</i>
 					<div class="md-list-item-text" layout="column">
 						<h3>Sign out</h3>
 					</div>
