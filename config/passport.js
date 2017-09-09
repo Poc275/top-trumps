@@ -31,7 +31,6 @@ if(!process.env.FacebookClientID) {
 	config = require('./auth');
 }
 
-
 mongoose.Promise = global.Promise;
 var options = {
 	user: process.env.MongoUsername || config.mongo.username,

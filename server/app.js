@@ -17,6 +17,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var game = require('./game.js');
+var store = require('./store.js');
 var config;
 if(!process.env.FacebookClientID) {
 	config = require('../config/auth');

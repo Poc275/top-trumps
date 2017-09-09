@@ -4,6 +4,7 @@ var chaiHttp = require('chai-http');
 var request = require('superagent');
 var app = require('../server/app');
 var game = require('../server/game');
+var store = require('../server/store');
 var io = require('socket.io-client');
 var mongodb = require('mongo-mock');
 // mimic async db behaviour by setting max_delay
@@ -657,5 +658,110 @@ describe('game event tests', function() {
 		expect(game.gameCount).to.deep.equal(0);
 
 		done();
+	});
+});
+
+
+describe('store module tests', function() {
+	var nBronze = 0;
+	var nSilver = 0;
+	var nGold = 0;
+	var nBrownPlatinum = 0;
+
+	it('cuntal order counts are initialised', function(done) {
+		store.initialiseQuantities(function(err, res) {
+			// assign counts to variables for later tests
+			nBronze = store.nBronze;
+			nSilver = store.nSilver;
+			nGold = store.nGold;
+			nBrownPlatinum = store.nBrownPlatinum;
+
+			expect(store.nBronze).to.be.above(0);
+			expect(store.nSilver).to.be.above(0);
+			expect(store.nGold).to.be.above(0);
+			expect(store.nBrownPlatinum).to.be.above(0);
+	
+			done();
+		});
+	});
+
+	it('get all bronze cards returns correct amount', function(done) {
+		store.getCards("Bronze", 100, function(err, results) {
+			expect(results.length).to.deep.equal(nBronze);
+
+			done();
+		});
+	});
+
+	it('get 20% of bronze cards returns correct amount', function(done) {
+		store.getCards("Bronze", 20, function(err, results) {
+			expect(results.length).to.deep.equal(Math.ceil(nBronze * 20 / 100));
+
+			done();
+		});
+	});
+
+	it('get all silver cards returns correct amount', function(done) {
+		store.getCards("Silver", 100, function(err, results) {
+			expect(results.length).to.deep.equal(nSilver);
+
+			done();
+		});
+	});
+
+	it('get 20% of silver cards returns correct amount', function(done) {
+		store.getCards("Silver", 20, function(err, results) {
+			expect(results.length).to.deep.equal(Math.ceil(nSilver * 20 / 100));
+
+			done();
+		});
+	});
+
+	it('get all gold cards returns correct amount', function(done) {
+		store.getCards("Gold", 100, function(err, results) {
+			expect(results.length).to.deep.equal(nGold);
+
+			done();
+		});
+	});
+
+	it('get 20% of gold cards returns correct amount', function(done) {
+		store.getCards("Gold", 20, function(err, results) {
+			expect(results.length).to.deep.equal(Math.ceil(nGold * 20 / 100));
+
+			done();
+		});
+	});
+
+	it('get all brown platinum cards returns correct amount', function(done) {
+		store.getCards("Brown Platinum", 100, function(err, results) {
+			expect(results.length).to.deep.equal(nBrownPlatinum);
+
+			done();
+		});
+	});
+
+	it('get 5% of brown platinum cards returns correct amount', function(done) {
+		store.getCards("Brown Platinum", 5, function(err, results) {
+			expect(results.length).to.deep.equal(Math.ceil(nBrownPlatinum * 5 / 100));
+
+			done();
+		});
+	});
+
+	it('pick random cards function works as expected', function(done) {
+		var testCardIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+		var testPack = store.pickRandomCards(testCardIds);
+
+		expect(testPack).to.have.lengthOf(5);
+
+		done();
+	});
+
+	it('purchase bronze pack function works as expected', function(done) {
+		store.purchaseBronze(function(err, pack) {
+			expect(pack).to.have.lengthOf(5);
+			done();
+		});
 	});
 });
