@@ -461,8 +461,8 @@ store.pickRandomCards = function(cards, total) {
 store.removeCardFromCollection = function(email, ids, cb) {
     user.update(
         { email: email },
-        { $pull: { cards: { $in: ids } }}
-    , function(err, res) {
+        { $pull: { cards: { $in: ids } }},
+    function(err, res) {
         if(err) {
             console.log(err);
             return cb(err);
