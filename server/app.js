@@ -179,6 +179,26 @@ app.get('/card/:name', isAuthenticated, function(req, res) {
 	});
 });
 
+app.get('/purchase/:grade', isAuthenticated, function(req, res) {
+	var callback = function(err, pack) {
+		if(err) {
+			console.log(err);
+		}
+		// 1. add pack to user's collection
+		// 2. take payment (UI checks user has enough cash)
+		// 3. return card objects, convert from ids (with 'got' boolean tag)
+		res.json(pack);
+	};
+	
+	switch(req.params.grade) {
+		case "bronze":
+			store.purchaseBronze(callback);
+			break;
+		default:
+			break;
+	}
+});
+
 app.get('/me', isAuthenticated, function(req, res) {
 	user.findOne({ 'email': req.user.email }, function(err, user) {
 		if(err) {
@@ -253,12 +273,12 @@ app.get('/auth/google/callback', passport.authenticate('google'), function(req, 
     res.end();
 });
 
-// bot endpoints
+// bot endpoint
 app.post('/api/messages', bot.connector.listen());
 
 
 /*
-* FOR TESTING ONLY - LOCAL SIGNUP TO ALLOW OTHER USERS TO SIGNUP FOR TESTING
+* FOR TESTING ONLY
 */
 app.post('/auth/local', passport.authenticate('local'), function(req, res) {
 	// you can't redirect from an AJAX post request
@@ -268,7 +288,7 @@ app.post('/auth/local', passport.authenticate('local'), function(req, res) {
 
 
 // start app
-server.listen(process.env.PORT || 3000, function() {
+module.exports = server.listen(process.env.PORT || 3000, function() {
 	if(process.env.port) {
 		console.log('Listening on port ' + process.env.port);
 	} else {

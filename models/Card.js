@@ -1,7 +1,6 @@
 /**
  * Card mongoose model to handle the card objects used in game.
  * @module models/Card
- * @todo Add fields for biography (markdown?) and references (array)
  */
 var mongoose = require('mongoose');
 

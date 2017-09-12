@@ -1,11 +1,12 @@
 var chai = require('chai');
 var expect = require('chai').expect;
 var chaiHttp = require('chai-http');
-var request = require('superagent');
 var app = require('../server/app');
 var game = require('../server/game');
 var store = require('../server/store');
 var io = require('socket.io-client');
+// require mongoose for objectId type tests
+var mongoose = require('mongoose');
 var mongodb = require('mongo-mock');
 // mimic async db behaviour by setting max_delay
 mongodb.max_delay = 0;
@@ -663,6 +664,8 @@ describe('game event tests', function() {
 
 
 describe('store module tests', function() {
+	var url = 'mongodb://localhost:27017/tc';
+	var collection;
 	var nBronze = 0;
 	var nSilver = 0;
 	var nGold = 0;
@@ -749,19 +752,166 @@ describe('store module tests', function() {
 		});
 	});
 
-	it('pick random cards function works as expected', function(done) {
+	it('pick random cards returns correct values', function(done) {
 		var testCardIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-		var testPack = store.pickRandomCards(testCardIds);
+		var testPack = store.pickRandomCards(testCardIds, 5);
 
 		expect(testPack).to.have.lengthOf(5);
+		testPack.forEach(function(card) {
+			expect(testCardIds).to.include(card);
+		});
 
 		done();
 	});
 
-	it('purchase bronze pack function works as expected', function(done) {
-		store.purchaseBronze(function(err, pack) {
-			expect(pack).to.have.lengthOf(5);
+	it('add pack to user\'s collection ignores duplicates', function(done) {
+		var pack = [
+			mongoose.Types.ObjectId("58963c0945c58e2e78ae015d"),
+			mongoose.Types.ObjectId("58963ed645c58e2e78ae016c"),
+			mongoose.Types.ObjectId("5896495f45c58e2e78ae01a5"),	// duplicate
+			mongoose.Types.ObjectId("5896468245c58e2e78ae0194"),
+			mongoose.Types.ObjectId("589630c745c58e2e78ae0137")
+		];
+		var cardsGot = 0;
+		var cardsNotGot = 0;
+		
+		store.addPackToUserCollection("thedonald@trump.com", pack, function(err, res) {
+			res.forEach(function(card) {
+				if(card.got) {
+					cardsGot++;
+				} else {
+					cardsNotGot++;
+				}
+			});
+			expect(res).to.have.lengthOf(5);
+			expect(cardsGot).to.deep.equal(1);
+			expect(cardsNotGot).to.deep.equal(4);
+
 			done();
 		});
+	});
+
+	it('purchase bronze pack returns a pack of card object ids of correct length', function(done) {
+		var objectId = mongoose.Types.ObjectId;
+
+		store.purchaseBronze(function(err, pack) {
+			expect(pack).to.have.lengthOf(5);
+			pack.forEach(function(card) {
+				expect(objectId.isValid(card)).to.be.true;
+			});
+
+			done();
+		});
+	});
+
+	it('purchase bronze premium pack returns a pack of card object ids of correct length', function(done) {
+		var objectId = mongoose.Types.ObjectId;
+
+		store.purchaseBronzePremium(function(err, pack) {
+			expect(pack).to.have.lengthOf(5);
+			pack.forEach(function(card) {
+				expect(objectId.isValid(card)).to.be.true;
+			});
+
+			done();
+		});
+	});
+
+	it('purchase silver pack returns a pack of card object ids of correct length', function(done) {
+		var objectId = mongoose.Types.ObjectId;
+
+		store.purchaseSilver(function(err, pack) {
+			expect(pack).to.have.lengthOf(5);
+			pack.forEach(function(card) {
+				expect(objectId.isValid(card)).to.be.true;
+			});
+
+			done();
+		});
+	});
+
+	it('purchase silver premium pack returns a pack of card object ids of correct length', function(done) {
+		var objectId = mongoose.Types.ObjectId;
+
+		store.purchaseSilverPremium(function(err, pack) {
+			expect(pack).to.have.lengthOf(5);
+			pack.forEach(function(card) {
+				expect(objectId.isValid(card)).to.be.true;
+			});
+
+			done();
+		});
+	});
+
+	it('purchase gold pack returns a pack of card object ids of correct length', function(done) {
+		var objectId = mongoose.Types.ObjectId;
+
+		store.purchaseGold(function(err, pack) {
+			expect(pack).to.have.lengthOf(5);
+			pack.forEach(function(card) {
+				expect(objectId.isValid(card)).to.be.true;
+			});
+
+			done();
+		});
+	});
+
+	it('purchase gold premium pack returns a pack of card object ids of correct length', function(done) {
+		var objectId = mongoose.Types.ObjectId;
+
+		store.purchaseGoldPremium(function(err, pack) {
+			expect(pack).to.have.lengthOf(5);
+			pack.forEach(function(card) {
+				expect(objectId.isValid(card)).to.be.true;
+			});
+
+			done();
+		});
+	});
+
+	after(function(done) {
+		// cleanup - remove non-duplicate cards from collection
+		var pack = [
+			mongoose.Types.ObjectId("58963c0945c58e2e78ae015d"),
+			mongoose.Types.ObjectId("58963ed645c58e2e78ae016c"),
+			mongoose.Types.ObjectId("5896468245c58e2e78ae0194"),
+			mongoose.Types.ObjectId("589630c745c58e2e78ae0137")
+		];
+
+		store.removeCardFromCollection("thedonald@trump.com", pack, function(err) {
+			if(err) {
+				console.log(err);
+			}
+
+			done();
+		});
+	});
+});
+
+
+// this is an integration test and it requires the local passport strategy
+// which I'd intended to eventually remove...
+describe('Purchase endpoint tests', function() {
+	it('/purchase/bronze functions as expected', function(done) {
+		var agent = chai.request.agent(app);
+
+		agent.post('/auth/local')
+			 .send({'email': 'thedonald@trump.com', 'password': '123'})
+			 .then(function(res) {
+				agent.get('/purchase/bronze').then(function (res) {
+					expect(res).to.have.status(200);
+					expect(res).to.be.json;
+
+				   	done();
+				})
+				.catch(function(err) {
+					console.log("Error: ", err);
+					done();
+				});
+			 })
+			 .catch(function(err) {
+				console.log("Error: ", err);
+				done();
+			 });
 	});
 });

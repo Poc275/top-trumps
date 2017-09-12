@@ -74,6 +74,6 @@
     "nyc": "^10.1.2",
     "protractor": "^5.1.1",
     "socket.io-client": "^1.7.3",
-    "superagent": "^3.5.2"
+    "superagent": "^3.6.0"
   }
 }
