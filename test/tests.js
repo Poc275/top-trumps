@@ -794,7 +794,7 @@ describe('store module tests', function() {
 	it('purchase bronze pack returns a pack of card object ids of correct length', function(done) {
 		var objectId = mongoose.Types.ObjectId;
 
-		store.purchaseBronze(function(err, pack) {
+		store.purchaseBronze("thedonald@trump.com", function(err, pack) {
 			expect(pack).to.have.lengthOf(5);
 			pack.forEach(function(card) {
 				expect(objectId.isValid(card)).to.be.true;
@@ -807,7 +807,7 @@ describe('store module tests', function() {
 	it('purchase bronze premium pack returns a pack of card object ids of correct length', function(done) {
 		var objectId = mongoose.Types.ObjectId;
 
-		store.purchaseBronzePremium(function(err, pack) {
+		store.purchaseBronzePremium("thedonald@trump.com", function(err, pack) {
 			expect(pack).to.have.lengthOf(5);
 			pack.forEach(function(card) {
 				expect(objectId.isValid(card)).to.be.true;
@@ -820,7 +820,7 @@ describe('store module tests', function() {
 	it('purchase silver pack returns a pack of card object ids of correct length', function(done) {
 		var objectId = mongoose.Types.ObjectId;
 
-		store.purchaseSilver(function(err, pack) {
+		store.purchaseSilver("thedonald@trump.com", function(err, pack) {
 			expect(pack).to.have.lengthOf(5);
 			pack.forEach(function(card) {
 				expect(objectId.isValid(card)).to.be.true;
@@ -833,7 +833,7 @@ describe('store module tests', function() {
 	it('purchase silver premium pack returns a pack of card object ids of correct length', function(done) {
 		var objectId = mongoose.Types.ObjectId;
 
-		store.purchaseSilverPremium(function(err, pack) {
+		store.purchaseSilverPremium("thedonald@trump.com", function(err, pack) {
 			expect(pack).to.have.lengthOf(5);
 			pack.forEach(function(card) {
 				expect(objectId.isValid(card)).to.be.true;
@@ -846,7 +846,7 @@ describe('store module tests', function() {
 	it('purchase gold pack returns a pack of card object ids of correct length', function(done) {
 		var objectId = mongoose.Types.ObjectId;
 
-		store.purchaseGold(function(err, pack) {
+		store.purchaseGold("thedonald@trump.com", function(err, pack) {
 			expect(pack).to.have.lengthOf(5);
 			pack.forEach(function(card) {
 				expect(objectId.isValid(card)).to.be.true;
@@ -859,11 +859,22 @@ describe('store module tests', function() {
 	it('purchase gold premium pack returns a pack of card object ids of correct length', function(done) {
 		var objectId = mongoose.Types.ObjectId;
 
-		store.purchaseGoldPremium(function(err, pack) {
+		store.purchaseGoldPremium("thedonald@trump.com", function(err, pack) {
 			expect(pack).to.have.lengthOf(5);
 			pack.forEach(function(card) {
 				expect(objectId.isValid(card)).to.be.true;
 			});
+
+			done();
+		});
+	});
+
+	it('payment is taken when a pack is bought', function(done) {
+		store.updateBoon("thedonald@trump.com", -500, function(err, updatedBoon) {
+			expect(err).to.be.null;
+			// once all of the previous purchases tests have been taken into account
+			// (one of each pack) then his balance is 
+			expect(updatedBoon).to.deep.equal(-14250);
 
 			done();
 		});
@@ -879,39 +890,39 @@ describe('store module tests', function() {
 		];
 
 		store.removeCardFromCollection("thedonald@trump.com", pack, function(err) {
-			if(err) {
-				console.log(err);
-			}
-
-			done();
+			// refund (back to 500 boon = -14250 + 14750)
+			store.updateBoon("thedonald@trump.com", 14750, function(err, updatedBoon) {
+				done();
+			});
 		});
 	});
+
 });
 
 
 // this is an integration test and it requires the local passport strategy
 // which I'd intended to eventually remove...
-describe('Purchase endpoint tests', function() {
-	it('/purchase/bronze functions as expected', function(done) {
-		var agent = chai.request.agent(app);
+// describe('Purchase endpoint tests', function() {
+// 	it('/purchase/bronze functions as expected', function(done) {
+// 		var agent = chai.request.agent(app);
 
-		agent.post('/auth/local')
-			 .send({'email': 'thedonald@trump.com', 'password': '123'})
-			 .then(function(res) {
-				agent.get('/purchase/bronze').then(function (res) {
-					expect(res).to.have.status(200);
-					expect(res).to.be.json;
+// 		agent.post('/auth/local')
+// 			 .send({'email': 'thedonald@trump.com', 'password': '123'})
+// 			 .then(function(res) {
+// 				agent.get('/purchase/bronze').then(function (res) {
+// 					expect(res).to.have.status(200);
+// 					expect(res).to.be.json;
 
-				   	done();
-				})
-				.catch(function(err) {
-					console.log("Error: ", err);
-					done();
-				});
-			 })
-			 .catch(function(err) {
-				console.log("Error: ", err);
-				done();
-			 });
-	});
-});
+// 				   	done();
+// 				})
+// 				.catch(function(err) {
+// 					console.log("Error: ", err);
+// 					done();
+// 				});
+// 			 })
+// 			 .catch(function(err) {
+// 				console.log("Error: ", err);
+// 				done();
+// 			 });
+// 	});
+// });

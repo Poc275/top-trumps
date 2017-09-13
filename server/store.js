@@ -4,6 +4,12 @@
  */
 // class member variables
 var PACK_SIZE = 5;
+var BRONZE_PRICE = -500;
+var BRONZE_PREMIUM_PRICE = -750;
+var SILVER_PRICE = -1500;
+var SILVER_PREMIUM_PRICE = -2000;
+var GOLD_PRICE = -4500;
+var GOLD_PREMIUM_PRICE = -5000;
 var PREMIUM_CHANCE = 20;
 var BROWN_PLATINUM_CHANCE = 5;
 var store = {
@@ -38,7 +44,7 @@ var user = db.model('users', userSchema);
  * @param {function} cb - Callback function
  * @returns {error|array} JSON array of card objects (the pack)
  */
-store.purchaseBronze = function(cb) {
+store.purchaseBronze = function(email, cb) {
     store.initialiseQuantities(function(err) {
         if(err) {
             console.log(err);
@@ -68,7 +74,15 @@ store.purchaseBronze = function(cb) {
 
                     // combine all cards and pick a random pack
                     var pack = store.pickRandomCards(bronzeCards.concat(silverCards, brownPlatinumCards), PACK_SIZE);
-                    return cb(null, pack);
+                    // take payment and return
+                    store.updateBoon(email, BRONZE_PRICE, function(err, balance) {
+                        if(err) {
+                            console.log(err);
+                            return cb(err, null);
+                        }
+
+                        return cb(null, pack);
+                    });
                 });
             });
         });
@@ -80,7 +94,7 @@ store.purchaseBronze = function(cb) {
  * @param {function} cb - Callback function
  * @returns {error|array} JSON array of card objects (the pack)
  */
-store.purchaseBronzePremium = function(cb) {
+store.purchaseBronzePremium = function(email, cb) {
     store.initialiseQuantities(function(err) {
         if(err) {
             console.log(err);
@@ -121,7 +135,15 @@ store.purchaseBronzePremium = function(cb) {
 
                         var pack = store.pickRandomCards(bronzeCards.concat(silverCards, brownPlatinumCards), PACK_SIZE - 1);
                         pack.push(premiumCard[0]._id);
-                        return cb(null, pack);
+                        // take payment and return
+                        store.updateBoon(email, BRONZE_PREMIUM_PRICE, function(err, balance) {
+                            if(err) {
+                                console.log(err);
+                                return cb(err, null);
+                            }
+
+                            return cb(null, pack);
+                        });
                     });
                 });
             });
@@ -134,7 +156,7 @@ store.purchaseBronzePremium = function(cb) {
  * @param {function} cb - Callback function
  * @returns {error|array} JSON array of card objects (the pack)
  */
-store.purchaseSilver = function(cb) {
+store.purchaseSilver = function(email, cb) {
     store.initialiseQuantities(function(err) {
         if(err) {
             console.log(err);
@@ -171,7 +193,15 @@ store.purchaseSilver = function(cb) {
 
                         // combine all cards and pick a random pack
                         var pack = store.pickRandomCards(silverCards.concat(bronzeCards, goldCards, brownPlatinumCards), PACK_SIZE);
-                        return cb(null, pack);
+                        // take payment and return
+                        store.updateBoon(email, SILVER_PRICE, function(err, balance) {
+                            if(err) {
+                                console.log(err);
+                                return cb(err, null);
+                            }
+
+                            return cb(null, pack);
+                        });
                     });
                 });
             });
@@ -184,7 +214,7 @@ store.purchaseSilver = function(cb) {
  * @param {function} cb - Callback function
  * @returns {error|array} JSON array of card objects (the pack)
  */
-store.purchaseSilverPremium = function(cb) {
+store.purchaseSilverPremium = function(email, cb) {
     store.initialiseQuantities(function(err) {
         if(err) {
             console.log(err);
@@ -232,7 +262,15 @@ store.purchaseSilverPremium = function(cb) {
 
                             var pack = store.pickRandomCards(silverCards.concat(bronzeCards, goldCards, brownPlatinumCards), PACK_SIZE - 1);
                             pack.push(premiumCard[0]._id);
-                            return cb(null, pack);
+                            // take payment and return
+                            store.updateBoon(email, SILVER_PREMIUM_PRICE, function(err, balance) {
+                                if(err) {
+                                    console.log(err);
+                                    return cb(err, null);
+                                }
+
+                                return cb(null, pack);
+                            });
                         });
                     });
                 });
@@ -246,7 +284,7 @@ store.purchaseSilverPremium = function(cb) {
  * @param {function} cb - Callback function
  * @returns {error|array} JSON array of card objects (the pack)
  */
-store.purchaseGold = function(cb) {
+store.purchaseGold = function(email, cb) {
     store.initialiseQuantities(function(err) {
         if(err) {
             console.log(err);
@@ -276,7 +314,15 @@ store.purchaseGold = function(cb) {
 
                     // combine all cards and pick a random pack
                     var pack = store.pickRandomCards(goldCards.concat(silverCards, brownPlatinumCards), PACK_SIZE);
-                    return cb(null, pack);
+                    // take payment and return
+                    store.updateBoon(email, GOLD_PRICE, function(err, balance) {
+                        if(err) {
+                            console.log(err);
+                            return cb(err, null);
+                        }
+
+                        return cb(null, pack);
+                    });
                 });
             });
         });
@@ -288,7 +334,7 @@ store.purchaseGold = function(cb) {
  * @param {function} cb - Callback function
  * @returns {error|array} JSON array of card objects (the pack)
  */
-store.purchaseGoldPremium = function(cb) {
+store.purchaseGoldPremium = function(email, cb) {
     store.initialiseQuantities(function(err) {
         if(err) {
             console.log(err);
@@ -315,15 +361,48 @@ store.purchaseGoldPremium = function(cb) {
 
                 var pack = store.pickRandomCards(goldCards, PACK_SIZE - 1);
                 pack.push(premiumCard[0]._id);
-                return cb(null, pack);
+                // take payment and return
+                store.updateBoon(email, GOLD_PREMIUM_PRICE, function(err, balance) {
+                    if(err) {
+                        console.log(err);
+                        return cb(err, null);
+                    }
+
+                    return cb(null, pack);
+                });
             });
         });
     });
 };
 
 /**
+ * Function that takes payment for purchases, issues refunds for duplicates etc.
+ * Note that the balance isn't checked as this will be done by the 
+ * UI to prevent un-necessary server calls.
+ * @param {string} email - User's email address
+ * @param {number} price - Price of the pack
+ * @param {function} cb - Callback function
+ * @returns {error|number} Returns user's updated balance
+ */
+store.updateBoon = function(email, price, cb) {
+    user.findOneAndUpdate(
+        { email: email },
+        { $inc: { boon: price }},
+        { new: true },    
+    function(err, updatedUser) {
+        if(err) {
+            console.log(err);
+            return cb(err, null);
+        }
+
+        return cb(null, updatedUser.boon);
+    });
+};
+
+/**
  * Function that adds a purchased pack to a user's collection. 
  * Duplicate cards are ignored, but tagged as "got" for the UI to handle.
+ * @todo Apply refunds for duplicates. How much?
  * @param {string} email - User's email address
  * @param {array} pack - Array of card ObjectId() to add to collection
  * @param {function} cb - Callback function
@@ -361,6 +440,7 @@ store.addPackToUserCollection = function(email, pack, cb) {
                     got: false
                 });
             } else {
+                // apply refund
                 sortedPack.push({
                     cardId: card,
                     got: true

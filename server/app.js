@@ -184,15 +184,34 @@ app.get('/purchase/:grade', isAuthenticated, function(req, res) {
 		if(err) {
 			console.log(err);
 		}
-		// 1. add pack to user's collection
-		// 2. take payment (UI checks user has enough cash)
-		// 3. return card objects, convert from ids (with 'got' boolean tag)
-		res.json(pack);
+
+		store.addPackToUserCollection(req.user.email, pack, function(err, sortedPack) {
+			if(err) {
+				console.log(err);
+			}
+
+			res.json(sortedPack);
+		});
 	};
 	
 	switch(req.params.grade) {
 		case "bronze":
-			store.purchaseBronze(callback);
+			store.purchaseBronze(req.user.email, callback);
+			break;
+		case "bronze-premium":
+			store.purchaseBronzePremium(req.user.email, callback);
+			break;
+		case "silver":
+			store.purchaseSilver(req.user.email, callback);
+			break;
+		case "silver-premium":
+			store.purchaseSilverPremium(req.user.email, callback);
+			break;
+		case "gold":
+			store.purchaseGold(req.user.email, callback);
+			break;
+		case "gold-premium":
+			store.purchaseGoldPremium(req.user.email, callback);
 			break;
 		default:
 			break;

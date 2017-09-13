@@ -24,7 +24,7 @@ exports.UserSchema = new mongoose.Schema({
 	 * @property {number} won - Games won
 	 * @property {number} lost - Games lost
 	 * @property {number} xp - User's experience (XP)
-	 * @property {number} coin - User's in-game currency total
+	 * @property {number} boon - User's in-game currency total
 	 */
 	_id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 	username: { type: String, required: true },
@@ -38,5 +38,5 @@ exports.UserSchema = new mongoose.Schema({
 	won: { type: Number, required: true },
 	lost: { type: Number, required: true },
 	xp: { type: Number, required: true },
-	coin: { type: Number, required: true }
+	boon: { type: Number, required: true }
 });
