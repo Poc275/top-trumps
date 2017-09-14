@@ -1,0 +1,14 @@
+<div layout="row" layout-align="space-between center">
+    <!-- left button -->
+    <md-button class="md-icon-button md-primary" aria-label="previous" ng-click="previousCard()">
+        <md-icon md-svg-icon="icons/ic_navigate_before_black_24px.svg"></md-icon>
+    </md-button>
+
+    <!-- card -->
+    <tc-card card='card' ng-repeat="card in currentCard"></tc-card>
+
+    <!-- right button -->
+    <md-button class="md-icon-button md-primary" aria-label="next" ng-click="nextCard()">
+        <md-icon md-svg-icon="icons/ic_navigate_next_black_24px.svg"></md-icon>
+    </md-button>
+</div>

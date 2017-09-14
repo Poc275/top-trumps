@@ -410,44 +410,65 @@ store.updateBoon = function(email, price, cb) {
  */
 store.addPackToUserCollection = function(email, pack, cb) {
     var sortedPack = [];
+    var error;
 
-    // get user's collection
-    user.aggregate([
-        { $match: { email: email }},
-        { $project: { _id: false, cards: true }}
-    ], function(err, collection) {
-        if(err) {
-            console.log(err);
-            return cb(err, null);
+    // because forEach is synchronous and we need to wait for each card in the pack to be processed, 
+    // we use a collection of promises from which we can await until they're all complete using Promise.all().
+    // note that we have to use map() instead of forEach() because forEach() doesn't return anything
+    // whereas from map() we can return a promise
+    var promises = pack.map(function(card) {
+        return new Promise(function(resolve, reject) {
+            // get user's collection inside loop to catch 
+            // any duplicates within the pack itself, the first 
+            // will get added but the next will not
+            user.aggregate([
+                { $match: { email: email }},
+                { $project: { _id: false, cards: true }}
+            ], function(err, collection) {
+                if(err) {
+                    console.log(err);
+                    error = err;
+                    reject(err);
+                }
+
+                // see if the user has this card already
+                var duplicate = collection[0].cards.find(function(existingCard) {
+                    // equals() is a mongodb objectId equality function
+                    return existingCard.equals(card);
+                });
+
+                // array.find() returns undefined if it can't find a match
+                if(duplicate === undefined) {
+                    // not got, add to collection
+                    user.update(
+                        { email: email },
+                        { $push: { cards: mongoose.Types.ObjectId(card) }},
+                    function(err, res) {
+                        sortedPack.push({
+                            cardId: card,
+                            got: false
+                        });
+                        resolve();
+                    });
+                } else {
+                    // apply refund...
+                    sortedPack.push({
+                        cardId: card,
+                        got: true
+                    });
+                    resolve();
+                }
+            });
+        });
+    });
+
+    // when all promises have completed, return the sorted pack
+    Promise.all(promises).then(function() {
+        if(sortedPack.length !== pack.length) {
+            // one of the promises was rejected
+            return cb(error, null);
         }
 
-        // find duplicates
-        pack.forEach(function(card) {
-            var result = collection[0].cards.find(function(element) {
-                // equals() is a mongodb objectId equality function
-                return element.equals(card);
-            });
-
-            if(result === undefined) {
-                // not got, add to collection
-                user.update(
-                    { email: email },
-                    { $push: { cards: mongoose.Types.ObjectId(card) }}
-                );
-
-                sortedPack.push({
-                    cardId: card,
-                    got: false
-                });
-            } else {
-                // apply refund
-                sortedPack.push({
-                    cardId: card,
-                    got: true
-                });
-            }
-        });
-        
         return cb(null, sortedPack);
     });
 };

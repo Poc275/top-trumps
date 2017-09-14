@@ -179,10 +179,18 @@ app.get('/card/:name', isAuthenticated, function(req, res) {
 	});
 });
 
+app.get('/card/id/:id', isAuthenticated, function(req, res) {
+	console.log(req.params.id);
+	card.findOne({ '_id': mongoose.Types.ObjectId(req.params.id) }, function(err, card) {
+		res.json(card);
+	});
+});
+
 app.get('/purchase/:grade', isAuthenticated, function(req, res) {
 	var callback = function(err, pack) {
 		if(err) {
 			console.log(err);
+			res.status(500).send(err);
 		}
 
 		store.addPackToUserCollection(req.user.email, pack, function(err, sortedPack) {
@@ -214,6 +222,7 @@ app.get('/purchase/:grade', isAuthenticated, function(req, res) {
 			store.purchaseGoldPremium(req.user.email, callback);
 			break;
 		default:
+			callback(new Error("Unknown grade"), null);
 			break;
 	}
 });
@@ -222,8 +231,19 @@ app.get('/me', isAuthenticated, function(req, res) {
 	user.findOne({ 'email': req.user.email }, function(err, user) {
 		if(err) {
 			console.log(err);
+			res.status(500).send(err);
 		}
 		res.json(user);
+	});
+});
+
+app.get('/me/boon', isAuthenticated, function(req, res) {
+	user.findOne({ 'email': req.user.email }, function(err, user) {
+		if(err) {
+			console.log(err);
+			res.status(500).send(err);
+		}
+		res.json(user.boon);
 	});
 });
 

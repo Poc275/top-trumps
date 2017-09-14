@@ -764,13 +764,13 @@ describe('store module tests', function() {
 		done();
 	});
 
-	it('add pack to user\'s collection ignores duplicates', function(done) {
+	it('add pack to user\'s collection ignores both kinds of duplicates', function(done) {
 		var pack = [
 			mongoose.Types.ObjectId("58963c0945c58e2e78ae015d"),
 			mongoose.Types.ObjectId("58963ed645c58e2e78ae016c"),
-			mongoose.Types.ObjectId("5896495f45c58e2e78ae01a5"),	// duplicate
+			mongoose.Types.ObjectId("5896495f45c58e2e78ae01a5"),	// duplicate (user already has this card)
 			mongoose.Types.ObjectId("5896468245c58e2e78ae0194"),
-			mongoose.Types.ObjectId("589630c745c58e2e78ae0137")
+			mongoose.Types.ObjectId("58963c0945c58e2e78ae015d")		// duplicate within the pack itself
 		];
 		var cardsGot = 0;
 		var cardsNotGot = 0;
@@ -784,8 +784,8 @@ describe('store module tests', function() {
 				}
 			});
 			expect(res).to.have.lengthOf(5);
-			expect(cardsGot).to.deep.equal(1);
-			expect(cardsNotGot).to.deep.equal(4);
+			expect(cardsGot).to.deep.equal(2);
+			expect(cardsNotGot).to.deep.equal(3);
 
 			done();
 		});
@@ -885,8 +885,7 @@ describe('store module tests', function() {
 		var pack = [
 			mongoose.Types.ObjectId("58963c0945c58e2e78ae015d"),
 			mongoose.Types.ObjectId("58963ed645c58e2e78ae016c"),
-			mongoose.Types.ObjectId("5896468245c58e2e78ae0194"),
-			mongoose.Types.ObjectId("589630c745c58e2e78ae0137")
+			mongoose.Types.ObjectId("5896468245c58e2e78ae0194")
 		];
 
 		store.removeCardFromCollection("thedonald@trump.com", pack, function(err) {

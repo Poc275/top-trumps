@@ -280,6 +280,72 @@ describe('CardsFactory getCardCollection() tests', function() {
 });
 
 
+describe('CardsFactory purchase function tests', function() {
+	var cardsFactory;
+	var httpBackend;
+
+	beforeEach(module('TCModule'));
+
+	beforeEach(inject(function(_Cards_, $httpBackend) {
+		cardsFactory = _Cards_;
+		httpBackend = $httpBackend;
+
+		// mock api response with a purchased pack
+		httpBackend.expectGET('/purchase/bronze').respond({
+			cards: [
+				{
+					"cardId": "58963c0945c58e2e78ae015d",
+					"got": false
+				},
+				{
+					"cardId": "58963ed645c58e2e78ae016c",
+					"got": false
+				},
+				{
+					"cardId": "5896495f45c58e2e78ae01a5",
+					"got": true
+				},
+				{
+					"cardId": "5896468245c58e2e78ae0194",
+					"got": false
+				},
+				{
+					"cardId": "589630c745c58e2e78ae0137",
+					"got": false
+				}
+			]
+		});
+
+		// this test kept failing until I added this line
+		// i'm not sure why it is trying to get a template when I'm only
+		// testing the factory??? just respond with some simple html for now
+		httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+	}));
+
+	// if you get $digest still in progress errors then 
+	// pass false to these 2 parameters
+	// this doesn't fix the problem but will allow 
+	// the error msg to be more descriptive
+	afterEach(function() {
+		httpBackend.verifyNoOutstandingExpectation();
+     	httpBackend.verifyNoOutstandingRequest();
+	});
+
+	it('purchase function returns a pack of 5 cards with a got property', function() {
+		cardsFactory.purchase("bronze").then(function(res) {
+			expect(res.data.cards.length).toEqual(5);
+			expect(res.data.cards[0].got).toBe(false);
+			expect(res.data.cards[1].got).toBe(false);
+			expect(res.data.cards[2].got).toBe(true);
+			expect(res.data.cards[3].got).toBe(false);
+			expect(res.data.cards[4].got).toBe(false);
+		});
+
+		httpBackend.flush();
+	});
+});
+
+
 describe('UserController Tests', function() {
 	var $httpBackend;
 	var $rootScope;
@@ -1694,6 +1760,50 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
 	}));
 
+});
+
+describe('StoreController Tests', function() {
+	var $httpBackend;
+	var $rootScope;
+	var createController;
+
+	beforeEach(module('TCModule'));
+
+	beforeEach(inject(function($injector, $location) {
+		// set up the mock http service responses
+		$httpBackend = $injector.get('$httpBackend');
+
+		// mock requests
+		// $httpBackend.whenRoute('GET', '/me').respond({email: 'abc123@test.com'});
+		// $httpBackend.whenRoute('GET', '/logout').respond();
+		// $httpBackend.whenRoute('GET', '/templates/home.html').respond('<html></html>');
+		// $httpBackend.whenRoute('GET', '/templates/collection.html').respond('<html></html>');
+		// $httpBackend.whenRoute('GET', '/templates/index.html').respond('<html></html>');
+
+		// setup scope
+		$rootScope = $injector.get('$rootScope');
+
+		// the $controller service is used to create instances of controllers
+		var $controller = $injector.get('$controller');
+
+		createController = function() {
+			return $controller('StoreController', { '$scope' : $rootScope });
+		};
+	}));
+
+	afterEach(function() {
+		$httpBackend.verifyNoOutstandingExpectation();
+     	$httpBackend.verifyNoOutstandingRequest();
+	});
+
+
+	it('/me call is made when controller instantiated', function() {
+		// $httpBackend.when('/me');
+		// var controller = createController();
+		// $httpBackend.flush();
+
+		// expect($rootScope.user.email).toBe('abc123@test.com');
+	});
 });
 
 
