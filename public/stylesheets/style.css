@@ -562,3 +562,18 @@ md-grid-tile.gold {
 	width: 75%!important;
 	height: auto!important;
 }
+
+/*
+*********************************
+ New pack styles
+*********************************
+*/
+#new-pack-dialog {
+	height: 100%;
+}
+
+/* make the cards the same width to keep 
+ the scroll effect nice and smooth */
+.new-card {
+	width: 500px;
+}
