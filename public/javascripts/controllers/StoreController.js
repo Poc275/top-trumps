@@ -8,8 +8,8 @@ angular.module('TCModule').controller('StoreController', function($scope, $mdDia
     $scope.showPremium = false;
 
     $scope.getBoon = function() {
-        Users.getUsersBoon().then(function(boon) {
-            $scope.boon = boon.data;
+        Users.getUsersStats().then(function(stats) {
+            $scope.boon = stats.data.boon;
         })
         .catch(function(err) {
             console.log(err);
@@ -133,7 +133,7 @@ angular.module('TCModule').controller('StoreController', function($scope, $mdDia
                 .parent(angular.element(document.body))
                 .clickOutsideToClose(true)
                 .title('Not enough boon')
-                .textContent('I know deals, and this is a bad one, real bad. Read The Art of The Deal and get back to me with a better offer.')
+                .textContent('💰 I know deals, and this is a bad one, real bad. Read The Art of The Deal and get back to me with a better offer.')
                 .ariaLabel('Not enough boon to buy the pack dialog')
                 .ok('I\'m sorry')
         );

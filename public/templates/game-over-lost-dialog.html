@@ -1,0 +1,26 @@
+<md-dialog aria-label="Game over lost dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Game Over</h2>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <h2>😭 You lose.</h2>
+            <p></p>The Donald does a cry, you lost to a bad hombre.</p>
+            <p>Hands: {{ stats.handsWon + stats.handsLost + stats.handsDrawn }} | Won: {{ stats.handsWon }} | Lost: {{ stats.handsLost }} | Drawn: {{ stats.handsDrawn }}</p>
+            <p>Boon: {{ stats.boon + stats.boonWon }} <small>+{{ stats.boonWon }}</small></p>
+            <div layout="row" class="profile-content">
+                <p>XP: {{ stats.newXp }}</p>
+                <md-progress-linear class="xp-slider" md-mode="determinate" value="{{ stats.xpSliderValue }}"></md-progress-linear>
+                <small>+{{ stats.xpWon }}</small>
+            </div>
+        </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="hide()">Ok</md-button>
+    </md-dialog-actions>
+</md-dialog>

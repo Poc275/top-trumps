@@ -237,13 +237,88 @@ app.get('/me', isAuthenticated, function(req, res) {
 	});
 });
 
-app.get('/me/boon', isAuthenticated, function(req, res) {
+app.get('/me/pack/:size', isAuthenticated, function(req, res) {
+	user.aggregate([
+		{ $match: { email: req.user.email }},
+		{ $project: { cards: true }}
+	], function(err, collection) {
+		if(err) {
+			console.log(err);
+			res.status(500).send(err);
+		}
+
+		// get card ids
+		var cardIds = collection[0].cards.map(function(cardId) {
+			return mongoose.Types.ObjectId(cardId);
+		});
+
+		// now get the top :size cards sorted by average
+		// remember parseInt(), url params are treated as strings
+		card.aggregate([
+			{ $match: { _id: { $in: cardIds }}},
+			{ $project: { average: { $avg: [ "$unpalatibility", "$up_their_own_arsemanship", "$media_attention", 
+				"$legacy", "$special_ability" ]}}},
+			{ $sort: { average: -1 }},
+			{ $limit: parseInt(req.params.size) }
+		], function(err, pack) {
+			if(err) {
+				console.log(err);
+				res.status(500).send(err);
+			}
+
+			// group pack ids
+			var packIds = pack.map(function(card) {
+				return mongoose.Types.ObjectId(card._id);
+			});
+
+			// finally, return the actual card objects from these ids
+			card.find({ _id: { $in: packIds } }, function(err, cards) {
+				if(err) {
+					res.status(500).send(err);
+					console.log(err);
+				}
+				res.json(cards);
+			});
+		});
+		
+	});
+});
+
+app.get('/me/stats', isAuthenticated, function(req, res) {
 	user.findOne({ 'email': req.user.email }, function(err, user) {
 		if(err) {
 			console.log(err);
 			res.status(500).send(err);
 		}
-		res.json(user.boon);
+		res.json({
+			level: user.level,
+			xp: user.xp,
+			boon: user.boon
+		});
+	});
+});
+
+app.put('/me/stats', isAuthenticated, function(req, res) {
+	var result = req.body;
+	var won = result.won === true ? 1 : 0;
+	var lost = result.won === false ? 1 : 0;
+
+	user.findOneAndUpdate(
+		{ email: req.user.email },
+		{ $inc: {
+			played: 1,
+			won: won,
+			lost: lost,
+			boon: parseInt(result.boon),
+			xp: parseInt(result.xp)
+		}},
+    function(err, result) {
+        if(err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+
+        res.status(201).send();
 	});
 });
 
@@ -256,6 +331,7 @@ app.get('/me/collection', isAuthenticated, function(req, res) {
 	], function(err, collection) {
 		if(err) {
 			console.log(err);
+			res.status(500).send(err);
 		}
 		// now retrieve card objects from the ids
 		// first map the ids to an array of type ObjectId
@@ -268,6 +344,7 @@ app.get('/me/collection', isAuthenticated, function(req, res) {
 		// you can query with an array using the $in operator in mongo
 		card.find({ "_id": { "$in": cardIds } }, function(err, cards) {
 			if(err) {
+				res.status(500).send(err);
 				console.log(err);
 			}
 			res.json(cards);

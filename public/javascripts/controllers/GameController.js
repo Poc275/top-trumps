@@ -1,11 +1,27 @@
-angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, $timeout, Cards, socket, Gravatar) {
-	var ppcMax = Math.log(200001);
-	
+angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, $timeout, $state, Cards, socket, Gravatar, Users) {
+	// PPC_MAX + 1 because log(0) = NaN
+	var PPC_MAX = Math.log(200001);
+
+	// link GAME_SIZE to a UI option eventually
+	// so user can choose own game length
+	var GAME_LENGTH = 5;
+
+	// game over rewards
+	var GAME_WON_BOON = 100;
+	var GAME_LOSE_BOON = 25;
+	var GAME_WON_XP = 25;
+	var XP_PER_HAND = 5;
+
 	$scope.collection;
 	$scope.currentCard;
 	$scope.host;
 	$scope.gameInProgress;
 	$scope.turn;
+
+	// tally hands won/lost/drawn for game stats and XP
+	$scope.handsWon = 0;
+	$scope.handsDrawn = 0;
+	$scope.handsLost = 0;
 
 	// counter for the number of rounds played
 	$scope.round;
@@ -41,11 +57,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	$scope.result.message = '';
 
 	// overall game score
-	// assumes a 10 card game, will need to 
-	// change when option is added for different
-	// sized games
-	$scope.myScore = 10;
-	$scope.opponentScore = 10;
+	$scope.myScore = GAME_LENGTH;
+	$scope.opponentScore = GAME_LENGTH;
 
 
 	// functions...
@@ -110,76 +123,58 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				$scope.turn = false;
 			}
 
-			// get user's card collection
-			Cards.getCardCollection().then(function(cards) {
-				$scope.collection = cards.data;
+			// get user's game pack
+			Cards.getGamePack(GAME_LENGTH).then(function(pack) {
+				$scope.collection = pack.data;
 				// force array creation for ng-repeat to work
 				// otherwise the card object is at the "wrong level"
 				// and we get a card for each property of a card 
 				// instead of a single object
 				$scope.currentCard = [$scope.collection[$scope.round]];
+			})
+			.catch(function(err) {
+				console.log(err);
 			});
 		});
 
 		// user has been sent a card they've won from an opponent
 		// just add to end of collection
 		socket.on('victorious', function(data) {
-			console.log('I win :) ');
-
 			$scope.collection.push(data[0]);
 			$scope.round++;
 			$scope.turn = true;
+			$scope.handsWon++;
 
 			// minus 1 from collection length because $scope.round starts at zero
 			if($scope.round > $scope.collection.length - 1) {
 				// go back to beginning of pack
 				$scope.round = 0;
 			}
-
-			console.log('my round: ', $scope.round);
-			$scope.collection.forEach(function(card) {
-				console.log(card.name);
-			});
-			console.log($scope.turn);
 		});
 
 		// user has lost a round, remove their current card
 		socket.on('defeated', function() {
-			console.log('I lose :(');
-
 			$scope.turn = false;
 			$scope.collection.splice($scope.round, 1);
+			$scope.handsLost++;
 
 			// minus 1 from collection length because $scope.round starts at zero
 			if($scope.round > $scope.collection.length - 1) {
 				// go back to beginning of pack
 				$scope.round = 0;
 			}
-
-			console.log('my round: ', $scope.round);
-			$scope.collection.forEach(function(card) {
-				console.log(card.name);
-			});
-			console.log($scope.turn);
 		});
 
 		// round was drawn, just move onto next card
 		socket.on('draw', function() {
-			console.log('Draw :|');
-
 			$scope.round++;
+			$scope.handsDrawn++;
 
 			// minus 1 from collection length because $scope.round starts at zero
 			if($scope.round > $scope.collection.length - 1) {
 				// go back to beginning of pack
 				$scope.round = 0;
 			}
-
-			console.log('my round: ', $scope.round);
-			$scope.collection.forEach(function(card) {
-				console.log(card.name);
-			});
-			console.log($scope.turn);
 		});
 
 		// opponentScore event
@@ -216,8 +211,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		// nextRound event - both players are ready for their next card
 		socket.on('nextRound', function() {
-			console.log('next round!');
-
 			$timeout(function() {
 				// reset opponent score visibility and unhide card categories
 				$scope.showScore = false;
@@ -234,18 +227,9 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				$scope.hideSpecialAbility = false;
 
 				if($scope.collection.length === 0) {
-					// I've lost, game over
-					$mdDialog.show(
-						$mdDialog.alert()
-							.parent(angular.element($document.body))
-							.clickOutsideToClose(true)
-							.title('Game Over')
-							.textContent('You lose. The Donald does a cry, you lost to a bad hombre')
-							.ariaLabel('Game Over Dialog')
-							.ok('Home')
-					);
-
+					// I've lost, tell opponent they've won and show game over dialog
 					socket.emit('gameOver');
+					$scope.gameLost();
 				} else {
 					$scope.currentCard = [$scope.collection[$scope.round]];
 				}
@@ -265,27 +249,15 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			// send score to opponent to update their slider
 			socket.emit('opponentScore', { category: $scope.result.category, score: $scope.result.myScore, card: $scope.currentCard });
 
-			console.log($scope.result);
-
 			$scope.moveOpponentScoreSlider($scope.result.category, $scope.result.opponentScore, $scope.result.myScore).then(function() {
 				$scope.resultCheck();
 			});
-
 		});
 
 		// game over event, player has won
 		socket.on('gameOver', function() {
-			$mdDialog.show(
-				$mdDialog.alert()
-					.parent(angular.element($document.body))
-					.clickOutsideToClose(true)
-					.title('Game Over')
-					.textContent('You win! The Donald is proud, you\'re making America great again')
-					.ariaLabel('Game Over Dialog')
-					.ok('Home')
-			);
+			$scope.gameWon();
 		});
-
 	};
 
 
@@ -327,8 +299,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		if(opponentScore > 0) {
 			if(category === 'ppc') {
-				var opponentLogScore = Math.round((Math.log(opponentScore + 1) / ppcMax) * 100, 0);
-				var myLogScore = Math.round((Math.log(myScore + 1) / ppcMax) * 100, 0);
+				var opponentLogScore = Math.round((Math.log(opponentScore + 1) / PPC_MAX) * 100, 0);
+				var myLogScore = Math.round((Math.log(myScore + 1) / PPC_MAX) * 100, 0);
 				
 				if(opponentLogScore > 0) {
 					return $q(function(resolve, reject) {
@@ -354,7 +326,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 						// $scope.result.scoreSlider += 1;
 						$scope.result.scoreSlider += (100 / myScore);
 						$scope.result.scoreSliderValue += 1;
-					}, 200, opponentScore, true).then(function() {
+					}, 100, opponentScore, true).then(function() {
 						resolve();
 					});
 				});
@@ -384,8 +356,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	$scope.resultCheck = function() {
 		if($scope.result.myScore > $scope.result.opponentScore) {
 			// win! opponent's card is added to collection :)
-			console.log('I win :)');
-
 			$scope.collection.push($scope.result.opponentCard[0]);
 			$scope.round++;
 			$scope.turn = true;
@@ -393,30 +363,29 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.opponentScore--;
 			$scope.result.message = '🎉 So Much Win!';
 			$scope.showResult = true;
+			$scope.handsWon++;
 
 			// tell opponent they have been defeated so their card is removed
 			socket.emit('defeated');
 
 		} else if($scope.result.myScore < $scope.result.opponentScore) {
 			// lost, card is removed from collection and sent to winner :(
-			console.log('I lose :(');
-
 			$scope.turn = false;
 			$scope.myScore--;
 			$scope.opponentScore++;
 			$scope.result.message = '💩 What A Lose';
 			$scope.showResult = true;
+			$scope.handsLost++;
 
 			// tell opponent they have won the round and send them their new card
 			var lostCard = $scope.collection.splice($scope.round, 1);
 			socket.emit('victorious', lostCard);
 
 		} else {
-			console.log('It\'s a draw :|');
-
 			$scope.round++;
 			$scope.result.message = '😑 It\'s a Draw';
 			$scope.showResult = true;
+			$scope.handsDrawn++;
 
 			socket.emit('draw');
 		}
@@ -429,13 +398,100 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		// ready for next round
 		socket.emit('nextRound');
+	};
 
-		// debugging info...
-		console.log('my round: ', $scope.round);
-		$scope.collection.forEach(function(card) {
-			console.log(card.name);
+
+	// won game function
+	$scope.gameWon = function() {
+		// get user's stats (to update xp and boon)
+		// and then load end of game summary dialog
+		Users.getUsersStats().then(function(userStats) {
+			$mdDialog.show({
+				locals: { stats: {
+					level: userStats.data.level,
+					handsWon: $scope.handsWon,
+					handsDrawn: $scope.handsDrawn,
+					handsLost: $scope.handsLost,
+					xp: userStats.data.xp,
+					xpWon: ($scope.handsWon + $scope.handsDrawn + $scope.handsLost) * XP_PER_HAND + GAME_WON_XP,
+					boon: userStats.data.boon,
+					boonWon: GAME_WON_BOON
+				} },
+				controller: GameOverDialogController,
+				templateUrl: 'templates/game-over-won-dialog.html',
+				parent: angular.element(document.body),
+				clickOutsideToClose: false,
+				fullscreen: true
+			})
+			.then(function() {
+				// update user's stats and go home
+				var newStats = {
+					won: true,
+					xp: ($scope.handsWon + $scope.handsDrawn + $scope.handsLost) * XP_PER_HAND + GAME_WON_XP,
+					boon: GAME_WON_BOON
+				};
+				
+				Users.updateUsersStats(JSON.stringify(newStats)).then(function() {
+					// go home
+					$state.go("home");
+				})
+				.catch(function(err) {
+					// handle error...
+					// go home
+					$state.go("home");
+				});
+			});
+		})
+		.catch(function(err) {
+			// handle error
 		});
-		console.log('my turn: ', $scope.turn);
+	};
+
+
+	// lost game function
+	$scope.gameLost = function() {
+		// get user's stats (to update xp and boon)
+		// and then load end of game summary dialog
+		Users.getUsersStats().then(function(userStats) {
+			$mdDialog.show({
+				locals: { stats: {
+					level: userStats.data.level,
+					handsWon: $scope.handsWon,
+					handsDrawn: $scope.handsDrawn,
+					handsLost: $scope.handsLost,
+					xp: userStats.data.xp,
+					xpWon: ($scope.handsWon + $scope.handsDrawn + $scope.handsLost) * XP_PER_HAND,
+					boon: userStats.data.boon,
+					boonWon: GAME_LOSE_BOON
+				} },
+				controller: GameOverDialogController,
+				templateUrl: 'templates/game-over-lost-dialog.html',
+				parent: angular.element(document.body),
+				clickOutsideToClose: false,
+				fullscreen: true
+			})
+			.then(function() {
+				// update user's stats and go home
+				var newStats = {
+					won: false,
+					xp: ($scope.handsWon + $scope.handsDrawn + $scope.handsLost) * XP_PER_HAND,
+					boon: GAME_LOSE_BOON
+				};
+
+				Users.updateUsersStats(JSON.stringify(newStats)).then(function() {
+					// go home
+					$state.go("home");
+				})
+				.catch(function(err) {
+					// handle error...
+					// go home
+					$state.go("home");
+				});
+			});
+		})
+		.catch(function(err) {
+			// handle error
+		});
 	};
 
 
@@ -453,5 +509,35 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			socket.disconnect();
 		}
 	});
+
+
+	// game over dialogs controller
+	function GameOverDialogController($scope, $mdDialog, $filter, stats) {
+		$scope.stats = stats;
+
+		// add user's new xp to stats for display,
+		// this allows us to dynamically update stats.xp in the slider
+		// without it affecting the fixed value display
+		$scope.stats.newXp = stats.xp + stats.xpWon;
+
+		// filter starting slider position
+		$scope.stats.xpSliderValue = $filter('xpFilter')(stats.xp, stats.level);
+		// filter slider position to move to
+		// (minus start as this is the number of $interval iterations)
+		var toXp = $filter('xpFilter')(stats.xp + stats.xpWon, stats.level) - $filter('xpFilter')(stats.xp, stats.level);
+
+		console.log("Start fixed: ", $scope.stats.newXp);
+		console.log("Start filtered: ", $scope.stats.xpSliderValue);
+		console.log("End filtered: ", toXp);
+
+		// move xp slider
+		$interval(function() {
+			$scope.stats.xpSliderValue += 1;
+		}, 100, toXp, true);
+
+		$scope.hide = function() {
+			$mdDialog.hide();
+		};
+	}
 
 });

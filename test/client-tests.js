@@ -701,6 +701,11 @@ describe('GameController Tests', function() {
 		$httpBackend.flush();
 	});
 
+
+	it('Game lost function loads dialog', function() {
+		$httpBackend.flush();
+	});
+
 });
 
 
@@ -822,11 +827,17 @@ describe('Game Logic Tests', function() {
 		expect(playerOneScope.round).toBe(0);
 		expect(playerOneScope.host).toBe(true);
 		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.handsWon).toBe(0);
+		expect(playerOneScope.handsDrawn).toBe(0);
+		expect(playerOneScope.handsLost).toBe(0);
 
 		expect(playerTwoScope.gameInProgress).toBe(true);
 		expect(playerTwoScope.round).toBe(0);
 		expect(playerTwoScope.host).toBe(false);
 		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.handsWon).toBe(0);
+		expect(playerTwoScope.handsDrawn).toBe(0);
+		expect(playerTwoScope.handsLost).toBe(0);
 	});
 
 	// inject $timeout so we can flush them from the nextRound event
@@ -906,6 +917,15 @@ describe('Game Logic Tests', function() {
 		$timeout.flush();
 
 		expect(playerTwoScope.currentCard[0].name).toBe('Donald Trump');
+
+		// game stats tests
+		expect(playerOneScope.handsWon).toBe(0);
+		expect(playerOneScope.handsDrawn).toBe(0);
+		expect(playerOneScope.handsLost).toBe(2);
+
+		expect(playerTwoScope.handsWon).toBe(2);
+		expect(playerTwoScope.handsDrawn).toBe(0);
+		expect(playerTwoScope.handsLost).toBe(0);
 	}));
 
 
@@ -983,6 +1003,15 @@ describe('Game Logic Tests', function() {
 		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Vladimir Putin');
+
+		// game stats tests
+		expect(playerOneScope.handsWon).toBe(2);
+		expect(playerOneScope.handsDrawn).toBe(0);
+		expect(playerOneScope.handsLost).toBe(0);
+
+		expect(playerTwoScope.handsWon).toBe(0);
+		expect(playerTwoScope.handsDrawn).toBe(0);
+		expect(playerTwoScope.handsLost).toBe(2);
 	}));
 
 	
@@ -1060,6 +1089,15 @@ describe('Game Logic Tests', function() {
 
 		expect(playerOneScope.currentCard[0].name).toBe('Donald Trump');
 		expect(playerTwoScope.currentCard[0].name).toBe('Vladimir Putin');
+
+		// game stats tests
+		expect(playerOneScope.handsWon).toBe(0);
+		expect(playerOneScope.handsDrawn).toBe(2);
+		expect(playerOneScope.handsLost).toBe(0);
+
+		expect(playerTwoScope.handsWon).toBe(0);
+		expect(playerTwoScope.handsDrawn).toBe(2);
+		expect(playerTwoScope.handsLost).toBe(0);
 	}));
 });
 
@@ -1166,11 +1204,17 @@ describe('Full Game Test', function() {
 		expect(playerOneScope.round).toBe(0);
 		expect(playerOneScope.host).toBe(true);
 		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.handsWon).toBe(0);
+		expect(playerOneScope.handsDrawn).toBe(0);
+		expect(playerOneScope.handsLost).toBe(0);
 
 		expect(playerTwoScope.gameInProgress).toBe(true);
 		expect(playerTwoScope.round).toBe(0);
 		expect(playerTwoScope.host).toBe(false);
 		expect(playerTwoScope.turn).toBe(false);
+		expect(playerTwoScope.handsWon).toBe(0);
+		expect(playerTwoScope.handsDrawn).toBe(0);
+		expect(playerTwoScope.handsLost).toBe(0);
 	});
 
 
@@ -1758,6 +1802,15 @@ describe('Full Game Test', function() {
 		$timeout.flush();
 
 		expect(playerOneScope.currentCard[0].name).toBe('Johnnie Cochran');
+
+		// game stats tests
+		expect(playerOneScope.handsWon).toBe(9);
+		expect(playerOneScope.handsDrawn).toBe(3);
+		expect(playerOneScope.handsLost).toBe(4);
+
+		expect(playerTwoScope.handsWon).toBe(4);
+		expect(playerTwoScope.handsDrawn).toBe(3);
+		expect(playerTwoScope.handsLost).toBe(9);
 	}));
 
 });
