@@ -322,6 +322,24 @@ app.put('/me/stats', isAuthenticated, function(req, res) {
 	});
 });
 
+app.put('/me/levelup', isAuthenticated, function(req, res) {
+	user.findOneAndUpdate(
+		{ email: req.user.email },
+		{ $inc: {
+			level: 1,
+			boon: 100,
+			xp: 15
+		}},
+    function(err, result) {
+        if(err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+
+        res.status(201).send();
+	});
+});
+
 app.get('/me/collection', isAuthenticated, function(req, res) {
 	// fetch card collection which is an 
 	// array of card Object Ids

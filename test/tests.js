@@ -401,7 +401,7 @@ describe('game lobby setup test', function() {
 				});
 
 				interloper.on('status', function(data) {
-					expect(data).to.contain('You are now the host, waiting for another player');
+					expect(data).to.contain('It\'s your turn first');
 					partialGameId = data.split(':')[0];
 
 					interloperMessagesReceived++;
@@ -416,7 +416,7 @@ describe('game lobby setup test', function() {
 			});
 
 			guest.on('status', function(data) {
-				expect(data).to.contain('You have now joined a game');
+				expect(data).to.contain('It\'s your opponent\'s turn first');
 				guestMessagesReceived++;
 			});
 
@@ -431,7 +431,7 @@ describe('game lobby setup test', function() {
 		});
 
 		host.on('status', function(data) {
-			expect(data).to.contain('You are now the host, waiting for another player');
+			expect(data).to.contain('It\'s your turn first');
 			gameId = data.split(':')[0];
 
 			hostMessagesReceived++;
@@ -539,7 +539,7 @@ describe('game event tests', function() {
 			});
 
 			guest.on('status', function(data) {
-				expect(data).to.contain('You have now joined a game');
+				expect(data).to.contain('It\'s your opponent\'s turn first');
 			});
 
 			guest.on('play', function(data) {
@@ -553,7 +553,7 @@ describe('game event tests', function() {
 		});
 
 		host.on('status', function(data) {
-			expect(data).to.contain('You are now the host, waiting for another player');
+			expect(data).to.contain('It\'s your turn first');
 			gameId = data.split(':')[0];
 		});
 
@@ -608,7 +608,7 @@ describe('game event tests', function() {
 			});
 
 			guest.on('status', function(data) {
-				expect(data).to.contain('You have now joined a game');
+				expect(data).to.contain('It\'s your opponent\'s turn first');
 			});
 
 			guest.on('play', function(data) {
@@ -626,7 +626,7 @@ describe('game event tests', function() {
 		});
 
 		host.on('status', function(data) {
-			expect(data).to.contain('You are now the host, waiting for another player');
+			expect(data).to.contain('It\'s your turn first');
 			gameId = data.split(':')[0];
 		});
 

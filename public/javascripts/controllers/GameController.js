@@ -48,8 +48,10 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	// opponent score variables
 	$scope.showScore = false;
 	$scope.showResult = false;
+
 	// scoreSlider moves the opponent score slider bar
 	$scope.result.scoreSlider = 0;
+
 	// scoreSliderValue increments the opponent's score value
 	// required as a separate value because scoreSlider is 
 	// incremented in different steps depending on the values
@@ -114,7 +116,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 				$mdToast.show(
 		      		$mdToast.simple()
 			        .textContent('Your turn!')
-			        .position('bottom')
+			        .position('top')
 			        .hideDelay(3000)
 			    );
 
@@ -308,7 +310,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 							$scope.result.scoreSlider += (100 / myLogScore);
 							$scope.totalSliderValue += opponentScore / opponentLogScore;
 							$scope.result.scoreSliderValue = Math.floor($scope.totalSliderValue, 0);
-						}, 200, opponentLogScore, true).then(function() {
+						}, 100, opponentLogScore, true).then(function() {
 							// update final score to account for any missing decimal places due to rounding
 							$scope.result.scoreSliderValue = opponentScore;
 							resolve();
@@ -512,8 +514,9 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 
 	// game over dialogs controller
-	function GameOverDialogController($scope, $mdDialog, $filter, stats) {
+	function GameOverDialogController($scope, $mdDialog, $filter, Users, stats) {
 		$scope.stats = stats;
+		$scope.levelUp = false;
 
 		// add user's new xp to stats for display,
 		// this allows us to dynamically update stats.xp in the slider
@@ -526,14 +529,16 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 		// (minus start as this is the number of $interval iterations)
 		var toXp = $filter('xpFilter')(stats.xp + stats.xpWon, stats.level) - $filter('xpFilter')(stats.xp, stats.level);
 
-		console.log("Start fixed: ", $scope.stats.newXp);
-		console.log("Start filtered: ", $scope.stats.xpSliderValue);
-		console.log("End filtered: ", toXp);
-
 		// move xp slider
 		$interval(function() {
 			$scope.stats.xpSliderValue += 1;
-		}, 100, toXp, true);
+		}, 100, toXp, true).then(function() {
+			// check for level up (xp bar >= 100)
+			if($filter('xpFilter')(stats.xp + stats.xpWon, stats.level) >= 100) {
+				$scope.levelUp = true;
+				Users.levelUp();
+			}
+		});
 
 		$scope.hide = function() {
 			$mdDialog.hide();

@@ -82,8 +82,11 @@
 						<h4>Rank: {{ user.level | levelFilter }}</h4>
 					</div>
 
-					<!-- todo - create filter for correct medal colour -->
-					<span class="emoji">&#x1F949;</span>
+					<span class="emoji" ng-if="(user.level | levelFilter).indexOf('Bronze') > -1">&#x1F949;</span>
+					<span class="emoji" ng-if="(user.level | levelFilter).indexOf('Silver') > -1">&#x1F948;</span>
+					<span class="emoji" ng-if="(user.level | levelFilter).indexOf('Gold') > -1">&#x1F947;</span>
+					<span class="emoji" ng-if="(user.level | levelFilter).indexOf('Brown Platinum') > -1">&#x1F3C5;</span>
+					<span class="emoji" ng-if="(user.level | levelFilter).indexOf('Top') > -1">&#x1F3C6;</span>
 					
 					<!--<md-button class="md-raised md-accent" layout-align="center center" ui-sref="home.play" ng-click="init(user)">Play</md-button>-->
 				</div>
@@ -151,8 +154,11 @@
 						</div>
 
 						<div class="profile-content" layout="row">
-							<p class="profile-text">XP:</p>
-							<md-progress-linear class="xp-slider" md-mode="determinate" value="{{ user.xp }}"></md-progress-linear>
+							<p class="profile-text">
+								XP:
+								<md-tooltip md-direction="up">{{ user.xp }}</md-tooltip>
+							</p>
+							<md-progress-linear class="xp-slider-profile" md-mode="determinate" value="{{ user.xp | xpFilter:user.level }}"></md-progress-linear>
 						</div>
 
 					</div><!-- end of profile card -->

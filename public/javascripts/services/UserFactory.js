@@ -5,6 +5,9 @@ angular.module('TCModule').factory('Users', function UsersFactory($http) {
 		},
 		updateUsersStats: function(newStats) {
 			return $http.put('/me/stats', newStats);
+		},
+		levelUp: function() {
+			return $http.put('/me/levelup');
 		}
 	};
 });

@@ -271,6 +271,11 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 	height: 25px;
 }
 
+/* shrink spacing around opponent's card name when score is being shown */
+.opponent-card-name {
+	margin-bottom: 0;
+}
+
 
 /*
 *********************************
@@ -458,11 +463,20 @@ md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-
 	border-radius: 5px;
 }
 
-.xp-slider {
-	width: 250px;
+.xp-slider-profile {
 	margin-top: 22px;
 	margin-left: 16px;
 }
+
+.xp-slider-profile .md-container {
+	height: 25px;
+}
+
+/* .xp-slider {
+	width: 250px;
+	margin-top: 22px;
+	margin-left: 16px;
+} */
 
 .xp-slider .md-container {
 	height: 25px;
@@ -576,4 +590,17 @@ md-grid-tile.gold {
  the scroll effect nice and smooth */
 .new-card {
 	width: 500px;
+}
+
+
+/*
+*********************************
+ End of game dialog styles
+*********************************
+*/
+/* This is to vertically centre the xp slider
+ *	with the xp label */
+.game-over-xp-label {
+	margin-top: 0;
+	margin-bottom: 0;
 }

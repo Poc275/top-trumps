@@ -222,8 +222,8 @@ gameServer.createGame = function(player) {
 	gameServer.games[newGame.id] = newGame;
 	gameServer.gameCount++;
 
-	// tell the player they are now hosting a game and waiting
-	player.emit('status', newGame.id + ': You are now the host, waiting for another player');
+	// tell the player it's their turn first
+	player.emit('status', 'Game on. It\'s your turn first');
 
 	player.game = newGame;
 	player.hosting = true;
@@ -259,7 +259,8 @@ gameServer.findGame = function(player) {
 				gameInstance.playerClient = player;
 				gameInstance.playerCount++;
 
-				gameInstance.playerClient.emit('status', 'You have now joined a game');
+				// tell the player it's not their turn first
+				gameInstance.playerClient.emit('status', 'Game on. It\'s your opponent\'s turn first');
 
 				gameServer.startGame(gameInstance);
 			}

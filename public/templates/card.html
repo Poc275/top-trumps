@@ -177,10 +177,10 @@
 					<img src="/images/vs.png" alt="versus" />
 				</p>
 
-				<h2>{{ result.opponentCard[0].name }}</h2>
+				<h2 layout-padding class="opponent-card-name">{{ result.opponentCard[0].name }}</h2>
 
 				<!-- opponent score slider -->
-				<div class="category-row" layout="row">
+				<div class="category-row" layout="row" layout-padding>
 					<md-progress-linear class="score-slider" md-mode="determinate" value="{{ result.scoreSlider }}"></md-progress-linear>
 					<span flex></span>
 					<md-button class="play-button grade-{{ card.cuntal_order }}">
