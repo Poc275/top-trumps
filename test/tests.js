@@ -352,13 +352,17 @@ describe('game lobby setup test', function() {
 	var host;
 	var guest;
 	var interloper;
-	var gameId;
+	var completeGameId;
 	var partialGameId;
 
 	var hostMessagesReceived = 0;
 	var guestMessagesReceived = 0;
 	var interloperMessagesReceived = 0;
 	var gameStartedMessagesReceived = 0;
+
+	var hostGameCreatedMessagesReceieved = 0;
+	var guestGameCreatedMessagesReceieved = 0;
+	var interloperGameCreatedMessagesReceieved = 0;
 
 
 	before(function(done) {
@@ -385,7 +389,6 @@ describe('game lobby setup test', function() {
 				// host goes first and plays a card
 				host.emit('message', 'unpalatibility: 75');
 
-
 				// 3rd player joins
 				interloper = io.connect('http://localhost:3000');
 
@@ -402,14 +405,19 @@ describe('game lobby setup test', function() {
 
 				interloper.on('status', function(data) {
 					expect(data).to.contain('It\'s your turn first');
-					partialGameId = data.split(':')[0];
-
 					interloperMessagesReceived++;
+				});
+
+				interloper.on('gameCreated', function(gameId) {
+					expect(gameId).to.not.be.null;
+					expect(gameId).to.be.a('string');
+					interloperGameCreatedMessagesReceieved++;
+					partialGameId = gameId;
 				});
 
 				// this shouldn't be called as the 3rd player
 				// doesn't get a game to start
-				interloper.on('start', function(data) {
+				interloper.on('start', function(gameId) {
 					gameStartedMessagesReceived++;
 				});
 
@@ -425,19 +433,30 @@ describe('game lobby setup test', function() {
 				guestMessagesReceived++;
 			});
 
-			guest.on('start', function(data) {
+			guest.on('start', function(gameId) {
 				gameStartedMessagesReceived++;
+			});
+
+			// this should never be called because the guest doesn't 
+			// create a game, only joins it
+			guest.on('gameCreated', function(gameId) {
+				guestGameCreatedMessagesReceieved++;
 			});
 		});
 
 		host.on('status', function(data) {
 			expect(data).to.contain('It\'s your turn first');
-			gameId = data.split(':')[0];
-
 			hostMessagesReceived++;
 		});
 
-		host.on('start', function(data) {
+		host.on('gameCreated', function(gameId) {
+			expect(gameId).to.not.be.null;
+			expect(gameId).to.be.a('string');
+			hostGameCreatedMessagesReceieved++;
+			completeGameId = gameId;
+		});
+
+		host.on('start', function(gameId) {
 			gameStartedMessagesReceived++;
 		});
 	});
@@ -451,7 +470,7 @@ describe('game lobby setup test', function() {
 		guest.disconnect();
 		interloper.disconnect();
 
-		game.endGame(gameId, host.userid);
+		game.endGame(completeGameId, host.userid);
 		game.endGame(partialGameId, interloper.userid);
 
 		// now we're cleaned up there shouldn't be any games left
@@ -468,6 +487,12 @@ describe('game lobby setup test', function() {
 		// we should have had 1 game that started and 
 		// notified both players = 2 messages
 		expect(gameStartedMessagesReceived).to.deep.equal(2);
+
+		// we should have had 2 gameCreated events 
+		// one for the host and one for the interloper
+		expect(hostGameCreatedMessagesReceieved).to.deep.equal(1);
+		expect(guestGameCreatedMessagesReceieved).to.deep.equal(0);
+		expect(interloperGameCreatedMessagesReceieved).to.deep.equal(1);
 
 		done();
 	});
@@ -552,9 +577,14 @@ describe('game event tests', function() {
 			});
 		});
 
+		host.on('gameCreated', function(newGameId) {
+			expect(newGameId).to.not.be.null;
+			expect(newGameId).to.be.a('string');
+			gameId = newGameId;
+		});
+
 		host.on('status', function(data) {
 			expect(data).to.contain('It\'s your turn first');
-			gameId = data.split(':')[0];
 		});
 
 		host.on('victorious', function(card) {
@@ -625,9 +655,14 @@ describe('game event tests', function() {
 			});
 		});
 
+		host.on('gameCreated', function(newGameId) {
+			expect(newGameId).to.not.be.null;
+			expect(newGameId).to.be.a('string');
+			gameId = newGameId;
+		});
+
 		host.on('status', function(data) {
 			expect(data).to.contain('It\'s your turn first');
-			gameId = data.split(':')[0];
 		});
 
 		host.on('opponentScore', function(score) {
@@ -776,7 +811,6 @@ describe('store module tests', function() {
 		var cardsNotGot = 0;
 		
 		store.addPackToUserCollection("thedonald@trump.com", pack, function(err, res) {
-			expect(err).to.be.null;
 			res.forEach(function(card) {
 				if(card.got) {
 					cardsGot++;

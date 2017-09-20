@@ -190,8 +190,8 @@ gameServer.onOpponentGravatar = function(client, msg) {
 gameServer.startGame = function(game) {
 	// game has 2 players so we can start
 	// send a start game event to kick things off
-	game.playerClient.emit('start', 'client');
 	game.playerHost.emit('start', 'host');
+	game.playerClient.emit('start', 'client');
 
 	game.playerClient.game = game;
 	game.active = true;
@@ -222,7 +222,11 @@ gameServer.createGame = function(player) {
 	gameServer.games[newGame.id] = newGame;
 	gameServer.gameCount++;
 
-	// tell the player it's their turn first
+	// emit a game created event with the id
+	// (mainly for testing but could be used later for analysis?)
+	player.emit('gameCreated', newGame.id);
+
+	// tell the player it's their turn first (ready for when the game starts)
 	player.emit('status', 'Game on. It\'s your turn first');
 
 	player.game = newGame;
@@ -286,7 +290,7 @@ gameServer.findGame = function(player) {
  * navigates away from the page.
  * @param {object} gameId - Game ID to find and delete from gameServer.games
  * @param {object} userid - User ID of player that left, from this we can tell the other player what happened
- * @todo Try and reconnect the player that is left behind to a new game?
+ * @param {function} cb - Callback function
  */
 gameServer.endGame = function(gameId, userid) {
 	var game = gameServer.games[gameId];
