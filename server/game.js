@@ -131,6 +131,22 @@ gameServer.onNextRound = function(client) {
 
 
 /**
+ * Function that handles a game abort when a 
+ * player leaves in the middle of a game
+ */
+gameServer.onAbort = function(client) {
+	// get opposition player to send result to
+	var sender = client.userid;
+
+	if(client.game.playerHost.userid === sender) {
+		client.game.playerClient.emit('abort');
+	} else {
+		client.game.playerHost.emit('abort');
+	}
+};
+
+
+/**
  * Function that informs the opponent that they've won the game
  * @param {object} client - The client who lost the game
  */
@@ -190,8 +206,8 @@ gameServer.onOpponentGravatar = function(client, msg) {
 gameServer.startGame = function(game) {
 	// game has 2 players so we can start
 	// send a start game event to kick things off
-	game.playerHost.emit('start', 'host');
 	game.playerClient.emit('start', 'client');
+	game.playerHost.emit('start', 'host');
 
 	game.playerClient.game = game;
 	game.active = true;
@@ -290,7 +306,6 @@ gameServer.findGame = function(player) {
  * navigates away from the page.
  * @param {object} gameId - Game ID to find and delete from gameServer.games
  * @param {object} userid - User ID of player that left, from this we can tell the other player what happened
- * @param {function} cb - Callback function
  */
 gameServer.endGame = function(gameId, userid) {
 	var game = gameServer.games[gameId];

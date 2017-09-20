@@ -698,6 +698,146 @@ describe('game event tests', function() {
 });
 
 
+describe('game abort test', function() {
+	var host;
+	var guest;
+	var gameId;
+	var abortMessagesReceived = 0;
+
+	before(function(done) {
+		expect(game.gameCount).to.deep.equal(0);
+		done();
+	});
+
+
+	it('When the host aborts, the guest gets notified', function(done) {
+		host = io.connect('http://localhost:3000');
+
+		host.on('onconnected', function(data) {
+			expect(data.id).to.be.a('string');
+			expect(game.gameCount).to.deep.equal(1);
+			
+			// 2nd player joins...
+			guest = io.connect('http://localhost:3000');
+
+			guest.on('onconnected', function(data) {
+				expect(data.id).to.be.a('string');
+				expect(game.gameCount).to.deep.equal(1);
+
+				// now the game has started...
+				// host aborts
+				host.emit('abort');
+			});
+
+			guest.on('abort', function() {
+				abortMessagesReceived++;
+				done();
+			});
+		});
+
+		host.on('gameCreated', function(newGameId) {
+			expect(newGameId).to.not.be.null;
+			expect(newGameId).to.be.a('string');
+			gameId = newGameId;
+		});
+
+		// shouldn't be called
+		host.on('abort', function() {
+			abortMessagesReceived++;
+		});
+	});
+
+
+	after(function(done) {
+		// disconnect and clean up
+		// have to call endGame to kill connections from the server side
+		// (we're using socket.io-client in the tests)
+		host.disconnect();
+		guest.disconnect();
+
+		game.endGame(gameId, host.userid);
+
+		// now we're cleaned up there shouldn't be any games left
+		expect(game.gameCount).to.deep.equal(0);
+
+		// client (guest) should have received an abort event
+		expect(abortMessagesReceived).to.deep.equal(1);
+
+		done();
+	});
+});
+
+
+describe('game abort test 2', function() {
+	var host;
+	var guest;
+	var gameId;
+	var abortMessagesReceived = 0;
+
+	before(function(done) {
+		expect(game.gameCount).to.deep.equal(0);
+		done();
+	});
+
+
+	it('When the guest aborts, the host gets notified', function(done) {
+		host = io.connect('http://localhost:3000');
+
+		host.on('onconnected', function(data) {
+			expect(data.id).to.be.a('string');
+			expect(game.gameCount).to.deep.equal(1);
+			
+			// 2nd player joins...
+			guest = io.connect('http://localhost:3000');
+
+			guest.on('onconnected', function(data) {
+				expect(data.id).to.be.a('string');
+				expect(game.gameCount).to.deep.equal(1);
+
+				// now the game has started...
+				// guest aborts
+				guest.emit('abort');
+			});
+
+			// shouldn't be called
+			guest.on('abort', function() {
+				abortMessagesReceived++;
+			});
+		});
+
+		host.on('gameCreated', function(newGameId) {
+			expect(newGameId).to.not.be.null;
+			expect(newGameId).to.be.a('string');
+			gameId = newGameId;
+		});
+
+		host.on('abort', function() {
+			abortMessagesReceived++;
+			done();
+		});
+	});
+
+
+	after(function(done) {
+		// disconnect and clean up
+		// have to call endGame to kill connections from the server side
+		// (we're using socket.io-client in the tests)
+		host.disconnect();
+		guest.disconnect();
+
+		game.endGame(gameId, host.userid);
+
+		// now we're cleaned up there shouldn't be any games left
+		expect(game.gameCount).to.deep.equal(0);
+
+		// client (guest) should have received an abort event
+		expect(abortMessagesReceived).to.deep.equal(1);
+
+		done();
+	});
+});
+
+
 describe('store module tests', function() {
 	var url = 'mongodb://localhost:27017/tc';
 	var collection;

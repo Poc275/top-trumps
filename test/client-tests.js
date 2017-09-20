@@ -685,7 +685,8 @@ describe('GameController Tests', function() {
 		$rootScope.init('abc@123.com');
 		socketMock.receive('start', 'host');
 		location.path('/logout');
-		expect(socketMock.emits.message[0]).toContain('Host has left the game...');
+		expect(socketMock.emits.abort).not.toBeNull();
+		expect(socketMock.emits.abort).not.toBeUndefined();
 
 		$httpBackend.flush();
 	});
@@ -696,13 +697,9 @@ describe('GameController Tests', function() {
 		$rootScope.init('abc@123.com');
 		socketMock.receive('start', 'client');
 		location.path('/logout');
-		expect(socketMock.emits.message[0]).toContain('Opponent has left the game...');
+		expect(socketMock.emits.abort).not.toBeNull();
+		expect(socketMock.emits.abort).not.toBeUndefined();
 
-		$httpBackend.flush();
-	});
-
-
-	it('Game lost function loads dialog', function() {
 		$httpBackend.flush();
 	});
 

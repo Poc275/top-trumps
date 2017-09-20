@@ -101,7 +101,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		// game has started
 		socket.on('start', function(status) {
-			// $scope.msg = 'Game has begun!';
 			$scope.gameInProgress = true;
 			$scope.round = 0;
 
@@ -254,6 +253,11 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.moveOpponentScoreSlider($scope.result.category, $scope.result.opponentScore, $scope.result.myScore).then(function() {
 				$scope.resultCheck();
 			});
+		});
+
+		// game aborted, opponent has left in-game
+		socket.on('abort', function() {
+			console.log('Opponent aborted game!');
 		});
 
 		// game over event, player has won
@@ -500,14 +504,11 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	// this method checks for the start of a route change
 	// i.e. player is leaving the game, so disconnect them
 	$scope.$on('$stateChangeStart', function(next, current) {
-		// if game was in progress and user was host then disconnect
-		if($scope.gameInProgress && $scope.host) {
-			console.log('host is disconnecting');
-			socket.emit('message', 'Host has left the game...');
-			socket.disconnect();
-		} else if($scope.gameInProgress && !$scope.host) {
-			console.log('client is disconnecting');
-			socket.emit('message', 'Opponent has left the game...');
+		// tell opponent game is over and disconnect
+		// (note: need gameInProgress check because there is a route 
+		// change between user waiting for a game and the game starting)
+		if($scope.gameInProgress) {
+			socket.emit('abort');
 			socket.disconnect();
 		}
 	});

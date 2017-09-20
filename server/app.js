@@ -152,6 +152,12 @@ io.on('connection', function(client) {
 		game.onNextRound(client);
 	});
 
+	// abort event
+	// player has left the game, inform the opponent and handle gracefully
+	client.on('abort', function() {
+		game.onAbort(client);
+	});
+
 	// gameOver event
 	// sent by the losing player to tell the opponent they've won
 	client.on('gameOver', function() {
