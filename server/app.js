@@ -346,6 +346,20 @@ app.put('/me/levelup', isAuthenticated, function(req, res) {
 	});
 });
 
+app.put('/me/boon/', isAuthenticated, function(req, res) {
+	user.findOneAndUpdate(
+		{ email: req.user.email },
+		{ $inc: { boon: parseInt(req.body.amount) }},
+    function(err, result) {
+        if(err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+
+        res.status(201).send();
+	});
+});
+
 app.get('/me/collection', isAuthenticated, function(req, res) {
 	// fetch card collection which is an 
 	// array of card Object Ids

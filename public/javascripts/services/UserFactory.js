@@ -8,6 +8,9 @@ angular.module('TCModule').factory('Users', function UsersFactory($http) {
 		},
 		levelUp: function() {
 			return $http.put('/me/levelup');
+		},
+		updateUsersBoon: function(amount) {
+			return $http.put('/me/boon', amount);
 		}
 	};
 });

@@ -963,6 +963,9 @@ describe('store module tests', function() {
 			expect(cardsNotGot).to.deep.equal(3);
 
 			done();
+		}, function(err) {
+			console.log(err);
+			done();
 		});
 	});
 

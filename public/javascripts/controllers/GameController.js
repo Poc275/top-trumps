@@ -11,6 +11,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	var GAME_LOSE_BOON = 25;
 	var GAME_WON_XP = 25;
 	var XP_PER_HAND = 5;
+	var COMPENSATION_BOON = 20;
 
 	$scope.collection;
 	$scope.currentCard;
@@ -257,7 +258,22 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		// game aborted, opponent has left in-game
 		socket.on('abort', function() {
-			console.log('Opponent aborted game!');
+			Users.updateUsersBoon(JSON.stringify({ amount: COMPENSATION_BOON }));
+
+			$mdDialog.show(
+				$mdDialog.alert()
+					.parent(angular.element(document.body))
+					.clickOutsideToClose(true)
+					.title('Opponent quits!')
+					.textContent('😠 Most heinous. Your opponent has left the game. Don\'t worry, we know who he is. Have some compensation (+' + 
+						COMPENSATION_BOON + ' boon)')
+					.ariaLabel('Opponent has left the game dialog')
+					.ok('Ok')
+			)
+			.then(function() {
+				// go back to home page
+				$state.go("home");
+			});
 		});
 
 		// game over event, player has won
