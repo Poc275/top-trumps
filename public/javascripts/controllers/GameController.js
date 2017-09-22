@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, $timeout, $state, Cards, socket, Gravatar, Users) {
+angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $document, $timeout, $state, $stateParams, Cards, socket, Gravatar, Users) {
 	// PPC_MAX + 1 because log(0) = NaN
 	var PPC_MAX = Math.log(200001);
 
@@ -13,11 +13,15 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	var XP_PER_HAND = 5;
 	var COMPENSATION_BOON = 20;
 
+	$scope.gameId = null;
 	$scope.collection;
 	$scope.currentCard;
 	$scope.host;
 	$scope.gameInProgress;
 	$scope.turn;
+
+	// one player option flag
+	$scope.onePlayerOption = false;
 
 	// tally hands won/lost/drawn for game stats and XP
 	$scope.handsWon = 0;
@@ -65,9 +69,9 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 
 	// functions...
-	$scope.init = function(user) {
+	$scope.init = function() {
 		// get my gravatar
-		$scope.myGravatarUrl = Gravatar(user.email, 80);
+		$scope.myGravatarUrl = Gravatar($stateParams.email, 80);
 
 		// create connection to socket.io
 		socket.connect();
@@ -75,6 +79,18 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 		// now listen for events
 		socket.on('onconnected', function(data) {
 			console.log('Connected to TC via socket.io. Player id is ' + data);
+		});
+
+		// game created event
+		// user is waiting for an opponent, if too long
+		// offer them a 1 player game option
+		socket.on('gameCreated', function(id) {
+			$scope.gameId = id;
+
+			$timeout(function() {
+				// show one player game option
+				$scope.onePlayerOption = true;
+			}, 10000);
 		});
 
 		// in-game chat message received
@@ -258,6 +274,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		// game aborted, opponent has left in-game
 		socket.on('abort', function() {
+			socket.disconnect();
 			Users.updateUsersBoon(JSON.stringify({ amount: COMPENSATION_BOON }));
 
 			$mdDialog.show(
@@ -526,6 +543,11 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 		if($scope.gameInProgress) {
 			socket.emit('abort');
 			socket.disconnect();
+		} else if($scope.gameId !== null) {
+			// user who created the game has decided not to wait or has chosen a 1 player game
+			console.log("user has cancelled game, or chosen 1 player option");
+			$scope.gameId = null;
+			socket.disconnect();
 		}
 	});
 
@@ -561,5 +583,8 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$mdDialog.hide();
 		};
 	}
+
+	// call init() function
+	$scope.init();
 
 });

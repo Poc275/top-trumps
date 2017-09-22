@@ -615,7 +615,7 @@ describe('GameController Tests', function() {
 
 	it('Game controller can receive message events', function() {
 		var controller = createController();
-		$rootScope.init('abc@123.com');
+		$rootScope.init();
 		socketMock.receive('status', 'Joined a room, waiting for opponent');
 
 		expect($rootScope.chat.messages[0].message).toBe('Joined a room, waiting for opponent');
@@ -626,7 +626,7 @@ describe('GameController Tests', function() {
 
 	it('Host goes first when game starts', function() {
 		var controller = createController();
-		$rootScope.init('abc@123.com');
+		$rootScope.init();
 		socketMock.receive('start', 'host');
 
 		expect($rootScope.host).toBe(true);
@@ -647,7 +647,7 @@ describe('GameController Tests', function() {
 
 	it('Client goes second when game starts', function() {
 		var controller = createController();
-		$rootScope.init('abc@123.com');
+		$rootScope.init();
 		socketMock.receive('start', 'client');
 
 		expect($rootScope.host).toBe(false);
@@ -667,7 +667,7 @@ describe('GameController Tests', function() {
 
 	it('In game messages can be sent', function() {
 		var controller = createController();
-		$rootScope.init('abc@123.com');
+		$rootScope.init();
 		$rootScope.chat.sendMessage = 'Hi!';
 		$rootScope.send();
 
@@ -682,7 +682,7 @@ describe('GameController Tests', function() {
 
 	it('Game disconnected if host leaves page', function() {
 		var controller = createController();
-		$rootScope.init('abc@123.com');
+		$rootScope.init();
 		socketMock.receive('start', 'host');
 		location.path('/logout');
 		expect(socketMock.emits.abort).not.toBeNull();
@@ -694,7 +694,7 @@ describe('GameController Tests', function() {
 
 	it('Game disconnected if client leaves page', function() {
 		var controller = createController();
-		$rootScope.init('abc@123.com');
+		$rootScope.init();
 		socketMock.receive('start', 'client');
 		location.path('/logout');
 		expect(socketMock.emits.abort).not.toBeNull();
@@ -814,8 +814,8 @@ describe('Game Logic Tests', function() {
 
 
 	it('Game is setup correctly', function() {
-		playerOneScope.init('abc@123.com');
-		playerTwoScope.init('def@456.com');
+		playerOneScope.init();
+		playerTwoScope.init();
 
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
@@ -842,9 +842,6 @@ describe('Game Logic Tests', function() {
 	// to see the result before moving onto the next round
 	// flushing the timeout means the tests don't have to be async
 	it('Player 2 wins the game', inject(function ($timeout) {
-		playerOneScope.init('abc@123.com');
-		playerTwoScope.init('def@456.com');
-
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
 
@@ -927,9 +924,6 @@ describe('Game Logic Tests', function() {
 
 
 	it('Player 1 wins the game', inject(function ($timeout) {
-		playerOneScope.init('abc@123.com');
-		playerTwoScope.init('def@456.com');
-
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
 
@@ -1013,9 +1007,6 @@ describe('Game Logic Tests', function() {
 
 	
 	it('A draw just moves onto the next card', inject(function ($timeout) {
-		playerOneScope.init('abc@123.com');
-		playerTwoScope.init('def@456.com');
-
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
 
@@ -1191,9 +1182,6 @@ describe('Full Game Test', function() {
 
 
 	it('Game is setup correctly', function() {
-		playerOneScope.init('abc@123.com');
-		playerTwoScope.init('def@456.com');
-
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
 
@@ -1216,9 +1204,6 @@ describe('Full Game Test', function() {
 
 
 	it('Game concludes with 1 winner', inject(function ($timeout) {
-		playerOneScope.init('abc@123.com');
-		playerTwoScope.init('def@456.com');
-
 		playerOneSockMock.receive('start', 'host');
 		playerTwoSockMock.receive('start', 'client');
 

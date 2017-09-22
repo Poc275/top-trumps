@@ -18,12 +18,9 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 	})
 	.state('home.play', {
 		url: '/play',
-		templateUrl: '/templates/game.html'
-	})
-	.state('home.profile', {
-		url: '/profile',
-		templateUrl: '/templates/profile.html',
-		controller: 'ProfileController'
+		templateUrl: '/templates/game.html',
+		controller: 'GameController',
+		params : { email: null, }
 	})
 	.state('home.store', {
 		url: '/store',
