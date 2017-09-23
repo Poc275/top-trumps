@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('GameController', function($scope, $mdToast, $mdDialog, $interval, $q, $timeout, $state, $stateParams, Cards, socket, Gravatar, Users) {
+angular.module('TCModule').controller('SoloGameController', function($scope, $mdToast, $mdDialog, $interval, $q, $state, $timeout, Cards, Users) {
 	// PPC_MAX + 1 because log(0) = NaN
 	var PPC_MAX = Math.log(200001);
 
@@ -13,50 +13,37 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	var XP_PER_HAND = 5;
 	var COMPENSATION_BOON = 20;
 
-	$scope.gameId = null;
+    // user/computer packs/current cards
 	$scope.collection;
-	$scope.currentCard;
-	$scope.host;
-	$scope.gameInProgress;
-	$scope.turn;
+    $scope.currentCard;
+    $scope.opponentPack;
+    $scope.opponentCard;
 
-	// one player option flag
-	$scope.onePlayerOption = false;
+    // user goes first in 1 player game
+	$scope.turn = true;
+
+	// counter for players current card
+	$scope.round = 0;
+	$scope.opponentRound = 0;
 
 	// tally hands won/lost/drawn for game stats and XP
 	$scope.handsWon = 0;
 	$scope.handsDrawn = 0;
 	$scope.handsLost = 0;
 
-	// counter for the number of rounds played
-	$scope.round;
-
-	// result object to compare scores and 
-	// calculate who wins a round
-	$scope.result = {
-		myScore: 0,
-		opponentScore: 0,
-		opponentCard: {},
-		category: ''
-	};
-
-	// gravatar images for score bar and in-game chat
-	$scope.myGravatarUrl;
-	$scope.opponentGravatarUrl;
-
-	// chat object sent during in-game chat
-  	$scope.chat = {
-  		messages: [],
-		sendMessage: ''
-	};
-
 	// opponent score variables
 	$scope.showScore = false;
 	$scope.showResult = false;
 
+    $scope.result = {
+		myScore: 0,
+		opponentScore: 0,
+		opponentCard: {},
+		category: ''
+    };
+    
 	// scoreSlider moves the opponent score slider bar
 	$scope.result.scoreSlider = 0;
-
 	// scoreSliderValue increments the opponent's score value
 	// required as a separate value because scoreSlider is 
 	// incremented in different steps depending on the values
@@ -70,263 +57,69 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 	// functions...
 	$scope.init = function() {
-		// get my gravatar
-		$scope.myGravatarUrl = Gravatar($stateParams.email, 80);
+        // get a pack for the opponent
+        Cards.getComputerPack(GAME_LENGTH).then(function(computerPack) {
+            console.log("Computer's pack: ", computerPack.data);
+            $scope.opponentPack = computerPack.data;
+            $scope.opponentCard = [$scope.opponentPack[$scope.opponentRound]];
 
-		// create connection to socket.io
-		socket.connect();
-
-		// now listen for events
-		socket.on('onconnected', function(data) {
-			console.log('Connected to TC via socket.io. Player id is ' + data);
-		});
-
-		// game created event
-		// user is waiting for an opponent, if too long
-		// offer them a 1 player game option
-		socket.on('gameCreated', function(id) {
-			$scope.gameId = id;
-
-			$timeout(function() {
-				// show one player game option
-				$scope.onePlayerOption = true;
-			}, 5000);
-		});
-
-		// in-game chat message received
-		socket.on('message', function(message) {
-			message.me = false;
-			$scope.chat.messages.push(message);
-		});
-
-		// status update sent
-		socket.on('status', function(status) {
-			// status messages are not player specific, so
-			// add the TC logo as the avatar
-			var statusMessage = {
-				message: status,
-				gravatarUrl: '/images/tc-avatar.png'
-			};
-
-			$scope.chat.messages.push(statusMessage);
-		});
-
-		// opponent's gravatar sent
-		socket.on('opponentGravatar', function(data) {
-			$scope.opponentGravatarUrl = data.gravatar;
-		});
-
-		// game has started
-		socket.on('start', function(status) {
-			$scope.gameInProgress = true;
-			$scope.round = 0;
-
-			// send avatar to opponent for score bar
-			socket.emit('opponentGravatar', { gravatar: $scope.myGravatarUrl });
-
-			if(status === 'host') {
-				$scope.host = true;
-				$scope.turn = true;
-				
-				// inform host they go first
-				$mdToast.show(
-		      		$mdToast.simple()
-			        .textContent('Your turn!')
-			        .position('top')
-			        .hideDelay(3000)
-			    );
-
-			} else {
-				$scope.host = false;
-				$scope.turn = false;
-			}
-
-			// get user's game pack
+            // now get user's game pack
 			Cards.getGamePack(GAME_LENGTH).then(function(pack) {
 				$scope.collection = pack.data;
 				// force array creation for ng-repeat to work
 				// otherwise the card object is at the "wrong level"
 				// and we get a card for each property of a card 
 				// instead of a single object
-				$scope.currentCard = [$scope.collection[$scope.round]];
+                $scope.currentCard = [$scope.collection[$scope.round]];
+                
+                // inform user that they go first
+				$mdToast.show(
+                    $mdToast.simple()
+                    .textContent('Your turn!')
+                    .position('top')
+                    .hideDelay(3000)
+                );
 			})
 			.catch(function(err) {
 				console.log(err);
 			});
-		});
-
-		// user has been sent a card they've won from an opponent
-		// just add to end of collection
-		socket.on('victorious', function(data) {
-			$scope.collection.push(data[0]);
-			$scope.round++;
-			$scope.turn = true;
-			$scope.handsWon++;
-
-			// minus 1 from collection length because $scope.round starts at zero
-			if($scope.round > $scope.collection.length - 1) {
-				// go back to beginning of pack
-				$scope.round = 0;
-			}
-		});
-
-		// user has lost a round, remove their current card
-		socket.on('defeated', function() {
-			$scope.turn = false;
-			$scope.collection.splice($scope.round, 1);
-			$scope.handsLost++;
-
-			// minus 1 from collection length because $scope.round starts at zero
-			if($scope.round > $scope.collection.length - 1) {
-				// go back to beginning of pack
-				$scope.round = 0;
-			}
-		});
-
-		// round was drawn, just move onto next card
-		socket.on('draw', function() {
-			$scope.round++;
-			$scope.handsDrawn++;
-
-			// minus 1 from collection length because $scope.round starts at zero
-			if($scope.round > $scope.collection.length - 1) {
-				// go back to beginning of pack
-				$scope.round = 0;
-			}
-		});
-
-		// opponentScore event
-		// the player "out-of-turn" has sent his score back to
-		// the player "in-turn" and the slider needs to move accordinly
-		// so both players can visually see each other's scores
-		socket.on('opponentScore', function(result) {
-			// assign out-of-turn player's card to result object
-			// so player-in-turn can see who their opponent
-			$scope.result.opponentCard = result.card;
-
-			$scope.moveOpponentScoreSlider(result.category, result.score, $scope.result.myScore).then(function() {
-				// show result then emit nextRound event
-				// to show you're ready to proceed
-				if($scope.result.myScore > result.score) {
-					// you've won
-					$scope.myScore++;
-					$scope.opponentScore--;
-					$scope.result.message = '🎉 So Much Win!';
-				} else if($scope.result.myScore < result.score) {
-					// you've lost
-					$scope.myScore--;
-					$scope.opponentScore++;
-					$scope.result.message = '💩 What A Lose';
-				} else {
-					// draw
-					$scope.result.message = '😑 It\'s a Draw';
-				}
-
-				$scope.showResult = true;
-				socket.emit('nextRound');
-			});
-		});
-
-		// nextRound event - both players are ready for their next card
-		socket.on('nextRound', function() {
-			$timeout(function() {
-				// reset opponent score visibility and unhide card categories
-				$scope.showScore = false;
-				$scope.showResult = false;
-				$scope.result.scoreSlider = 0;
-				$scope.result.scoreSliderValue = 0;
-				$scope.result.message = '';
-
-				$scope.hideUnpalatibility = false;
-				$scope.hideUpTheirOwnArsemanship = false;
-				$scope.hideMediaAttention = false;
-				$scope.hideLegacy = false;
-				$scope.hidePpc = false;
-				$scope.hideSpecialAbility = false;
-
-				if($scope.collection.length === 0) {
-					// I've lost, tell opponent they've won and show game over dialog
-					socket.emit('gameOver');
-					$scope.gameLost();
-				} else {
-					$scope.currentCard = [$scope.collection[$scope.round]];
-				}
-			}, 3000);
-		});
-
-		// in-game play events
-		// this is where the result is calculated, this always happens for the 
-		// player "out-of-turn" i.e. it isn't their turn to play a card.
-		// the result is then passed back to the player "in-turn"
-		socket.on('play', function(play) {
-			$scope.result.myScore = $scope.currentCard[0][play.category];
-			$scope.result.opponentScore = play.score;
-			$scope.result.opponentCard = play.card;
-			$scope.result.category = play.category;
-
-			// send score to opponent to update their slider
-			socket.emit('opponentScore', { category: $scope.result.category, score: $scope.result.myScore, card: $scope.currentCard });
-
-			$scope.moveOpponentScoreSlider($scope.result.category, $scope.result.opponentScore, $scope.result.myScore).then(function() {
-				$scope.resultCheck();
-			});
-		});
-
-		// game aborted, opponent has left in-game
-		socket.on('abort', function() {
-			socket.disconnect();
-			Users.updateUsersBoon(JSON.stringify({ amount: COMPENSATION_BOON }));
-
-			$mdDialog.show(
-				$mdDialog.alert()
-					.parent(angular.element(document.body))
-					.clickOutsideToClose(true)
-					.title('Opponent quits!')
-					.textContent('😠 Most heinous. Your opponent has left the game. Don\'t worry, we know who he is. Have some compensation (+' + 
-						COMPENSATION_BOON + ' boon)')
-					.ariaLabel('Opponent has left the game dialog')
-					.ok('Ok')
-			)
-			.then(function() {
-				// go back to home page
-				$state.go("home");
-			});
-		});
-
-		// game over event, player has won
-		socket.on('gameOver', function() {
-			$scope.gameWon();
-		});
-	};
-
-
-	// in-game chat - send message
-	$scope.send = function() {
-		var message = {
-			message: $scope.chat.sendMessage,
-			gravatarUrl: $scope.myGravatarUrl,
-			me: true
-		};
-
-		$scope.chat.messages.push(message);
-		socket.emit('message', message);
-
-		// clear input ready for a new message
-		$scope.chat.sendMessage = null;
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
 	};
 
 
 	// user has selected a category to play
 	$scope.play = function(category, score) {
 		if($scope.turn) {
-			// update result object
+			var computerScore = $scope.opponentCard[0][category];
+
 			$scope.result.myScore = score;
+			$scope.result.opponentScore = computerScore;
+			$scope.result.opponentCard = $scope.opponentCard;
 			$scope.result.category = category;
 
-			socket.emit('play', { card: $scope.currentCard, category: category, score: score });
+            $scope.moveOpponentScoreSlider(category, computerScore, score).then(function() {
+                $scope.resultCheck();
+            });
 		}
-	};
+    };
 
+	// computer has selected a category to play
+	$scope.computerPlay = function(category, computerScore) {
+		var myScore = $scope.currentCard[0][category];
+
+		$scope.result.myScore = myScore;
+		$scope.result.opponentScore = computerScore;
+		$scope.result.opponentCard = $scope.opponentCard;
+		$scope.result.category = category;
+
+		$scope.moveOpponentScoreSlider(category, computerScore, myScore).then(function() {
+			$scope.resultCheck();
+		});
+	};
+	
 
 	// move slider function to see opponent's score
 	$scope.moveOpponentScoreSlider = function(category, opponentScore, myScore) {
@@ -362,7 +155,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			} else {
 				return $q(function(resolve, reject) {
 					$interval(function() {
-						// $scope.result.scoreSlider += 1;
 						$scope.result.scoreSlider += (100 / myScore);
 						$scope.result.scoreSliderValue += 1;
 					}, 100, opponentScore, true).then(function() {
@@ -405,7 +197,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.handsWon++;
 
 			// tell opponent they have been defeated so their card is removed
-			socket.emit('defeated');
+			$scope.opponentResultNotification('defeated', null);
 
 		} else if($scope.result.myScore < $scope.result.opponentScore) {
 			// lost, card is removed from collection and sent to winner :(
@@ -418,7 +210,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 			// tell opponent they have won the round and send them their new card
 			var lostCard = $scope.collection.splice($scope.round, 1);
-			socket.emit('victorious', lostCard);
+			$scope.opponentResultNotification('victorious', lostCard);
 
 		} else {
 			$scope.round++;
@@ -426,7 +218,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$scope.showResult = true;
 			$scope.handsDrawn++;
 
-			socket.emit('draw');
+			$scope.opponentResultNotification('draw', null);
 		}
 
 		// minus 1 from collection length because $scope.round starts at zero
@@ -436,7 +228,82 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 		}
 
 		// ready for next round
-		socket.emit('nextRound');
+		$scope.nextRound();
+	};
+
+
+	// inform computer opponent of result
+	$scope.opponentResultNotification = function(result, cardWon) {
+		if(result === 'defeated') {
+			// remove card and update current card
+			$scope.opponentPack.splice($scope.opponentRound, 1);
+
+			if($scope.opponentRound > $scope.opponentPack.length - 1) {
+				// go back to the beginning of the pack
+				$scope.opponentRound = 0;
+			}
+
+		} else if(result === 'victorious') {
+			// add cardWon to opponent's pack and update current card
+			$scope.opponentPack.push(cardWon[0]);
+			$scope.opponentRound++;
+
+			if($scope.opponentRound > $scope.opponentPack.length - 1) {
+				// go back to the beginning of the pack
+				$scope.opponentRound = 0;
+			}
+
+		} else if(result === 'draw') {
+			// just move onto the next card
+			$scope.opponentRound++;
+
+			if($scope.opponentRound > $scope.opponentPack.length - 1) {
+				// go back to the beginning of the pack
+				$scope.opponentRound = 0;
+			}
+		}
+	};
+
+
+	// next round function
+	$scope.nextRound = function() {
+		$timeout(function() {
+			// reset opponent score visibility and unhide card categories
+			$scope.showScore = false;
+			$scope.showResult = false;
+			$scope.result.scoreSlider = 0;
+			$scope.result.scoreSliderValue = 0;
+			$scope.result.message = '';
+
+			$scope.hideUnpalatibility = false;
+			$scope.hideUpTheirOwnArsemanship = false;
+			$scope.hideMediaAttention = false;
+			$scope.hideLegacy = false;
+			$scope.hidePpc = false;
+			$scope.hideSpecialAbility = false;
+
+			if($scope.collection.length === 0) {
+				// Human has lost
+				$scope.gameLost();
+			} else if($scope.opponentPack.length === 0) {
+				// Human has won
+				$scope.gameWon();
+			} else {
+				// move onto next round
+				$scope.currentCard = [$scope.collection[$scope.round]];
+				$scope.opponentCard = [$scope.opponentPack[$scope.opponentRound]];
+
+				// does computer need to play a card?
+				if(!$scope.turn) {
+					// wait a few seconds before selecting a random category
+					$timeout(function() {
+						var categories = ['unpalatibility', 'up_their_own_arsemanship', 'media_attention', 'legacy', 'ppc', 'special_ability'];
+						var category = categories[Math.floor(Math.random() * categories.length)];
+						$scope.computerPlay(category, $scope.opponentCard[0][category]);
+					}, 2000);
+				}
+			}
+		}, 3000);
 	};
 
 
@@ -534,24 +401,6 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 	};
 
 
-	// this method checks for the start of a route change
-	// i.e. player is leaving the game, so disconnect them
-	$scope.$on('$stateChangeStart', function(next, current) {
-		// tell opponent game is over and disconnect
-		// (note: need gameInProgress check because there is a route 
-		// change between user waiting for a game and the game starting)
-		if($scope.gameInProgress) {
-			socket.emit('abort');
-			socket.disconnect();
-		} else if($scope.gameId !== null) {
-			// user who created the game has decided not to wait or has chosen a 1 player game
-			console.log("user has cancelled game, or chosen 1 player option");
-			$scope.gameId = null;
-			socket.disconnect();
-		}
-	});
-
-
 	// game over dialogs controller
 	function GameOverDialogController($scope, $mdDialog, $filter, Users, stats) {
 		$scope.stats = stats;
@@ -564,7 +413,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 
 		// filter starting slider position
 		$scope.stats.xpSliderValue = $filter('xpFilter')(stats.xp, stats.level);
-		// filter slider position to move to
+		// filter slider to position
 		// (minus start as this is the number of $interval iterations)
 		var toXp = $filter('xpFilter')(stats.xp + stats.xpWon, stats.level) - $filter('xpFilter')(stats.xp, stats.level);
 
@@ -583,6 +432,7 @@ angular.module('TCModule').controller('GameController', function($scope, $mdToas
 			$mdDialog.hide();
 		};
 	}
+
 
 	// call init() function
 	$scope.init();

@@ -1797,9 +1797,11 @@ describe('Full Game Test', function() {
 
 });
 
-describe('StoreController Tests', function() {
+
+describe('SoloGameController Tests', function() {
 	var $httpBackend;
 	var $rootScope;
+	var location;
 	var createController;
 
 	beforeEach(module('TCModule'));
@@ -1809,11 +1811,474 @@ describe('StoreController Tests', function() {
 		$httpBackend = $injector.get('$httpBackend');
 
 		// mock requests
-		// $httpBackend.whenRoute('GET', '/me').respond({email: 'abc123@test.com'});
-		// $httpBackend.whenRoute('GET', '/logout').respond();
-		// $httpBackend.whenRoute('GET', '/templates/home.html').respond('<html></html>');
-		// $httpBackend.whenRoute('GET', '/templates/collection.html').respond('<html></html>');
-		// $httpBackend.whenRoute('GET', '/templates/index.html').respond('<html></html>');
+		$httpBackend.whenRoute('GET', '/me/collection').respond({id: '12345'});
+
+		// mock templates
+		$httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+
+		// setup scope and location (for logout testing)
+		$rootScope = $injector.get('$rootScope');
+
+		location = $location;
+
+		// the $controller service is used to create instances of controllers
+		var $controller = $injector.get('$controller');
+
+		createController = function() {
+			return $controller('SoloGameController', { '$scope' : $rootScope });
+		};
+	}));
+
+
+	afterEach(function() {
+		$httpBackend.verifyNoOutstandingExpectation();
+     	$httpBackend.verifyNoOutstandingRequest();
+	});
+
+
+	it('Human player goes first when game starts', function() {
+		var controller = createController();
+
+		expect($rootScope.turn).toBe(true);
+		expect($rootScope.round).toBe(0);
+
+		// host can play a card first
+		// verify by checking there is a play event emitted
+		$rootScope.opponentCard = [
+			{
+				_id: '12345',
+				name: 'Donald Trump',
+				unpalatibility: 87,
+				up_their_own_arsemanship: 92,
+				media_attention: 86,
+				legacy: 77,
+				special_ability: 96,
+				ppc: 200000,
+				cuntal_order: 'Gold',
+				category: 'World Leaders',
+				special_ability_description: 'General bad apple',
+				bio: 'This guy is unbelievable...',
+				references: ['see this here', 'and this as well'],
+				images: ['front.jpg', 'rear.png']
+			}
+		];
+
+		$rootScope.play('ppc', 25);
+
+		expect($rootScope.result.myScore).toBe(25);
+		expect($rootScope.result.category).toBe('ppc');
+
+		$httpBackend.flush();
+	});
+});
+
+
+describe('Solo Game Logic Tests', function() {
+	var httpBackend;
+	var playerOneController;
+	var playerOneScope;
+
+	var dt = {
+		_id: '12345',
+		name: 'Donald Trump',
+		unpalatibility: 87,
+		up_their_own_arsemanship: 92,
+		media_attention: 86,
+		legacy: 77,
+		special_ability: 96,
+		ppc: 200000,
+		cuntal_order: 'Gold',
+		category: 'World Leaders',
+		special_ability_description: 'General bad apple',
+		bio: 'This guy is unbelievable...',
+		references: ['see this here', 'and this as well'],
+		images: ['front.jpg', 'rear.png']
+	};
+
+	var gk = {
+		_id: '13579',
+		name: 'Genghis Khan',
+		unpalatibility: 79,
+		up_their_own_arsemanship: 43,
+		media_attention: 12,
+		legacy: 86,
+		special_ability: 80,
+		ppc: 5,
+		cuntal_order: 'Silver',
+		category: 'World Leaders',
+		special_ability_description: 'Trail blazer',
+		bio: 'Wow!',
+		references: ['novel'],
+		images: ['front-pic.jpg', 'rear-pic.png']
+	};
+
+	var vp = {
+		_id: '67890',
+		name: 'Vladimir Putin',
+		unpalatibility: 84,
+		up_their_own_arsemanship: 92,
+		media_attention: 85,
+		legacy: 85,
+		special_ability: 90,
+		ppc: 100000,
+		cuntal_order: 'Gold',
+		category: 'World Leaders',
+		special_ability_description: 'Bad ass',
+		bio: 'This guy is a real treasure...',
+		references: ['news article', 'video'],
+		images: ['front-pic.jpg', 'rear-pic.png']
+	};
+
+	var sb = {
+		_id: '24680',
+		name: 'Silvio Berlusconi',
+		unpalatibility: 65,
+		up_their_own_arsemanship: 62,
+		media_attention: 70,
+		legacy: 54,
+		special_ability: 80,
+		ppc: 6000,
+		cuntal_order: 'Silver',
+		category: 'World Leaders',
+		special_ability_description: 'Bunga bunga',
+		bio: 'Italian plutocracy for the win',
+		references: ['paparazzi', 'tabloid-scandal'],
+		images: ['front-pic.jpg', 'rear-pic.gif']
+	};
+
+	beforeEach(module('TCModule'));
+
+	// setup 2 players with their own controllers/scope
+	beforeEach(inject(function($httpBackend, $controller, $rootScope) {
+		httpBackend = $httpBackend;
+
+		// mock requests
+		httpBackend.whenRoute('GET', '/me/collection').respond({id: '12345'});
+
+		// mock templates
+		httpBackend.expectGET('/templates/index.html').respond('<html></html>');
+
+		playerOneScope = $rootScope.$new();
+
+		playerOneController = $controller('SoloGameController', {
+			$scope: playerOneScope
+		});
+	}));
+
+
+	it('Game is setup correctly', function() {
+		expect(playerOneScope.round).toBe(0);
+		expect(playerOneScope.opponentRound).toBe(0);
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.handsWon).toBe(0);
+		expect(playerOneScope.handsDrawn).toBe(0);
+		expect(playerOneScope.handsLost).toBe(0);
+	});
+
+	// inject $timeout so we can flush them from the nextRound event
+	// the timeout in nextRound() is just to give the players time
+	// to see the result before moving onto the next round
+	// flushing the timeout means the tests don't have to be async
+	it('Computer wins the game', inject(function ($timeout) {
+		playerOneScope.collection = [dt, gk];
+		playerOneScope.opponentPack = [vp, sb];
+
+		playerOneScope.currentCard = [dt];
+		playerOneScope.opponentCard = [vp];
+
+		// before game, human player goes first
+		expect(playerOneScope.turn).toBe(true);
+
+		// legacy: computer wins
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].legacy;
+		playerOneScope.result.opponentScore = playerOneScope.opponentCard[0].legacy;
+		playerOneScope.result.opponentCard = playerOneScope.opponentCard;
+		playerOneScope.result.category = 'legacy';
+
+		playerOneScope.resultCheck();
+
+		expect(playerOneScope.opponentPack.length).toBe(3);
+		expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+		expect(playerOneScope.opponentPack[1].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.opponentPack[2].name).toBe('Donald Trump');
+		expect(playerOneScope.opponentRound).toBe(1);
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(1);
+		expect(playerOneScope.collection[0].name).toBe('Genghis Khan');
+		expect(playerOneScope.round).toBe(0);
+
+		// next round event
+		$timeout.flush();
+
+		expect(playerOneScope.opponentCard[0].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
+
+		// media attention: computer wins again - game over for human
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].media_attention;
+		playerOneScope.result.opponentScore = playerOneScope.opponentCard[0].media_attention;
+		playerOneScope.result.opponentCard = playerOneScope.opponentCard;
+		playerOneScope.result.category = 'media_attention';
+
+		playerOneScope.resultCheck();
+
+		expect(playerOneScope.opponentPack.length).toBe(4);
+		expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+		expect(playerOneScope.opponentPack[1].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.opponentPack[2].name).toBe('Donald Trump');
+		expect(playerOneScope.opponentPack[3].name).toBe('Genghis Khan');
+		expect(playerOneScope.opponentRound).toBe(2);
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(0);
+		expect(playerOneScope.round).toBe(0);
+
+		// game stats tests
+		expect(playerOneScope.handsWon).toBe(0);
+		expect(playerOneScope.handsDrawn).toBe(0);
+		expect(playerOneScope.handsLost).toBe(2);
+	}));
+
+
+	it('Human wins the game', inject(function ($timeout) {
+		playerOneScope.collection = [dt, gk];
+		playerOneScope.opponentPack = [vp, sb];
+
+		playerOneScope.currentCard = [dt];
+		playerOneScope.opponentCard = [vp];
+
+		// before game, human player goes first
+		expect(playerOneScope.turn).toBe(true);
+
+		// unpalatibility: human wins
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].unpalatibility;
+		playerOneScope.result.opponentScore = playerOneScope.opponentCard[0].unpalatibility;
+		playerOneScope.result.opponentCard = playerOneScope.opponentCard;
+		playerOneScope.result.category = 'unpalatibility';
+
+		playerOneScope.resultCheck();
+
+		expect(playerOneScope.opponentPack.length).toBe(1);
+		expect(playerOneScope.opponentPack[0].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.opponentRound).toBe(0);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(3);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.collection[2].name).toBe('Vladimir Putin');
+		expect(playerOneScope.round).toBe(1);
+
+		// next round event
+		$timeout.flush();
+
+		expect(playerOneScope.opponentCard[0].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
+
+		// legacy: human wins again - game over for computer
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].legacy;
+		playerOneScope.result.opponentScore = playerOneScope.opponentCard[0].legacy;
+		playerOneScope.result.opponentCard = playerOneScope.opponentCard;
+		playerOneScope.result.category = 'legacy';
+
+		playerOneScope.resultCheck();
+
+		expect(playerOneScope.opponentPack.length).toBe(0);
+		expect(playerOneScope.opponentRound).toBe(0);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(4);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.collection[2].name).toBe('Vladimir Putin');
+		expect(playerOneScope.collection[3].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.round).toBe(2);
+
+		// game stats tests
+		expect(playerOneScope.handsWon).toBe(2);
+		expect(playerOneScope.handsDrawn).toBe(0);
+		expect(playerOneScope.handsLost).toBe(0);
+	}));
+
+
+	it('A draw just moves onto the next round', inject(function ($timeout) {
+		playerOneScope.collection = [dt, gk];
+		playerOneScope.opponentPack = [vp, sb];
+
+		playerOneScope.currentCard = [dt];
+		playerOneScope.opponentCard = [vp];
+
+		// before game, human player goes first
+		expect(playerOneScope.turn).toBe(true);
+
+		// up_their_own_arsemanship: draw
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].up_their_own_arsemanship;
+		playerOneScope.result.opponentScore = playerOneScope.opponentCard[0].up_their_own_arsemanship;
+		playerOneScope.result.opponentCard = playerOneScope.opponentCard;
+		playerOneScope.result.category = 'up_their_own_arsemanship';
+
+		playerOneScope.resultCheck();
+
+		expect(playerOneScope.opponentPack.length).toBe(2);
+		expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+		expect(playerOneScope.opponentPack[1].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.opponentRound).toBe(1);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(2);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.round).toBe(1);
+
+		// next round event
+		$timeout.flush();
+
+		expect(playerOneScope.opponentCard[0].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
+
+		// special_ability: another draw
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].special_ability;
+		playerOneScope.result.opponentScore = playerOneScope.opponentCard[0].special_ability;
+		playerOneScope.result.opponentCard = playerOneScope.opponentCard;
+		playerOneScope.result.category = 'special_ability';
+
+		playerOneScope.resultCheck();
+
+		expect(playerOneScope.opponentPack.length).toBe(2);
+		expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+		expect(playerOneScope.opponentPack[1].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.opponentRound).toBe(0);
+
+		expect(playerOneScope.turn).toBe(true);
+		expect(playerOneScope.collection.length).toBe(2);
+		expect(playerOneScope.collection[0].name).toBe('Donald Trump');
+		expect(playerOneScope.collection[1].name).toBe('Genghis Khan');
+		expect(playerOneScope.round).toBe(0);
+
+		// game stats tests
+		expect(playerOneScope.handsWon).toBe(0);
+		expect(playerOneScope.handsDrawn).toBe(2);
+		expect(playerOneScope.handsLost).toBe(0);
+	}));
+
+
+	it('Computer plays when it isn\'t the human\'s turn', inject(function ($timeout) {
+		playerOneScope.collection = [dt, gk];
+		playerOneScope.opponentPack = [vp, sb];
+
+		playerOneScope.currentCard = [dt];
+		playerOneScope.opponentCard = [vp];
+
+		// before game, human player goes first
+		expect(playerOneScope.turn).toBe(true);
+
+		// legacy: computer wins
+		playerOneScope.result.myScore = playerOneScope.currentCard[0].legacy;
+		playerOneScope.result.opponentScore = playerOneScope.opponentCard[0].legacy;
+		playerOneScope.result.opponentCard = playerOneScope.opponentCard;
+		playerOneScope.result.category = 'legacy';
+
+		playerOneScope.resultCheck();
+
+		expect(playerOneScope.opponentPack.length).toBe(3);
+		expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+		expect(playerOneScope.opponentPack[1].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.opponentPack[2].name).toBe('Donald Trump');
+		expect(playerOneScope.opponentRound).toBe(1);
+
+		expect(playerOneScope.turn).toBe(false);
+		expect(playerOneScope.collection.length).toBe(1);
+		expect(playerOneScope.collection[0].name).toBe('Genghis Khan');
+		expect(playerOneScope.round).toBe(0);
+
+		playerOneScope.nextRound();
+
+		// 2 flushes for nextRound $timeout and 
+		// for computerPlay $timeout
+		$timeout.flush();
+		$timeout.flush();
+
+		expect(playerOneScope.opponentCard[0].name).toBe('Silvio Berlusconi');
+		expect(playerOneScope.currentCard[0].name).toBe('Genghis Khan');
+
+		// computer should have played a category now
+		// check result object has been populated correctly
+		expect(playerOneScope.result.category).toBeDefined();
+		expect(playerOneScope.result.myScore).toBe(playerOneScope.currentCard[0][playerOneScope.result.category]);
+		expect(playerOneScope.result.opponentScore).toBe(playerOneScope.opponentCard[0][playerOneScope.result.category]);
+		expect(playerOneScope.result.opponentCard).toBe(playerOneScope.opponentCard);
+
+		playerOneScope.resultCheck();
+
+		// we need to check the scores because we don't know which category 
+		// the computer randomly chose beforehand
+		if(playerOneScope.result.myScore > playerOneScope.result.opponentScore) {
+			// human won
+			expect(playerOneScope.opponentPack.length).toBe(2);
+			expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+			expect(playerOneScope.opponentPack[1].name).toBe('Donald Trump');
+			expect(playerOneScope.opponentRound).toBe(1);
+	
+			expect(playerOneScope.turn).toBe(true);
+			expect(playerOneScope.collection.length).toBe(2);
+			expect(playerOneScope.collection[0].name).toBe('Genghis Khan');
+			expect(playerOneScope.collection[1].name).toBe('Silvio Berlusconi');
+			expect(playerOneScope.round).toBe(1);
+
+			expect(playerOneScope.handsWon).toBe(1);
+			expect(playerOneScope.handsDrawn).toBe(0);
+			expect(playerOneScope.handsLost).toBe(1);
+		} else if(playerOneScope.result.myScore < playerOneScope.result.opponentScore) {
+			// human lost
+			expect(playerOneScope.opponentPack.length).toBe(4);
+			expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+			expect(playerOneScope.opponentPack[1].name).toBe('Silvio Berlusconi');
+			expect(playerOneScope.opponentPack[2].name).toBe('Donald Trump');
+			expect(playerOneScope.opponentPack[3].name).toBe('Genghis Khan');
+			expect(playerOneScope.opponentRound).toBe(2);
+	
+			expect(playerOneScope.turn).toBe(false);
+			expect(playerOneScope.collection.length).toBe(0);
+			expect(playerOneScope.round).toBe(0);
+
+			expect(playerOneScope.handsWon).toBe(0);
+			expect(playerOneScope.handsDrawn).toBe(0);
+			expect(playerOneScope.handsLost).toBe(2);
+		} else {
+			// draw
+			expect(playerOneScope.opponentPack.length).toBe(3);
+			expect(playerOneScope.opponentPack[0].name).toBe('Vladimir Putin');
+			expect(playerOneScope.opponentPack[1].name).toBe('Silvio Berlusconi');
+			expect(playerOneScope.opponentPack[2].name).toBe('Donald Trump');
+			expect(playerOneScope.opponentRound).toBe(2);
+	
+			expect(playerOneScope.turn).toBe(false);
+			expect(playerOneScope.collection.length).toBe(1);
+			expect(playerOneScope.collection[0].name).toBe('Genghis Khan');
+			expect(playerOneScope.round).toBe(0);
+
+			expect(playerOneScope.handsWon).toBe(0);
+			expect(playerOneScope.handsDrawn).toBe(1);
+			expect(playerOneScope.handsLost).toBe(1);
+		}
+
+	}));
+});
+
+
+describe('StoreController Tests', function() {
+	var $httpBackend;
+	var $rootScope;
+	var createController;
+
+	beforeEach(module('TCModule'));
+
+	beforeEach(inject(function($injector) {
+		// set up the mock http service responses
+		$httpBackend = $injector.get('$httpBackend');
+
+		// mock requests
+		$httpBackend.whenRoute('GET', '/me/stats').respond({boon: 500});
 
 		// setup scope
 		$rootScope = $injector.get('$rootScope');
@@ -1822,7 +2287,9 @@ describe('StoreController Tests', function() {
 		var $controller = $injector.get('$controller');
 
 		createController = function() {
-			return $controller('StoreController', { '$scope' : $rootScope });
+			return $controller('StoreController', { 
+				'$scope': $rootScope
+			});
 		};
 	}));
 
@@ -1832,13 +2299,77 @@ describe('StoreController Tests', function() {
 	});
 
 
-	it('/me call is made when controller instantiated', function() {
-		// $httpBackend.when('/me');
-		// var controller = createController();
-		// $httpBackend.flush();
+	it('boon is retrieved', function() {
+		var controller = createController();
+		$httpBackend.flush();
 
-		// expect($rootScope.user.email).toBe('abc123@test.com');
+		expect($rootScope.boon).toBe(500);
 	});
+
+
+	it('purchase bronze pack functions correctly', function() {
+		var controller = createController();
+		expect($rootScope.showPremium).toBe(false);
+
+		$rootScope.purchase('bronze');
+		$httpBackend.flush();
+
+		expect($rootScope.purchaseGrade).toBe('bronze');
+		expect($rootScope.purchaseGradeIcon).toBe('icons/paper-bag-bronze.svg');
+		expect($rootScope.purchasePremiumIcon).toBe('icons/paper-bag-bronze-premium.svg');
+		expect($rootScope.purchasePrice).toBe($rootScope.bronzePackPrice);
+		expect($rootScope.purchasePremiumPrice).toBe($rootScope.bronzePremiumPackPrice);
+		expect($rootScope.showPremium).toBe(true);
+	});
+
+
+	it('purchase silver pack functions correctly', function() {
+		var controller = createController();
+		expect($rootScope.showPremium).toBe(false);
+
+		$rootScope.purchase('silver');
+		$httpBackend.flush();
+
+		expect($rootScope.purchaseGrade).toBe('silver');
+		expect($rootScope.purchaseGradeIcon).toBe('icons/paper-bag-silver.svg');
+		expect($rootScope.purchasePremiumIcon).toBe('icons/paper-bag-silver-premium.svg');
+		expect($rootScope.purchasePrice).toBe($rootScope.silverPackPrice);
+		expect($rootScope.purchasePremiumPrice).toBe($rootScope.silverPremiumPackPrice);
+		expect($rootScope.showPremium).toBe(true);
+	});
+
+
+	it('purchase gold pack functions correctly', function() {
+		var controller = createController();
+		expect($rootScope.showPremium).toBe(false);
+		
+		$rootScope.purchase('gold');
+		$httpBackend.flush();
+
+		expect($rootScope.purchaseGrade).toBe('gold');
+		expect($rootScope.purchaseGradeIcon).toBe('icons/paper-bag-gold.svg');
+		expect($rootScope.purchasePremiumIcon).toBe('icons/paper-bag-gold-premium.svg');
+		expect($rootScope.purchasePrice).toBe($rootScope.goldPackPrice);
+		expect($rootScope.purchasePremiumPrice).toBe($rootScope.goldPremiumPackPrice);
+		expect($rootScope.showPremium).toBe(true);
+	});
+
+
+	it('pack cannot be purchased if user doesn\'t have enough boon', function() {
+		var controller = createController();
+		$rootScope.boon = 500;
+		spyOn($rootScope, 'showNotEnoughBoonAlert');
+
+		$rootScope.confirmPurchase('bronze-premium');
+		$httpBackend.flush();
+		
+		expect($rootScope.showNotEnoughBoonAlert).toHaveBeenCalled();
+	});
+
+
+	// TODO - Confirm purchase tests
+	// these are more integration tests because we need to check the 
+	// purchased cards have been added to the user's collection in the db
 });
 
 

@@ -22,11 +22,18 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 		controller: 'GameController',
 		params : { email: null, }
 	})
+	.state('home.playSolo', {
+		url: '/play',
+		templateUrl: '/templates/solo-game.html',
+		controller: 'SoloGameController'
+	})
 	.state('home.store', {
 		url: '/store',
 		templateUrl: '/templates/store.html',
 		controller: 'StoreController'
 	})
+	// this route is for testing the appearance of a card
+	// by name (note the controller can be removed in production)
 	.state('card', {
 		url: '/card/:name',
 		templateUrl: '/templates/card-admin.html',

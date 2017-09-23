@@ -15,6 +15,9 @@ angular.module('TCModule').factory('Cards', function CardsFactory($http) {
 		getGamePack: function(size) {
 			return $http.get('/me/pack/' + size);
 		},
+		getComputerPack: function(size) {
+			return $http.get('/card/pack/' + size);
+		},
 		purchase: function(grade) {
 			return $http.get('/purchase/' + grade);
 		}

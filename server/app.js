@@ -186,9 +186,21 @@ app.get('/card/:name', isAuthenticated, function(req, res) {
 });
 
 app.get('/card/id/:id', isAuthenticated, function(req, res) {
-	console.log(req.params.id);
 	card.findOne({ '_id': mongoose.Types.ObjectId(req.params.id) }, function(err, card) {
 		res.json(card);
+	});
+});
+
+app.get('/card/pack/:size', isAuthenticated, function(req, res) {
+	card.aggregate([
+		{ $sample: { size: parseInt(req.params.size) }}
+	], function(err, pack) {
+		if(err) {
+			console.log(err);
+			res.status(500).send(err);
+		}
+
+		res.json(pack);
 	});
 });
 
