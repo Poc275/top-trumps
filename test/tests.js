@@ -939,6 +939,33 @@ describe('store module tests', function() {
 		done();
 	});
 
+	it('add pack to user\'s collection functions as expected', function(done) {
+		var pack = [
+			mongoose.Types.ObjectId("5988ae1930b679186ca450e4"),
+			mongoose.Types.ObjectId("59c28888cf65c31384143f2b"),
+			mongoose.Types.ObjectId("5896327a45c58e2e78ae0140"),
+			mongoose.Types.ObjectId("5896371245c58e2e78ae0150"),
+			mongoose.Types.ObjectId("58963d2345c58e2e78ae0162")
+		];
+		var cardsGot = 0;
+		var cardsNotGot = 0;
+		
+		store.addPackToUserCollection("thedonald@trump.com", pack, function(err, res) {
+			res.forEach(function(card) {
+				if(card.got) {
+					cardsGot++;
+				} else {
+					cardsNotGot++;
+				}
+			});
+			expect(res).to.have.lengthOf(5);
+			expect(cardsGot).to.deep.equal(0);
+			expect(cardsNotGot).to.deep.equal(5);
+
+			done();
+		});
+	});
+
 	it('add pack to user\'s collection ignores both kinds of duplicates', function(done) {
 		var pack = [
 			mongoose.Types.ObjectId("58963c0945c58e2e78ae015d"),
@@ -963,8 +990,32 @@ describe('store module tests', function() {
 			expect(cardsNotGot).to.deep.equal(3);
 
 			done();
-		}, function(err) {
-			console.log(err);
+		});
+	});
+
+	it('add pack to user\'s collection ignores a card duplicated multiple times', function(done) {
+		var pack = [
+			mongoose.Types.ObjectId("58962d1e45c58e2e78ae0127"),
+			mongoose.Types.ObjectId("58963c8445c58e2e78ae015f"),	// duplicate (user already has this card)
+			mongoose.Types.ObjectId("58962d1e45c58e2e78ae0127"),	// duplicate within the pack itself
+			mongoose.Types.ObjectId("58962d8345c58e2e78ae0129"),
+			mongoose.Types.ObjectId("58962d1e45c58e2e78ae0127")		// another duplicate within the pack itself
+		];
+		var cardsGot = 0;
+		var cardsNotGot = 0;
+		
+		store.addPackToUserCollection("thedonald@trump.com", pack, function(err, res) {
+			res.forEach(function(card) {
+				if(card.got) {
+					cardsGot++;
+				} else {
+					cardsNotGot++;
+				}
+			});
+			expect(res).to.have.lengthOf(5);
+			expect(cardsGot).to.deep.equal(3);
+			expect(cardsNotGot).to.deep.equal(2);
+
 			done();
 		});
 	});
@@ -1063,7 +1114,14 @@ describe('store module tests', function() {
 		var pack = [
 			mongoose.Types.ObjectId("58963c0945c58e2e78ae015d"),
 			mongoose.Types.ObjectId("58963ed645c58e2e78ae016c"),
-			mongoose.Types.ObjectId("5896468245c58e2e78ae0194")
+			mongoose.Types.ObjectId("5896468245c58e2e78ae0194"),
+			mongoose.Types.ObjectId("58962d1e45c58e2e78ae0127"),
+			mongoose.Types.ObjectId("58962d8345c58e2e78ae0129"),
+			mongoose.Types.ObjectId("5988ae1930b679186ca450e4"),
+			mongoose.Types.ObjectId("59c28888cf65c31384143f2b"),
+			mongoose.Types.ObjectId("5896327a45c58e2e78ae0140"),
+			mongoose.Types.ObjectId("5896371245c58e2e78ae0150"),
+			mongoose.Types.ObjectId("58963d2345c58e2e78ae0162")
 		];
 
 		store.removeCardFromCollection("thedonald@trump.com", pack, function(err) {
