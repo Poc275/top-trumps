@@ -42,7 +42,13 @@ var userSchema = require('../models/User.js').UserSchema;
 var user = db.model('users', userSchema);
 
 // bot vars
+var builder = require('botbuilder');
 var bot = require('./bot.js');
+var connector = new builder.ChatConnector({
+    appId: process.env.BotAppId || config.bot.appId,
+    appPassword: process.env.BotPassword || config.bot.password
+});
+bot.create(connector);
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, '../public', 'images', 'favicon.ico')));
@@ -440,7 +446,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), function(req, 
 });
 
 // bot endpoint
-app.post('/api/messages', bot.connector.listen());
+app.post('/api/messages', connector.listen());
 
 
 /*

@@ -71,6 +71,7 @@
     "karma-spec-reporter": "0.0.26",
     "mocha": "^3.2.0",
     "mongo-mock": "^2.1.1",
+    "nock": "^9.0.21",
     "nyc": "^10.1.2",
     "protractor": "^5.1.1",
     "socket.io-client": "^1.7.3",

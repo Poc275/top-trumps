@@ -4,6 +4,10 @@ var chaiHttp = require('chai-http');
 var app = require('../server/app');
 var game = require('../server/game');
 var store = require('../server/store');
+var bot = require('../server/bot');
+var botResponses = require('../server/botResponses');
+var builder = require('botbuilder');
+var luisMock = require('../test/luis-mock');
 var io = require('socket.io-client');
 // require mongoose for objectId type tests
 var mongoose = require('mongoose');
@@ -14,6 +18,8 @@ mongodb.max_delay = 0;
 var MongoClient = mongodb.MongoClient;
 
 chai.use(chaiHttp);
+
+luisMock.setup();
 
 describe('database card collection tests', function() {
 	var url = 'mongodb://localhost:27017/tc';
@@ -1132,6 +1138,279 @@ describe('store module tests', function() {
 		});
 	});
 
+});
+
+
+describe('sentiment analysis tests', function() {
+	it('getSentimentAnalysis function returns json response', function(done) {
+		bot.getSentimentAnalysis("Great!", function(err, res) {
+			expect(err).to.be.a('null');
+			expect(res).to.be.an('object');
+			expect(res.documents).to.be.an('array');
+			expect(res.documents[0].score).to.be.a('number');
+			expect(res.errors).to.be.an('array');
+			expect(res.errors).to.be.empty;
+
+			done();
+		});
+	});
+
+	it('getSentimentAnalysis function handles errors', function(done) {
+		bot.getSentimentAnalysis("This will cause an error", function(err, res) {
+			expect(err).to.not.be.null;
+			expect(res).to.be.a('null');
+
+			done();
+		});
+	});
+});
+
+
+describe('bot tests', function() {
+	// var connector = new builder.ConsoleConnector();
+	// var botMock = bot.create(connector);
+
+	it('Hello intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.helloIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Hello');
+	});
+
+	it('Age intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.ageIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Age');
+	});
+
+	// check appearance intent because it sends multiple responses...
+	// it('Appearance intent matches', function(done) {
+	// 	var connector = new builder.ConsoleConnector();
+	// 	var botMock = bot.create(connector);
+
+	// 	botMock.on('send', function(msg) {
+	// 		console.log(msg);
+	// 		expect(msg).to.not.be.null;
+	// 		// expect(botResponses.appearanceIntentResponses).to.include(msg.text);
+
+	// 		done();
+	// 	});
+
+	// 	connector.processMessage('Appearance');
+	// });
+
+	it('Create intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.createIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Create');
+	});
+
+	// check intent because it calls sentiment analysis function...
+	// it('Feedback Donald intent matches', function(done) {
+	// 	var connector = new builder.ConsoleConnector();
+	// 	var botMock = bot.create(connector);
+
+	// 	botMock.on('send', function(msg) {
+	// 		console.log("Feedback: ", msg);
+	// 		expect(msg).to.not.be.null;
+	// 		expect(botResponses.donaldFeedbackNegativeResponses).to.include(msg.text);
+
+	// 		done();
+	// 	});
+
+	// 	connector.processMessage('Feedback Donald');
+	// });
+
+	it('Find intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.findIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Find');
+	});
+
+	it('Help intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.helpIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Help');
+	});
+
+	it('Hobbies intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.hobbiesIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Hobbies');
+	});
+
+	it('Language intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.languageIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Language');
+	});
+
+	it('Location intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.locationIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Location');
+	});
+
+	it('Modify intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.modifyIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Modify');
+	});
+
+	it('None intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.noneIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('None');
+	});
+
+	it('Reality intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.realityIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Reality');
+	});
+
+	it('State intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.stateIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('State');
+	});
+
+	it('Time intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.timeIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Time');
+	});
+
+	it('What intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.whatIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('What');
+	});
+
+	it('Who intent matches', function(done) {
+		var connector = new builder.ConsoleConnector();
+		var botMock = bot.create(connector);
+
+		botMock.on('send', function(msg) {
+			expect(msg).to.not.be.null;
+			expect(botResponses.whoIntentResponses).to.include(msg.text);
+
+			done();
+		});
+
+		connector.processMessage('Who');
+	});
 });
 
 

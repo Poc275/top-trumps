@@ -498,7 +498,6 @@ store.addPackToUserCollection = function(email, pack, cb) {
                     }
                 }
             });
-            
         });
 
         // when all promises have completed, return the sorted pack
