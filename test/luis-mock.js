@@ -14,6 +14,8 @@ if(!process.env.FacebookClientID) {
 
 function setup() {
     // luis.ai mocks
+    console.log("Mocking ok");
+    
     nock('https://westus.api.cognitive.microsoft.com')
     .get('/luis/v2.0/apps/07ed3d92-346c-466c-8c97-e91b95ccf3a3?subscription-key=85ef85d19b8940afb875a484617b3112&verbose=true&timezoneOffset=0&q=' + encodeURIComponent('Hello'))
     .reply(200, {
