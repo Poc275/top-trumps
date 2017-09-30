@@ -604,3 +604,13 @@ md-grid-tile.gold {
 	margin-top: 0;
 	margin-bottom: 0;
 }
+
+
+/*
+*********************************
+ Tutorial styles
+*********************************
+*/
+.tutorial-image {
+	width: 100%;
+}

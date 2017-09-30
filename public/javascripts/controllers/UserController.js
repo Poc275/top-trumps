@@ -25,6 +25,16 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 		});
 	};
 
+	$scope.showTutorial = function() {
+		$mdDialog.show({
+			controller: TutorialDialogController,
+			templateUrl: 'templates/tutorial-dialog.html',
+			parent: angular.element(document.body),
+			clickOutsideToClose: true,
+			fullscreen: true
+		});
+	};
+
 	$scope.getCards = function() {
 		// object to store number of cards collected per category
 		// placed in getCards() because otherwise view doesn't update, child scope?
@@ -123,6 +133,17 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 
 		$scope.cancel = function() {
 			$mdDialog.cancel();
+		};
+	}
+
+	// tutorial dialog controller
+	function TutorialDialogController($scope, $mdDialog) {
+		$scope.hide = function() {
+		  $mdDialog.hide();
+		};
+	
+		$scope.cancel = function() {
+		  $mdDialog.cancel();
 		};
 	}
 
