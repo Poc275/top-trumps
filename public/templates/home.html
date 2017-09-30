@@ -5,7 +5,8 @@
 				<i class="material-icons menu-icon">menu</i>
 			</md-button>
 
-			<!--<h2 flex md-truncate>Home</h2>-->
+			<!-- <h2 flex md-truncate>{{ toolbarTitle }}</h2> -->
+
 			<span flex></span>
 
 			<md-button class="md-raised md-accent" ui-sref="home.play({ email: user.email })">Play</md-button>
@@ -76,7 +77,9 @@
 			<!-- default home view -->
 			<div id="profile" layout="column" layout-align="end none" layout-padding>
 				<div id="user-info" layout="row">
-					<img ng-src="{{ gravatarUrl(user.email, 80) }}" alt="user's gravatar" id="profile-image" />
+					<a href="https://en.gravatar.com/" target="_blank">
+						<img ng-src="{{ gravatarUrl(user.email, 80) }}" alt="user's gravatar" id="profile-image" />
+					</a>
 					<div id="user-details" layout="column">
 						<h2>{{ user.name }}</h2>
 						<h4>Rank: {{ user.level | levelFilter }}</h4>
@@ -139,8 +142,8 @@
 							<p>Welcome to TC. This game is the greatest... and everyone... a lot of people, agree! It's probably 
 								the greatest thing since Mar-a-Lago chocolate cake so well done.</p>
 							<p>Take a look around and get familiar with the place. <a href="" ng-click="showTutorial()">Learn how to play</a> or 
-								<a ui-sref="home.store">spend</a> the overly generous starter boon we've given you. If you're still stuck then chat 
-								to The Donald by clicking the pinch in the bottom right corner.</p>
+								<a ui-sref="home.store">spend</a> the overly generous starter boon I've given you. If you're still stuck then chat 
+								to me by clicking the icon in the bottom right corner.</p>
 						</md-card-content>
 					</md-card>
 				</div><!-- end of timeline -->
