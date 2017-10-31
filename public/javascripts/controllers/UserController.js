@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('UserController', function($scope, $http, $location, $state, $mdDialog, Cards, Gravatar) {
+angular.module('TCModule').controller('UserController', function($scope, $location, $state, $mdDialog, $window, Cards, Gravatar, Users, Auth) {
 	$scope.showWorldLeaders = false;
 	$scope.showAttSeekers = false;
 	$scope.showWrongNs = false;
@@ -9,10 +9,36 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 	$scope.showOnePercenters = false;
 	$scope.showJokers = false;
 
-	$scope.getUser = function() {
-		$http.get('/me').then(function(user) {
-			$scope.user = user.data;
-		});
+	$scope.getToken = function() {
+		// this method is called every home page visit
+		// so make sure we only get a token if one doesn't already exists
+		if(Auth.getToken() === null) {
+			Users.getToken().then(function(response) {
+				Auth.saveToken(response.data.token);
+				// JWTs consist of 3 strings separated by a dot
+				// [0] = Header (contains type and hash info)
+				// [1] = Payload (JSON containing the data, Base64 encoded, use atob() to decode)
+				// [2] = Signature (Encrypted hash using the server secret)
+				var payload = response.data.token.split('.')[1];
+				payload = $window.atob(payload);
+				$scope.user = JSON.parse(payload);
+			}, function(err) {
+				// unauthorised, redirect to home
+				$location.path('/');
+			});
+		} else {
+			// user already has a token, is it valid?
+			if(Auth.isTokenValid()) {
+				var token = Auth.getToken();
+				var payload = token.split('.')[1];
+				payload = $window.atob(payload);
+				$scope.user = JSON.parse(payload);
+			} else {
+				// token has expired
+				// redirect to home so they can login again
+				$location.path('/');
+			}
+		}
 	};
 
 	$scope.gravatarUrl = function(email, size) {
@@ -20,9 +46,8 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 	};
 
 	$scope.logout = function() {
-		$http.get('/logout').then(function() {
-			$location.path('/');
-		});
+		Auth.logout();
+		$location.path('/');
 	};
 
 	$scope.showTutorial = function() {
@@ -147,5 +172,5 @@ angular.module('TCModule').controller('UserController', function($scope, $http, 
 		};
 	}
 
-	$scope.getUser();
+	$scope.getToken();
 });

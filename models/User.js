@@ -5,6 +5,11 @@
  * up using different social media profiles. We need to treat them as the same user.
  */
 var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
+var config;
+if(!process.env.FacebookClientID) {
+	config = require('../config/auth');
+}
 
 /**
  * Mongooser User schema
@@ -40,3 +45,28 @@ exports.UserSchema = new mongoose.Schema({
 	xp: { type: Number, required: true },
 	boon: { type: Number, required: true }
 });
+
+/** @function generateJwt
+ * Generates a JWT for a user
+ * @returns {object} A JWT
+ */
+this.UserSchema.methods.generateJwt = function() {
+	var secret = process.env.JwtSecret || config.jwt.secret;
+	var expiry = new Date();
+	expiry.setDate(expiry.getDate() + 7);
+
+	return jwt.sign({
+		_id: this._id,
+		email: this.email,
+		name: this.name,
+		username: this.username,
+		cards: this.cards,
+		level: this.level,
+		played: this.played,
+		won: this.won,
+		lost: this.lost,
+		xp: this.xp,
+		boon: this.boon,
+		exp: parseInt(expiry.getTime() / 1000)
+	}, secret);
+};

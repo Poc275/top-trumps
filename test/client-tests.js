@@ -1,3 +1,11 @@
+// test jwt from jwt.io
+// payload: {
+//	'sub': '1234567890',
+//	'name': 'John Doe',
+//	'admin': true
+// }
+var testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
+
 describe('GravatarFactory tests', function() {
 	var gravatarFactory;
 	var email = 'poc275@gmail.com';
@@ -359,7 +367,7 @@ describe('UserController Tests', function() {
 		$httpBackend = $injector.get('$httpBackend');
 
 		// mock requests
-		$httpBackend.whenRoute('GET', '/me').respond({email: 'abc123@test.com'});
+		$httpBackend.whenRoute('GET', '/me/token').respond({ token: testJwt });
 		$httpBackend.whenRoute('GET', '/logout').respond();
 		$httpBackend.whenRoute('GET', '/templates/home.html').respond('<html></html>');
 		$httpBackend.whenRoute('GET', '/templates/collection.html').respond('<html></html>');
@@ -383,12 +391,12 @@ describe('UserController Tests', function() {
 	});
 
 
-	it('/me call is made when controller instantiated', function() {
-		$httpBackend.when('/me');
+	it('/me/token call is made when controller instantiated', function() {
+		$httpBackend.when('/me/token');
 		var controller = createController();
 		$httpBackend.flush();
 
-		expect($rootScope.user.email).toBe('abc123@test.com');
+		expect($rootScope.user.name).toBe('John Doe');
 	});
 
 
@@ -424,7 +432,7 @@ describe('Card Collection Tests', function() {
 		$httpBackend = $injector.get('$httpBackend');
 
 		// mock requests
-		$httpBackend.whenRoute('GET', '/me').respond({email: 'abc123@test.com'});
+		$httpBackend.whenRoute('GET', '/me/token').respond({ token: testJwt });
 		$httpBackend.whenRoute('GET', '/cards').respond([
 			{
 				"name": "Donald Trump",

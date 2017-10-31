@@ -37,7 +37,12 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 	.state('card', {
 		url: '/card/:name',
 		templateUrl: '/templates/card-admin.html',
-		controller: 'CardController'
+		controller: 'CardController',
+		resolve: {
+			access: ["Access", function(Access) {
+				// return Access.hasRole("admin");
+			}]
+		}
 	})
 	.state('login', {
 		url: '/login',

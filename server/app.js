@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var uuid = require('uuid');
 var helmet = require('helmet');
+// express-jwt is for route guarding, not generating tokens
+var jwt = require('express-jwt');
 var passport = require('passport');
 // we have to initialise passport.js before we can use it
 // (see app.use(passport.initilize() below)
@@ -37,9 +39,9 @@ var db = mongoose.createConnection('ds062919.mlab.com:62919/tc', options);
 // create mongoose schemas and models from the schemas
 // note 'cards' and 'users' refers to the collection names
 var cardSchema = require('../models/Card.js').CardSchema;
-var card = db.model('cards', cardSchema);
+var Card = db.model('cards', cardSchema);
 var userSchema = require('../models/User.js').UserSchema;
-var user = db.model('users', userSchema);
+var User = db.model('users', userSchema);
 
 // bot vars
 var builder = require('botbuilder');
@@ -61,7 +63,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 // for angular etc. use a /scripts alias for the path
 app.use('/scripts', express.static(path.join(__dirname, '../node_modules')));
 app.use(session({ 
-	secret: 'thedonald',
+	secret: process.env.PassportSecret || config.passport.secret,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
@@ -91,6 +93,24 @@ var isAuthenticated = function(req, res, next) {
     });
     res.end();
 };
+
+// route guard auth configuration, requires secret and 
+// a name of the property to create on the req object 
+// that holds the JWT which we can check for authorisation
+var auth = jwt({
+	secret: process.env.JwtSecret || config.jwt.secret,
+	userProperty: 'payload'
+});
+
+// error handler for JWT unauthorised requests
+app.use(function(err, req, res, next) {
+	if(err.name === 'UnauthorizedError') {
+		res.status(401);
+		res.json({
+			'message': err.name + ": " + err.message
+		});
+	}
+});
 
 
 // sockets
@@ -179,26 +199,26 @@ io.on('connection', function(client) {
 
 
 // routes
-app.get('/cards', isAuthenticated, function(req, res) {
-	card.find({}, function(err, cards) {
+app.get('/cards', auth, function(req, res) {
+	Card.find({}, function(err, cards) {
 		res.json(cards);
 	});
 });
 
-app.get('/card/:name', isAuthenticated, function(req, res) {
-	card.findOne({ 'name': req.params.name }, function(err, card) {
+app.get('/card/:name', auth, function(req, res) {
+	Card.findOne({ 'name': req.params.name }, function(err, card) {
 		res.json(card);
 	});
 });
 
-app.get('/card/id/:id', isAuthenticated, function(req, res) {
-	card.findOne({ '_id': mongoose.Types.ObjectId(req.params.id) }, function(err, card) {
+app.get('/card/id/:id', auth, function(req, res) {
+	Card.findOne({ '_id': mongoose.Types.ObjectId(req.params.id) }, function(err, card) {
 		res.json(card);
 	});
 });
 
-app.get('/card/pack/:size', isAuthenticated, function(req, res) {
-	card.aggregate([
+app.get('/card/pack/:size', auth, function(req, res) {
+	Card.aggregate([
 		{ $sample: { size: parseInt(req.params.size) }}
 	], function(err, pack) {
 		if(err) {
@@ -210,7 +230,7 @@ app.get('/card/pack/:size', isAuthenticated, function(req, res) {
 	});
 });
 
-app.get('/purchase/:grade', isAuthenticated, function(req, res) {
+app.get('/purchase/:grade', auth, function(req, res) {
 	var callback = function(err, pack) {
 		if(err) {
 			console.log(err);
@@ -251,18 +271,27 @@ app.get('/purchase/:grade', isAuthenticated, function(req, res) {
 	}
 });
 
-app.get('/me', isAuthenticated, function(req, res) {
-	user.findOne({ 'email': req.user.email }, function(err, user) {
-		if(err) {
-			console.log(err);
-			res.status(500).send(err);
-		}
-		res.json(user);
-	});
+// for the token route where we haven't got a token yet,
+// we revert back to oAuth middleware
+app.get('/me/token', isAuthenticated, function(req, res) {
+	if(req.user) {
+		// have to cast req.user back to mongoose schema
+		// object as it is stored as JSON in req
+		var user = new User(req.user);
+		var token = user.generateJwt();
+
+		res.status(200);
+		res.json({
+			'token': token
+		});
+	} else {
+		// unauthorised
+		res.status(401).end();
+	}
 });
 
-app.get('/me/pack/:size', isAuthenticated, function(req, res) {
-	user.aggregate([
+app.get('/me/pack/:size', auth, function(req, res) {
+	User.aggregate([
 		{ $match: { email: req.user.email }},
 		{ $project: { cards: true }}
 	], function(err, collection) {
@@ -278,7 +307,7 @@ app.get('/me/pack/:size', isAuthenticated, function(req, res) {
 
 		// now get the top :size cards sorted by average
 		// remember parseInt(), url params are treated as strings
-		card.aggregate([
+		Card.aggregate([
 			{ $match: { _id: { $in: cardIds }}},
 			{ $project: { average: { $avg: [ "$unpalatibility", "$up_their_own_arsemanship", "$media_attention", 
 				"$legacy", "$special_ability" ]}}},
@@ -296,7 +325,7 @@ app.get('/me/pack/:size', isAuthenticated, function(req, res) {
 			});
 
 			// finally, return the actual card objects from these ids
-			card.find({ _id: { $in: packIds } }, function(err, cards) {
+			Card.find({ _id: { $in: packIds } }, function(err, cards) {
 				if(err) {
 					res.status(500).send(err);
 					console.log(err);
@@ -308,8 +337,8 @@ app.get('/me/pack/:size', isAuthenticated, function(req, res) {
 	});
 });
 
-app.get('/me/stats', isAuthenticated, function(req, res) {
-	user.findOne({ 'email': req.user.email }, function(err, user) {
+app.get('/me/stats', auth, function(req, res) {
+	User.findOne({ 'email': req.user.email }, function(err, user) {
 		if(err) {
 			console.log(err);
 			res.status(500).send(err);
@@ -322,12 +351,13 @@ app.get('/me/stats', isAuthenticated, function(req, res) {
 	});
 });
 
-app.put('/me/stats', isAuthenticated, function(req, res) {
+app.put('/me/stats', auth, function(req, res) {
+	console.log('PUT /me/stats: ', req.body, ' : ', req.user.email);
 	var result = req.body;
 	var won = result.won === true ? 1 : 0;
 	var lost = result.won === false ? 1 : 0;
 
-	user.findOneAndUpdate(
+	User.findOneAndUpdate(
 		{ email: req.user.email },
 		{ $inc: {
 			played: 1,
@@ -346,8 +376,9 @@ app.put('/me/stats', isAuthenticated, function(req, res) {
 	});
 });
 
-app.put('/me/levelup', isAuthenticated, function(req, res) {
-	user.findOneAndUpdate(
+app.put('/me/levelup', auth, function(req, res) {
+	console.log('PUT /me/levelup: ', req.user.email);
+	User.findOneAndUpdate(
 		{ email: req.user.email },
 		{ $inc: {
 			level: 1,
@@ -364,8 +395,9 @@ app.put('/me/levelup', isAuthenticated, function(req, res) {
 	});
 });
 
-app.put('/me/boon/', isAuthenticated, function(req, res) {
-	user.findOneAndUpdate(
+app.put('/me/boon/', auth, function(req, res) {
+	console.log('PUT /me/boon: ', req.user.email, ' : ', req.body.amount);
+	User.findOneAndUpdate(
 		{ email: req.user.email },
 		{ $inc: { boon: parseInt(req.body.amount) }},
     function(err, result) {
@@ -378,10 +410,10 @@ app.put('/me/boon/', isAuthenticated, function(req, res) {
 	});
 });
 
-app.get('/me/collection', isAuthenticated, function(req, res) {
+app.get('/me/collection', auth, function(req, res) {
 	// fetch card collection which is an 
 	// array of card Object Ids
-	user.aggregate([
+	User.aggregate([
 		{ $match: { email: req.user.email }},
 		{ $project: { cards: true }}
 	], function(err, collection) {
@@ -398,7 +430,7 @@ app.get('/me/collection', isAuthenticated, function(req, res) {
 
 		// now we have the card ids, fetch the cards and return
 		// you can query with an array using the $in operator in mongo
-		card.find({ "_id": { "$in": cardIds } }, function(err, cards) {
+		Card.find({ "_id": { "$in": cardIds } }, function(err, cards) {
 			if(err) {
 				res.status(500).send(err);
 				console.log(err);
@@ -440,9 +472,9 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.g
 
 app.get('/auth/google/callback', passport.authenticate('google'), function(req, res) {
 	res.writeHead(302, {
-        'Location': '/#!/home'
-    });
-    res.end();
+		'Location': '/#!/home'
+	});
+	res.end();
 });
 
 // bot endpoint

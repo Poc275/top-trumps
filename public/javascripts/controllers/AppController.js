@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('AppController', function($scope, $mdSidenav, $http, $location, $mdDialog) {
+angular.module('TCModule').controller('AppController', function($scope, $mdSidenav, $http, $location, $mdDialog, Users) {
 	// it's good practice to bind ng-model properties
 	// to an object rather than a string on the scope
 	$scope.local = {};

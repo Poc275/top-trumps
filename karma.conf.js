@@ -25,6 +25,7 @@ module.exports = function(config) {
         'node_modules/socket.io-client/dist/socket.io.js',
         'public/javascripts/app.js',
         'public/javascripts/routes.js',
+        'public/javascripts/services/AuthFactory.js',
         'public/javascripts/services/CardsFactory.js',
         'public/javascripts/services/SocketFactory.js',
         'public/javascripts/services/UserFactory.js',

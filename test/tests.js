@@ -344,7 +344,7 @@ describe('database user collection tests', function() {
 // Is the use of chaiHttp considered integration testing?
 describe('user authentication tests', function() {
 	it('unauthenticated user cannot get /me', function(done) {
-		chai.request('http://localhost:3000').get('/me').end(function(err, res) {
+		chai.request('http://localhost:3000').get('/me/token').end(function(err, res) {
 			expect(err).to.not.be.null;
 			expect(res).to.have.status(401);
 

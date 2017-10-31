@@ -1,4 +1,4 @@
-angular.module('TCModule').controller('CardController', function($scope, $http, $stateParams, Cards) {
+angular.module('TCModule').controller('CardController', function($scope, $stateParams, Cards) {
 	$scope.result = [];
 
 	Cards.findByName($stateParams.name).then(function(card) {
