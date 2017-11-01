@@ -112,7 +112,8 @@ module.exports = function(passport) {
 							won: 0,
 							lost: 0,
 							xp: 0,
-							boon: 500
+							boon: 500,
+							role: 'user'
 						});
 
 						user.save(function(err) {
@@ -165,7 +166,8 @@ module.exports = function(passport) {
 							won: 0,
 							lost: 0,
 							xp: 0,
-							boon: 500
+							boon: 500,
+							role: 'user'
 						});
 
 						user.save(function(err) {
@@ -228,7 +230,8 @@ module.exports = function(passport) {
 							won: 0,
 							lost: 0,
 							xp: 0,
-							boon: 500
+							boon: 500,
+							role: 'user'
 						});
 
 						user.save(function(err) {
@@ -288,7 +291,8 @@ module.exports = function(passport) {
 						won: 0,
 						lost: 0,
 						xp: 0,
-						boon: 500
+						boon: 500,
+						role: 'user'
 					});
 
 					user.save(function(err) {

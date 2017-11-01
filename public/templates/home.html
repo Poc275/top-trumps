@@ -60,6 +60,14 @@
 					</div>
 				</md-list-item>
 
+				<!-- CMS - Admin only -->
+				<md-list-item ng-if="user.role === 'admin'" class="md-1-line" ng-click="toggleMenu()" ui-sref="home.cms">
+					<i class="material-icons md-avatar menu-icon">edit</i>
+					<div class="md-list-item-text" layout="column">
+						<h3>CMS</h3>
+					</div>
+				</md-list-item>
+
 				<md-list-item class="md-1-line" ng-click="logout()">
 					<i class="material-icons md-avatar menu-icon">exit_to_app</i>
 					<div class="md-list-item-text" layout="column">

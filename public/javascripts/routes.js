@@ -32,6 +32,16 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 		templateUrl: '/templates/store.html',
 		controller: 'StoreController'
 	})
+	.state('home.cms', {
+		url: '/cms',
+		templateUrl: '/templates/cms.html',
+		controller: 'CmsController',
+		resolve: {
+			access: ["Auth", function(Auth) {
+				return Auth.isAdmin();
+			}]
+		}
+	})
 	// this route is for testing the appearance of a card
 	// by name (note the controller can be removed in production)
 	.state('card', {
@@ -39,8 +49,8 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 		templateUrl: '/templates/card-admin.html',
 		controller: 'CardController',
 		resolve: {
-			access: ["Access", function(Access) {
-				// return Access.hasRole("admin");
+			access: ["Auth", function(Auth) {
+				return Auth.isAdmin();
 			}]
 		}
 	})

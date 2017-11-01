@@ -30,6 +30,7 @@ exports.UserSchema = new mongoose.Schema({
 	 * @property {number} lost - Games lost
 	 * @property {number} xp - User's experience (XP)
 	 * @property {number} boon - User's in-game currency total
+	 * @property {string} role - User's role (user | admin)
 	 */
 	_id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 	username: { type: String, required: true },
@@ -43,7 +44,8 @@ exports.UserSchema = new mongoose.Schema({
 	won: { type: Number, required: true },
 	lost: { type: Number, required: true },
 	xp: { type: Number, required: true },
-	boon: { type: Number, required: true }
+	boon: { type: Number, required: true },
+	role: { type: String, required: true }
 });
 
 /** @function generateJwt
@@ -67,6 +69,7 @@ this.UserSchema.methods.generateJwt = function() {
 		lost: this.lost,
 		xp: this.xp,
 		boon: this.boon,
+		role: this.role,
 		exp: parseInt(expiry.getTime() / 1000)
 	}, secret);
 };

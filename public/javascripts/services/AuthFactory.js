@@ -1,4 +1,4 @@
-angular.module('TCModule').factory('Auth', function AuthFactory($http, $window) {
+angular.module('TCModule').factory('Auth', function AuthFactory($http, $window, $q) {
     return {
         // store the JWT in session storage which
         // only lasts during the current browser session
@@ -24,6 +24,13 @@ angular.module('TCModule').factory('Auth', function AuthFactory($http, $window) 
             } else {
                 return false;
             }
+        },
+        isAdmin: function() {
+            var token = this.getToken();
+            var payload = token.split('.')[1];
+            payload = $window.atob(payload);
+            payload = JSON.parse(payload);
+            return $q.when(payload.role === 'admin');
         }
     };
 });
