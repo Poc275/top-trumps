@@ -1,4 +1,4 @@
-angular.module('TCModule', ['ngMaterial', 'ngAnimate', 'ui.router'])
+angular.module('TCModule', ['ngMaterial', 'ngAnimate', 'ui.router', 'ngSanitize'])
 	.config(function($mdThemingProvider) {
 		$mdThemingProvider.theme('default')
 			// .backgroundPalette('cyan')

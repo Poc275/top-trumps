@@ -4,14 +4,14 @@
         <div layout="column" flex-gt-sm="55">
             <h3 layout-padding class="md-headline">Create/Edit a card</h3>
             <form ng-submit="">
-                <md-autocomplete 
+                <md-autocomplete class="cms-autocomplete" 
                     md-selected-item="selectedItem" 
                     md-search-text="searchText" 
                     md-selected-item-change="selectedItemChange(item)" 
                     md-items="item in querySearch(searchText)" 
                     md-item-text="item.value"
                     md-min-length="0" 
-                    placeholder="Name" 
+                    placeholder="Select existing..." 
                     md-menu-class="autocomplete-custom-template">
                     <md-item-template>
                         <!-- <div ng-style="{'background-image':'url(https://tcmaster.blob.core.windows.net/images/{{ item.image }})'}" 
@@ -23,6 +23,14 @@
                 </md-autocomplete>
 
                 <md-input-container class="md-block">
+                    <label>Name</label>
+                    <input name="name" ng-model="card.name" required />
+                    <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
+                        <div ng-message="required">Name is required</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
                     <label>Unpalatibility</label>
                     <input required type="number" step="any" name="unpalatibility" ng-model="card.unpalatibility" min="0" max="100" ng-change="calcAverage()" />
                     <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
@@ -32,7 +40,7 @@
 
                 <md-input-container class="md-block">
                     <label>Up their own arsemanship</label>
-                    <input required type="number" step="any" name="arsemanship" ng-model="card.arsemanship" min="0" max="100" ng-change="calcAverage()" />
+                    <input required type="number" step="any" name="arsemanship" ng-model="card.up_their_own_arsemanship" min="0" max="100" ng-change="calcAverage()" />
                     <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
                         <div ng-message="required">Require a value between 0 and 100</div>
                     </div>
@@ -40,7 +48,7 @@
 
                 <md-input-container class="md-block">
                     <label>Media Attention</label>
-                    <input required type="number" step="any" name="media" ng-model="card.media" min="0" max="100" ng-change="calcAverage()" />
+                    <input required type="number" step="any" name="media" ng-model="card.media_attention" min="0" max="100" ng-change="calcAverage()" />
                     <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
                         <div ng-message="required">Require a value between 0 and 100</div>
                     </div>
@@ -59,44 +67,60 @@
                     <input required type="number" step="any" name="legacy" ng-model="card.ppc" min="0" />
                     <!-- <div class="hint">In millions i.e. a score of 1 = 1 million. 200000 is current max (Putin)</div> -->
                     <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
-                        <div ng-message="required">Require a value between 0 and 100</div>
-                        <div ng-message="min">Below 0? Are they in debt or something?</div>
+                        <div ng-message="required">PPC required</div>
+                        <div ng-message="min">In millions i.e. a score of 1 = 1 million. 200000 is current max (Putin)</div>
                     </div>
                 </md-input-container>
 
                 <md-input-container class="md-block">
                     <label>Special Ability</label>
-                    <input required type="number" step="any" name="specialAbility" ng-model="card.specialAbility" min="0" max="100" ng-change="calcAverage()" />
+                    <input required type="number" step="any" name="specialAbility" ng-model="card.special_ability" min="0" max="100" ng-change="calcAverage()" />
                     <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
                         <div ng-message="required">Require a value between 0 and 100</div>
                     </div>
                 </md-input-container>
 
                 <md-input-container class="md-block">
-                    <label>Average</label>
-                    <input required type="number" ng-model="average" disabled />
+                    <label>Special Ability Description</label>
+                    <textarea ng-model="card.special_ability_description" md-maxlength="150" rows="2" md-select-on-focus required></textarea>
+                    <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
+                        <div ng-message="required">Special Ability Description is required</div>
+                    </div>
                 </md-input-container>
 
-                <md-select ng-model="card.category" name="category" placeholder="Category" required>
-                    <md-option value="World Leaders">World Leaders</md-option>
-                    <md-option value="Attention Seekers">Attention Seekers</md-option>
-                    <md-option value="Wrong'ns">Wrong'ns</md-option>
-                    <md-option value="Sports">Sports</md-option>
-                    <md-option value="Mouth Breathers">Mouth Breathers</md-option>
-                    <md-option value="Tories">Tories</md-option>
-                    <md-option value="Fictional">Fictional</md-option>
-                    <md-option value="1%ers">1%ers</md-option>
-                    <md-option value="Jokers">Jokers</md-option>
-                </md-select>
+                <md-input-container class="md-block">
+                    <label>Average</label>
+                    <input type="number" ng-model="average" value="50" disabled />
+                </md-input-container>
 
                 <md-input-container class="md-block">
-                    <label>Special Ability Description</label>
-                    <textarea required ng-model="card.specialAbilityDesc" md-maxlength="150" rows="2" md-select-on-focus></textarea>
+                    <label>Category</label>
+                    <md-select ng-model="card.category" name="category" placeholder="Category" ng-change="isTory()" required>
+                        <md-option value="World Leaders">World Leaders</md-option>
+                        <md-option value="Attention Seekers">Attention Seekers</md-option>
+                        <md-option value="Wrong'n">Wrong'n</md-option>
+                        <md-option value="Sports">Sports</md-option>
+                        <md-option value="Mouth Breathers">Mouth Breathers</md-option>
+                        <md-option value="Tories">Tories</md-option>
+                        <md-option value="Fictional">Fictional</md-option>
+                        <md-option value="1%er">1%er</md-option>
+                        <md-option value="Jokers">Jokers</md-option>
+                    </md-select>
                 </md-input-container>
 
                 <md-input-container class="md-block">
                     <label>Biography</label>
-                    <textarea required ng-model="card.bio" rows="10" md-select-on-focus></textarea>
+                    <textarea ng-model="card.mdBio" 
+                              ng-model-options="{ debounce: 1000 }" 
+                              ng-change="updateBioMarkdown(card.mdBio)" 
+                              name="bio" 
+                              rows="10" 
+                              md-select-on-focus 
+                              required>
+                    </textarea>
+                    <div ng-messages="projectForm.rate.$error" multiple md-auto-hide="false">
+                        <div ng-message="required">Bio is required</div>
+                    </div>
                 </md-input-container>
 
                 <md-chips ng-model="card.references" name="references" md-removable="true" placeholder="References"></md-chips>
@@ -108,8 +132,9 @@
         </div>
 
         <!-- Preview -->
-        <div layout="column" flex-gt-sm="35" flex="100">
+        <div layout="column" flex-gt-sm="35" flex="100" class="cms-preview">
             <h3 layout-padding class="md-headline">Preview</h3>
+            <tc-card card='card' ng-repeat="card in preview"></tc-card>
         </div>
     </div>
 </div>

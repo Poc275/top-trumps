@@ -666,3 +666,13 @@ md-grid-tile.gold {
 	bottom: 7px;
 	opacity: 1;
 }
+
+.cms-autocomplete {
+	margin-bottom: 32px;
+}
+
+.cms-preview {
+	/* position: fixed; */
+	/* top: 200px; */
+	/* left: 55%; */
+}
