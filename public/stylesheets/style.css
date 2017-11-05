@@ -639,18 +639,24 @@ md-grid-tile.gold {
 	cursor: pointer;
 }
 
+.cms-form-result {
+	position: absolute;
+	left: 2px;
+	right: auto;
+	font-size: 12px;
+	line-height: 14px;
+	transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+	color: grey;
+}
 
 .hint {
-	/* Position the hint */
 	position: absolute;
 	left: 2px;
 	right: auto;
 	bottom: 7px;
-	/* Copy styles from ng-messages */
 	font-size: 12px;
 	line-height: 14px;
 	transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
-	/* Set our own color */
 	color: grey;
 }
 
@@ -667,12 +673,17 @@ md-grid-tile.gold {
 	opacity: 1;
 }
 
-.cms-autocomplete {
+.cms-autocomplete,
+.cms-category {
 	margin-bottom: 32px;
 }
 
 .cms-preview {
-	/* position: fixed; */
-	/* top: 200px; */
-	/* left: 55%; */
+	position: relative;
+}
+
+.cms-preview-card {
+	width: 500px;
+	position: fixed;
+	margin-top: 70px;
 }

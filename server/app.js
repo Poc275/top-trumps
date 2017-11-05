@@ -25,6 +25,18 @@ if(!process.env.FacebookClientID) {
 	config = require('../config/auth');
 }
 
+var multer = require('multer');
+var multerAzure = require('multer-azure');
+var upload = multer({
+    storage: multerAzure({
+        connectionString: process.env.AzureStorageKey || config.storage.connectionString,
+		container: 'images',
+		blobPathResolver: function(req, file, cb) {
+			cb(null, file.originalname);
+		}
+    })
+});
+
 var mongoose = require('mongoose');
 // use default JS promises as mongoose promises are deprecated
 mongoose.Promise = global.Promise;
@@ -79,7 +91,7 @@ app.use(passport.session());
 
 
 // middleware
-// is user authenticated?
+// is user passport authenticated?
 var isAuthenticated = function(req, res, next) {
 	// if a user is authenticated, carry on
 	// isAuthenticated provided by passport
@@ -101,6 +113,17 @@ var auth = jwt({
 	secret: process.env.JwtSecret || config.jwt.secret,
 	userProperty: 'payload'
 });
+
+// is user an admin?
+var isAdmin = function(req, res, next) {
+	if(req.payload.role === 'admin') {
+		return next();
+	} else {
+		return res.status(401).json({
+			"response": "Unauthorised"
+		});
+	}
+};
 
 // error handler for JWT unauthorised requests
 app.use(function(err, req, res, next) {
@@ -228,6 +251,65 @@ app.get('/card/pack/:size', auth, function(req, res) {
 
 		res.json(pack);
 	});
+});
+
+app.put('/card/edit', auth, isAdmin, function(req, res) {
+	Card.findById(req.body._id, function(err, card) {
+		if(err) {
+			console.log(err);
+			res.status(500).end();
+		}
+
+		card.name = req.body.name;
+		card.unpalatibility = req.body.unpalatibility;
+		card.up_their_own_arsemanship = req.body.up_their_own_arsemanship;
+		card.media_attention = req.body.media_attention;
+		card.legacy = req.body.legacy;
+		card.special_ability = req.body.special_ability;
+		card.ppc = req.body.ppc;
+		card.cuntal_order = req.body.cuntal_order;
+		card.category = req.body.category;
+		card.special_ability_description = req.body.special_ability_description;
+		card.bio = req.body.mdBio;
+		card.references = req.body.references;
+		card.images = req.body.images;
+
+		card.save(function(err) {
+			if(err) {
+				console.log(err);
+				res.status(500).end();
+			}
+			
+			res.status(200).end();
+		});
+	});
+});
+
+app.post('/card/create', auth, isAdmin, function(req, res) {
+	var card = new Card();
+
+	card.name = req.body.name;
+	card.unpalatibility = req.body.unpalatibility;
+	card.up_their_own_arsemanship = req.body.up_their_own_arsemanship;
+	card.media_attention = req.body.media_attention;
+	card.legacy = req.body.legacy;
+	card.special_ability = req.body.special_ability;
+	card.ppc = req.body.ppc;
+	card.cuntal_order = req.body.cuntal_order;
+	card.category = req.body.category;
+	card.special_ability_description = req.body.special_ability_description;
+	card.bio = req.body.mdBio;
+	card.references = req.body.references;
+	card.images = req.body.images;
+
+	card.save(function(err) {
+        if(err) {
+            console.log(err);
+            res.status(500).end();
+		}
+		
+		res.status(201).end();
+    });
 });
 
 app.get('/purchase/:grade', auth, function(req, res) {
@@ -438,6 +520,17 @@ app.get('/me/collection', auth, function(req, res) {
 			res.json(cards);
 		});
 	});
+});
+
+app.post('/images/upload', auth, isAdmin, upload.single('file'), function(req, res) {
+	// probably don't need this extra check because of isAdmin middleware
+	if(req.payload.role !== 'admin') {
+		res.status(401).json({
+			"response": "Unauthorised"
+		});
+	} else {
+		res.status(201).end();
+	}
 });
 
 app.get('/logout', function(req, res) {

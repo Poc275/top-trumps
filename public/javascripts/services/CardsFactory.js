@@ -48,6 +48,20 @@ angular.module('TCModule').factory('Cards', function CardsFactory($http, Auth) {
 					Authorization: 'Bearer ' + Auth.getToken()
 				}
 			});
+		},
+		edit: function(card) {
+			return $http.put('/card/edit/', card, {
+				headers: {
+					Authorization: 'Bearer ' + Auth.getToken()
+				}
+			});
+		},
+		create: function(card) {
+			return $http.post('/card/create', card, {
+				headers: {
+					Authorization: 'Bearer ' + Auth.getToken()
+				}
+			});
 		}
 	};
 });

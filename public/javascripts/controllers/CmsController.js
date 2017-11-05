@@ -12,7 +12,7 @@ angular.module('TCModule').controller('CmsController', function($scope, $http, $
         mdBio: 'Bio here, markdown compatible...',
         bio: 'Bio here, markdown compatible...',
         references: [
-            'https://en.wikipedia.org'
+            '[Wikipedia](https://en.wikipedia.org)'
         ],
         cuntal_order: 'Bronze',
         images: [
@@ -26,6 +26,7 @@ angular.module('TCModule').controller('CmsController', function($scope, $http, $
         $scope.card
     ];
 
+    $scope.showPreviewCard = true;
     $scope.querySearch = querySearch;
     $scope.selectedItemChange = selectedItemChange;
     $scope.converter = new showdown.Converter();
@@ -44,13 +45,34 @@ angular.module('TCModule').controller('CmsController', function($scope, $http, $
         $scope.cards = null;
     });
 
+    // form submit event
+    $scope.onSubmit = function() {
+        if($scope.card._id) {
+            // we're editing an existing card
+            Cards.edit($scope.card).then(function(res) {
+                $scope.cmsFormResponse = "Edit successful";
+            }, function(err) {
+                console.log(err);
+                $scope.cmsFormResponse = "Error: " + err;
+            });
+        } else {
+            // we're creating a new card
+            Cards.create($scope.card).then(function(res) {
+                $scope.cmsFormResponse = "Card created successfully";
+            }, function(err) {
+                console.log(err);
+                $scope.cmsFormResponse = "Error: " + err;
+            });
+        }
+    };
+
     $scope.calcAverage = function() {
         $scope.average = ($scope.card.unpalatibility + 
                          $scope.card.up_their_own_arsemanship + 
                          $scope.card.media_attention + 
                          $scope.card.legacy + 
                          $scope.card.special_ability) / 5;
-        
+
         $scope.isTory();
     };
 
@@ -64,22 +86,50 @@ angular.module('TCModule').controller('CmsController', function($scope, $http, $
         } else {
             $scope.card.cuntal_order = 'Gold';
         }
-    }
+    };
 
     $scope.updateBioMarkdown = function(text) {
         $scope.card.bio = $sce.trustAsHtml($scope.converter.makeHtml(text));
-    }
+    };
+
+    // quick markdown insert functions
+    $scope.insertMdLink = function() {
+        $scope.card.mdBio.concat("[link text...](https://www.google.com)");
+    };
+
+    $scope.insertMdItalics = function() {
+        $scope.card.mdBio.conact("*italic*");
+    };
+
+    $scope.insertMdBold = function() {
+        $scope.card.mdBio.conact("**bold**");
+    };
+
+    $scope.insertMdNumberedList = function() {
+        $scope.card.mdBio.concat("\n1. Item 1\n2. Item 2\n3. Item 3");
+    };
+
+    $scope.insertMdBulletedList = function() {
+        $scope.card.mdBio.concat("\n- Item 1\n- Item 2\n- Item 3");
+    };
+
+    $scope.insertMdBlockquote = function() {
+        $scope.card.mdBio.concat("\n> \"I have a dream\"");
+    };
+
     
     function selectedItemChange(item) {
-        var selectedCard = $scope.cards.find(function(card) {
-            return card.name === item.value;
-        });
-
-        // update model and average
-        $scope.card = selectedCard;
-        $scope.card.mdBio = $scope.card.bio;
-        $scope.preview[0] = $scope.card;
-        $scope.calcAverage();
+        if(item) {
+            var selectedCard = $scope.cards.find(function(card) {
+                return card.name === item.value;
+            });
+    
+            // update model and average
+            $scope.card = selectedCard;
+            $scope.card.mdBio = $scope.card.bio;
+            $scope.preview[0] = $scope.card;
+            $scope.calcAverage();
+        }
     }
 
     function querySearch(query) {
