@@ -94,27 +94,27 @@ angular.module('TCModule').controller('CmsController', function($scope, $http, $
 
     // quick markdown insert functions
     $scope.insertMdLink = function() {
-        $scope.card.mdBio.concat("[link text...](https://www.google.com)");
+        $scope.card.mdBio += "[link text...](https://www.google.com)";
     };
 
     $scope.insertMdItalics = function() {
-        $scope.card.mdBio.conact("*italic*");
+        $scope.card.mdBio += "*italic*";
     };
 
     $scope.insertMdBold = function() {
-        $scope.card.mdBio.conact("**bold**");
+        $scope.card.mdBio += "**bold**";
     };
 
     $scope.insertMdNumberedList = function() {
-        $scope.card.mdBio.concat("\n1. Item 1\n2. Item 2\n3. Item 3");
+        $scope.card.mdBio += "\n1. Item 1\n2. Item 2\n3. Item 3";
     };
 
     $scope.insertMdBulletedList = function() {
-        $scope.card.mdBio.concat("\n- Item 1\n- Item 2\n- Item 3");
+        $scope.card.mdBio += "\n- Item 1\n- Item 2\n- Item 3";
     };
 
     $scope.insertMdBlockquote = function() {
-        $scope.card.mdBio.concat("\n> \"I have a dream\"");
+        $scope.card.mdBio += "\n> \"I have a dream\"";
     };
 
     

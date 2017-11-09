@@ -680,6 +680,8 @@ md-grid-tile.gold {
 
 .cms-preview {
 	position: relative;
+	/* give column enough height for smaller screens */
+	height: 2500px;
 }
 
 .cms-preview-card {
