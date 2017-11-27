@@ -5,9 +5,18 @@
 				<i class="material-icons menu-icon">menu</i>
 			</md-button>
 
-			<!-- <h2 flex md-truncate>{{ toolbarTitle }}</h2> -->
+			<!-- <h2 flex md-truncate>{{ location.path() }}</h2> -->
 
 			<span flex></span>
+
+			<md-button ng-if="showVrIcon"
+					   class="md-raised md-accent md-icon-button"
+					   aria-label="View Collection in VR"
+					   title="New! TC VR!!"
+					   ng-click="getCards()"
+					   ui-sref="vr">
+				<i class="material-icons">3d_rotation</i>
+			</md-button>
 
 			<md-button class="md-raised md-accent" ui-sref="home.play({ email: user.email })">Play</md-button>
 		</div>

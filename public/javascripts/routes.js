@@ -16,6 +16,11 @@ angular.module('TCModule').config(function($stateProvider, $urlRouterProvider) {
 		templateUrl: '/templates/collection.html',
 		controller: 'UserController'
 	})
+	.state('vr', {
+		url: '/vr-collection',
+		templateUrl: '/templates/vr-collection.html',
+		controller: 'UserController'
+	})
 	.state('home.play', {
 		url: '/play',
 		templateUrl: '/templates/game.html',

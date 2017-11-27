@@ -5,12 +5,24 @@ angular.module('TCModule').controller('AppController', function($scope, $mdSiden
 
 	$scope.flipped = false;
 
+	$scope.showVrIcon = false;
+
+	
 	// toggle sidenav menu
 	$scope.toggleMenu = function() {
 		$mdSidenav('side-menu').toggle();
 	};
 
-	// THIS CONTROLLER IS FOR TESTING PURPOSES ONLY!!!
+	// ui-sref change event to add VR icon to the collection page
+	$scope.$on('$stateChangeStart', function(event, toState, toParams) {
+		if(toState.url === '/collection') {
+			$scope.showVrIcon = true;
+		} else {
+			$scope.showVrIcon = false;
+		}
+	});
+
+	// THIS IS FOR TESTING PURPOSES ONLY!!!
 	// Local signup to test 2 player games etc.
 	$scope.localSignin = function() {
 		$http.post('/auth/local', $scope.local).then(function() {
