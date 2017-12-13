@@ -6,6 +6,8 @@
         <img id="chamber" src="textures/chamber1.jpg">
     </a-assets>
 
+    <tc-card card='card' ng-repeat="card in collection | limitTo: 1"></tc-card>
+
     <a-box src="#boxTexture" position="0 0 15" rotation="0 45 45" scale="2 2 2"></a-box>
     <a-box src="#boxTexture" position="15 0 0" rotation="0 45 45" scale="2 2 2"></a-box>
     <a-box src="#boxTexture" position="0 0 -15" rotation="0 45 45" scale="2 2 2"></a-box>

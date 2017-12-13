@@ -39,6 +39,7 @@ module.exports = function(config) {
         'public/javascripts/controllers/SoloGameController.js',
         'public/javascripts/controllers/StoreController.js',
         'public/javascripts/controllers/CmsController.js',
+        'public/javascripts/controllers/VrController.js',
         'public/javascripts/directives/CardDirective.js',
         'public/javascripts/directives/CardNotCollectedDirective.js',
         'public/javascripts/directives/PackDirective.js',
