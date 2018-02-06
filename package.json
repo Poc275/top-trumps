@@ -2,6 +2,7 @@
   "name": "toptrumps",
   "version": "1.0.0",
   "private": true,
+  "main": "server/app.js",
   "engines": {
     "node": "6.9.5"
   },
