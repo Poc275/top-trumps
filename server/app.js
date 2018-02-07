@@ -550,16 +550,6 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook'), function(r
     res.end();
 });
 
-// twitter oauth
-app.get('/auth/twitter', passport.authenticate('twitter'));
-
-app.get('/auth/twitter/callback', passport.authenticate('twitter'), function(req, res) {
-	res.writeHead(302, {
-        'Location': '/#!/home'
-    });
-    res.end();
-});
-
 // google oauth
 app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.profile.emails.read'] }));
 

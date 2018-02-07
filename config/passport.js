@@ -10,7 +10,6 @@
  * to its own file.
  */
 var FacebookStrategy = require('passport-facebook').Strategy;
-var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var mongoose = require('mongoose');
 var config;
@@ -126,60 +125,6 @@ module.exports = function(passport) {
 					});
 				} else {
 					// we found a user, return them
-					return done(null, user);
-				}
-			});
-		}
-	));
-
-	// twitter strategy
-	passport.use(new TwitterStrategy({
-			consumerKey: process.env.TwitterConsumerKey || config.twitter.consumerKey,
-			consumerSecret: process.env.TwitterConsumerSecret || config.twitter.consumerSecret,
-			callbackURL: process.env.TwitterCallbackURL || config.twitter.callbackURL
-		},
-		function(token, tokenSecret, profile, done) {
-			User.findOne({
-				'id': profile.id.toString()
-			}, function(err, user) {
-				if(err) {
-					return done(err);
-				}
-
-				if(!user) {
-					// create starter pack
-					createStarterPack(function(err, cardIds) {
-						if(err) {
-							console.log(err);
-							throw(err);
-						}
-
-						user = new User({
-							username: profile.username,
-							name: profile.displayName,
-							email: 'test@twitter.com',
-							provider: 'twitter',
-							id: profile.id.toString(),
-							cards: cardIds,
-							level: 1,
-							played: 0,
-							won: 0,
-							lost: 0,
-							xp: 0,
-							boon: 500,
-							role: 'user'
-						});
-
-						user.save(function(err) {
-							if(err) {
-								console.log(err);
-								return done(err, null);
-							}
-							return done(null, user);
-						});
-					});
-				} else {
-					// we found a user
 					return done(null, user);
 				}
 			});
