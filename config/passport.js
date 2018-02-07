@@ -1,11 +1,9 @@
 /**
  * Passport module that handles authentiction strategies
- * for Facebook, Google, and Twitter.
+ * for Facebook and Google.
  * @module config/passport
- * @todo Twitter will not provide email addresses until the application requesting
- * access has a Ts and Cs and privacy policy document.
  * @todo createStarterPack() returns a callback. Only the Google strategy is set up 
- * correctly in calling/returning from this function, need to update Twitter & Facebook.
+ * correctly in calling/returning from this function, need to update Facebook.
  * @todo db connection is duplicated in app.js and passport.js, migrate
  * to its own file.
  */
@@ -47,7 +45,7 @@ var Card = db.model('cards', cardSchema);
 
 /**
  * function that takes the initialised passport object (from app.js) 
- * and handles the oAuth callbacks using Facebook, Google, Twitter strategies.
+ * and handles the oAuth callbacks using Facebook and Google strategies.
  * @param {object} passport - initialised passport object
  * @returns {Error|User} Error if something went wrong, or the user if found. If 
  * the user wasn't found they are created and added to the database
