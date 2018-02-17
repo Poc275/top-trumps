@@ -65,15 +65,15 @@ var connector = new builder.ChatConnector({
 bot.create(connector);
 
 // uncomment after placing your favicon in /public
-app.use(favicon(path.join(__dirname, '../public', 'images', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '../dist', 'images', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../dist')));
 // don't expose external paths to resources, so to access node_modules
 // for angular etc. use a /scripts alias for the path
-app.use('/scripts', express.static(path.join(__dirname, '../node_modules')));
+// app.use('/scripts', express.static(path.join(__dirname, '../node_modules')));
 app.use(session({ 
 	secret: process.env.PassportSecret || config.passport.secret,
 	resave: false,

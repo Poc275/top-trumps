@@ -1,0 +1,17 @@
+<a-scene>
+    <a-assets>
+        <img id="highlight1" src="textures/radial-highlight.png">
+        <img id="shadow3" src="textures/radial-shadow-3.png">
+        <img id="boxTexture" src="textures/DT-Front.jpg">
+        <img id="chamber" src="textures/chamber1.jpg">
+    </a-assets>
+
+    <tc-card card='card' ng-repeat="card in collection | limitTo: 1"></tc-card>
+
+    <a-box src="#boxTexture" position="0 0 15" rotation="0 45 45" scale="2 2 2"></a-box>
+    <a-box src="#boxTexture" position="15 0 0" rotation="0 45 45" scale="2 2 2"></a-box>
+    <a-box src="#boxTexture" position="0 0 -15" rotation="0 45 45" scale="2 2 2"></a-box>
+    <a-box src="#boxTexture" position="-15 0 0" rotation="0 45 45" scale="2 2 2"></a-box>
+
+    <a-sky id="image-360" radius="20" src="#chamber"></a-sky>
+</a-scene>
